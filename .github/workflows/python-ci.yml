@@ -1,0 +1,22 @@
+name: Python CI
+
+# Runs the merge test suite on every push and PR. The weekly sync's merge job
+# runs the same two steps before it touches master; this makes them a check
+# on every commit too.
+
+on:
+  push:
+    branches: [ "claude/explorium-docs-mcp-brregp" ]
+  pull_request:
+    branches: [ "claude/explorium-docs-mcp-brregp" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -q pytest
+      - run: python -m pytest tests -q
