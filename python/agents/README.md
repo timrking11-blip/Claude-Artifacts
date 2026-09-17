@@ -11,6 +11,16 @@ nothing inside is modified, so an upstream diff applies cleanly.
 
 License: each sample carries its own `LICENSE` (Apache-2.0, Google LLC).
 
+**Tests.** Vendored samples are not part of this repo's CI. Their suites
+need Google Application Default Credentials at import time (every module in
+`brand-aligned-presentations/tests` fails collection with
+`DefaultCredentialsError` without them), so run them locally after
+`gcloud auth application-default login`:
+
+```bash
+cd python/agents/brand-aligned-presentations && uv sync --dev && make test
+```
+
 Our own agents, modelled on these samples rather than copied, live in
 [`../../agents/`](../../agents/) (e.g. `account-research`, derived from
 `fomc-research`).
