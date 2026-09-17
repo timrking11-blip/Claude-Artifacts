@@ -144,12 +144,38 @@ Credentials must be present — `ACCOUNT_RESEARCH_OTEL_TO_CLOUD` builds its
 exporter eagerly and cannot start without them (`trace_to_cloud` alone only
 warns and runs untraced).
 
-**Not the same thing as Vertex request/response logging.** Vertex can mirror
-model requests and responses into a BigQuery table, but that is configured per
-publisher model through `GenerativeModel.set_request_response_logging_config`
--- a *Gemini* class. This agent calls Claude through `AnthropicVertex`, which
-never goes through it, so that path captures none of the agent's traffic.
-ADK tracing above is provider-agnostic and does.
+### Request/response logging to BigQuery
+
+Separately from tracing, Vertex can mirror the actual prompts and completions
+into a BigQuery table. Claude **is** supported -- models served through
+`rawPredict`/`streamRawPredict` under the `anthropic` publisher -- but only via
+REST (`setPublisherModelConfig`), and the Terraform google provider has no
+resource for it yet ([#24092](https://github.com/hashicorp/terraform-provider-google/issues/24092)).
+Hence a script:
+
+```bash
+bq mk --dataset --location=US "$GOOGLE_CLOUD_PROJECT:crm"   # if it doesn't exist
+
+python scripts/claude_request_logging.py --show
+python scripts/claude_request_logging.py --enable --dataset crm --table claude_logs
+python scripts/claude_request_logging.py --enable --dataset crm --dry-run   # inspect first
+python scripts/claude_request_logging.py --disable
+```
+
+It targets whatever `ACCOUNT_RESEARCH_CLAUDE_MODEL` names, at
+`GOOGLE_CLOUD_LOCATION` (`global` uses `aiplatform.googleapis.com`, a region
+uses `<region>-aiplatform.googleapis.com`). `--sampling-rate` takes a fraction
+in (0,1]; `--otel` adds OpenTelemetry logs.
+
+The rows contain prompts and completions — the contact data the agent reads
+and the briefs it writes. Choose the dataset's region, access and retention
+deliberately before turning this on.
+
+**Tracing and logging are different things.** Tracing gives you spans -- what
+ran, in what order, how long. Logging gives you payloads. Note also that the
+Gemini recipe for logging (`GenerativeModel.set_request_response_logging_config`)
+configures a *Gemini* class the agent never touches; use the script above for
+Claude.
 
 ## Tests
 
