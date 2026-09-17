@@ -110,10 +110,30 @@ They are different servers on different hosts:
   `match-prospects`, `fetch-businesses-events`, …). Spends credits; needs
   `EXPLORIUM_API_KEY`.
 
-The docs server URL follows Mintlify's `<docs-host>/mcp` convention and could
-not be verified from the environment this repo was built in (outbound access
-to `explorium.ai` was blocked). If it fails to connect, correct it in
-`.mcp.json` and `crm/config.py` — the only two places it appears.
+Both servers use **OAuth**. `.mcp.json` deliberately carries no
+`Authorization` header: setting one disables the OAuth flow, and the REST
+API key in `crm/config.py` is not a token for the MCP endpoint anyway.
+
+### Authorizing the MCP servers
+
+`/mcp enable`, `disable` and `reconnect` never authenticate — they only
+toggle a server's config. Authorization needs a browser, so it happens in
+one of two places:
+
+- **Local Claude Code (terminal or desktop app).** Open this repo; approve
+  the project's `.mcp.json` when prompted. Run `/mcp` with no arguments,
+  pick the server, choose **Authenticate**, and log in in the browser tab
+  it opens. This applies to that machine only.
+- **claude.ai and remote Claude Code sessions.** These cannot run OAuth
+  themselves. Instead add the server as a connector: claude.ai → Settings →
+  Connectors → *Add custom connector*, with the same URL from `.mcp.json`.
+  OAuth runs in the browser there, and the tools then appear in every web
+  session as `mcp__<Connector name>__*`.
+
+The docs server URL follows Mintlify's `<docs-host>/mcp` convention and has
+been observed answering with an OAuth challenge, which confirms it is a live
+MCP endpoint. If it ever moves, it is defined in `.mcp.json` and
+`crm/config.py` only.
 
 ## Layout
 
