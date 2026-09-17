@@ -14,6 +14,7 @@ import os
 
 import uvicorn
 from google.adk.cli.fast_api import get_fast_api_app
+from google.auth.exceptions import DefaultCredentialsError
 
 AGENTS_DIR = os.path.dirname(os.path.abspath(__file__))
 PORT = int(os.getenv("PORT", "8080"))
@@ -36,18 +37,27 @@ if TRACE_TO_CLOUD or OTEL_TO_CLOUD:
             "Or unset ACCOUNT_RESEARCH_TRACE_TO_CLOUD / ACCOUNT_RESEARCH_OTEL_TO_CLOUD."
         ) from None
 
-app = get_fast_api_app(
-    agents_dir=AGENTS_DIR,
-    trace_to_cloud=TRACE_TO_CLOUD,
-    otel_to_cloud=OTEL_TO_CLOUD,
-    # Local SQLite session store next to the agent; swap for a
-    # postgresql:// or agentengine:// URI in production.
-    session_service_uri=os.getenv("SESSION_SERVICE_URI", "sqlite:///./sessions.db"),
-    allow_origins=os.getenv("ALLOW_ORIGINS", "*").split(","),
-    web=os.getenv("SERVE_WEB_UI", "1") == "1",
-    host=HOST,
-    port=PORT,
-)
+try:
+    app = get_fast_api_app(
+        agents_dir=AGENTS_DIR,
+        trace_to_cloud=TRACE_TO_CLOUD,
+        otel_to_cloud=OTEL_TO_CLOUD,
+        # Local SQLite session store next to the agent; swap for a
+        # postgresql:// or agentengine:// URI in production.
+        session_service_uri=os.getenv("SESSION_SERVICE_URI", "sqlite:///./sessions.db"),
+        allow_origins=os.getenv("ALLOW_ORIGINS", "*").split(","),
+        web=os.getenv("SERVE_WEB_UI", "1") == "1",
+        host=HOST,
+        port=PORT,
+    )
+except DefaultCredentialsError:
+    # otel_to_cloud builds its exporter eagerly and needs credentials;
+    # trace_to_cloud only warns. Either way, say so plainly.
+    raise SystemExit(
+        "Tracing is enabled but there are no Application Default Credentials.\n"
+        "  gcloud auth application-default login\n"
+        "Or unset ACCOUNT_RESEARCH_TRACE_TO_CLOUD / ACCOUNT_RESEARCH_OTEL_TO_CLOUD."
+    ) from None
 
 
 @app.get("/healthz")

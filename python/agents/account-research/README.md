@@ -139,7 +139,10 @@ ACCOUNT_RESEARCH_ENABLE_TRACING=1 python deployment/deploy.py --create
 
 The exporter is an optional extra, so the flags without it stop with the
 install command rather than a `ModuleNotFoundError` from inside ADK. The
-running identity needs `roles/cloudtrace.agent`.
+running identity needs `roles/cloudtrace.agent`, and Application Default
+Credentials must be present — `ACCOUNT_RESEARCH_OTEL_TO_CLOUD` builds its
+exporter eagerly and cannot start without them (`trace_to_cloud` alone only
+warns and runs untraced).
 
 **Not the same thing as Vertex request/response logging.** Vertex can mirror
 model requests and responses into a BigQuery table, but that is configured per
