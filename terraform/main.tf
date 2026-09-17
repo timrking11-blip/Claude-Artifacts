@@ -12,16 +12,12 @@ terraform {
   # coupling gets in the way.
   required_version = "1.16.3"
 
-  cloud {
-    # Your HCP Terraform organization NAME -- the /app/<name>/ segment of the
-    # app.terraform.io URL. Not the `org-...` External ID from Settings ->
-    # General; the cloud block does not take that.
-    organization = "REPLACE_WITH_HCP_ORG"
-
-    workspaces {
-      name = "REPLACE_WITH_HCP_WORKSPACE"
-    }
-  }
+  # Organization and workspace come from the environment, so this repo names
+  # no specific HCP account:
+  #   TF_CLOUD_ORGANIZATION=<your org>   # the /app/<name>/ segment of the URL,
+  #                                      # not the `org-...` External ID
+  #   TF_WORKSPACE=<your workspace>
+  cloud {}
 
   required_providers {
     google = {

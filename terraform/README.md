@@ -15,15 +15,24 @@ command.
 
 ### Which workspace this targets
 
-Set `organization` and `workspaces.name` in the `cloud` block of `main.tf`.
-They are easy to mix up: the organization is the `/app/<name>/` segment of
-the app.terraform.io URL, and the `org-…` string under Settings → General is
-its External ID, which the `cloud` block does **not** take.
+Nothing in this repo names an HCP account. The `cloud {}` block reads both
+values from the environment:
 
-Simplest way to read the organization name: open app.terraform.io and take
-the segment after `/app/` in the URL. To list them from the API instead,
-after `terraform login` — note the credentials file lives in a different
-place on each platform:
+```powershell
+$env:TF_CLOUD_ORGANIZATION = "your-org"        # the /app/<name>/ segment of
+$env:TF_WORKSPACE          = "your-workspace"  # the app.terraform.io URL
+```
+
+```bash
+export TF_CLOUD_ORGANIZATION=your-org
+export TF_WORKSPACE=your-workspace
+```
+
+The two are easy to mix up, and the `org-…` string under Settings → General
+is the External ID, which is **not** what `TF_CLOUD_ORGANIZATION` takes.
+Read the organization name off the URL after `/app/`, or list them from the
+API after `terraform login` — the credentials file lives in a different place
+on each platform:
 
 ```bash
 # macOS / Linux
@@ -39,8 +48,20 @@ $tok = (Get-Content "$env:APPDATA\terraform.d\credentials.tfrc.json" | ConvertFr
 
 ### 1. Workload identity federation, on the GCP side
 
-This part is console/`gcloud` work rather than code: bootstrapping the pool
-with Terraform would need the credentials that the pool exists to grant.
+This part is `gcloud` work rather than Terraform: bootstrapping the pool with
+Terraform would need the credentials that the pool exists to grant.
+
+**[`setup-wif.ps1`](setup-wif.ps1) does all of it.** It is idempotent — every
+step is skipped if the resource already exists — and `-DryRun` prints the
+commands without running them:
+
+```powershell
+.\setup-wif.ps1 -ProjectId <project> -HcpOrg <org> -HcpWorkspace <workspace> -DryRun
+.\setup-wif.ps1 -ProjectId <project> -HcpOrg <org> -HcpWorkspace <workspace>
+```
+
+It prints the three `TFC_GCP_*` values to paste into the workspace at the end.
+The steps it performs, if you would rather do them by hand:
 
 1. Create a **workload identity pool**, then an **OIDC provider** in it with
    issuer `https://app.terraform.io`.
@@ -95,6 +116,7 @@ keeps its own GCS-backed state, so the `cloud {}` block in `main.tf` comes
 
 ```bash
 cd terraform
+# TF_CLOUD_ORGANIZATION and TF_WORKSPACE must be set -- see above
 terraform login            # stores a token locally (~/.terraform.d, or %APPDATA%\terraform.d
                            # on Windows) -- never paste it anywhere
 terraform init             # generates .terraform.lock.hcl — commit it (see below)
