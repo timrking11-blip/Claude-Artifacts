@@ -85,21 +85,44 @@ def match_prospects(batch: list[Contact]) -> dict[str, str]:
     return resolved
 
 
+class CreditsExhausted(RuntimeError):
+    """Explorium refused enrichment because the account has no credits left."""
+
+
 def enrich(prospect_ids: list[str]) -> dict[str, dict]:
     """Fetch enrichment for resolved prospect ids. Returns prospect_id -> data."""
     if not prospect_ids:
         return {}
-    data = post_json(
-        f"{config.EXPLORIUM_API_BASE}/prospects/contacts_information/bulk_enrich",
-        {"prospect_ids": prospect_ids},
-        headers=explorium_headers(),
-    )
+    try:
+        data = post_json(
+            f"{config.EXPLORIUM_API_BASE}/prospects/contacts_information/bulk_enrich",
+            {"prospect_ids": prospect_ids},
+            headers=explorium_headers(),
+        )
+    except HttpError as exc:
+        if exc.status == 403 and "insufficient credits" in exc.body.lower():
+            raise CreditsExhausted(exc.body) from exc
+        raise
     out: dict[str, dict] = {}
     for entry in data.get("data") or []:
         pid = entry.get("prospect_id")
         if pid:
             out[pid] = entry.get("data") or entry
     return out
+
+
+def matched_only(original: Contact, prospect_id: str) -> Contact:
+    """The record we can still stage when matching worked but enrichment could
+    not be paid for: identity for the merge to find it, plus the Explorium id
+    so next week's run -- with credits -- enriches straight away.
+    """
+    return Contact(
+        email=original.email,
+        first_name=original.first_name,
+        last_name=original.last_name,
+        company_domain=original.company_domain,
+        explorium_prospect_id=prospect_id,
+    )
 
 
 def to_contact(original: Contact, prospect_id: str, data: dict) -> Contact:
@@ -159,16 +182,34 @@ def main() -> int:
 
     by_email = {normalize_email(c.email): c for c in roster if normalize_email(c.email)}
     enriched: list[Contact] = []
+    credits_exhausted = False
 
     try:
         for batch in chunked(list(by_email.values()), config.EXPLORIUM_BATCH_SIZE):
             resolved = match_prospects(batch)
             log.info("matched %s/%s prospects", len(resolved), len(batch))
-            payload = enrich(list(resolved.values()))
+            if credits_exhausted:
+                # Matching still works without credits; keep resolving ids so
+                # the whole roster is linked, and skip the paid step.
+                enriched.extend(matched_only(by_email[e], pid) for e, pid in resolved.items())
+                continue
+            try:
+                payload = enrich(list(resolved.values()))
+            except CreditsExhausted:
+                credits_exhausted = True
+                log.warning(
+                    "Explorium account has no enrichment credits left. Staging "
+                    "matched prospect ids only; enrichment fields will fill in "
+                    "on the first run after credits are added."
+                )
+                enriched.extend(matched_only(by_email[e], pid) for e, pid in resolved.items())
+                continue
             for email, pid in resolved.items():
                 data = payload.get(pid)
                 if data:
                     enriched.append(to_contact(by_email[email], pid, data))
+                else:
+                    enriched.append(matched_only(by_email[email], pid))
     except HttpError as exc:
         log.error("Explorium enrichment failed: %s", exc)
         return 1
@@ -180,6 +221,7 @@ def main() -> int:
                 "source": SOURCE_EXPLORIUM,
                 "observed_at": utcnow(),
                 "roster": args.roster,
+                "credits_exhausted": credits_exhausted,
                 "count": len(enriched),
                 "contacts": [c.to_dict() for c in enriched],
             },

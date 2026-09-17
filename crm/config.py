@@ -62,5 +62,5 @@ APOLLO_WRITEBACK_ENABLED = (
     os.environ.get("APOLLO_WRITEBACK_ENABLED", "false").lower() == "true"
 )
 
-REQUEST_TIMEOUT = 30
+REQUEST_TIMEOUT = 90  # Explorium prospect matching has been observed to exceed 30s
 MAX_RETRIES = 4
