@@ -1,4 +1,15 @@
-# python/agents — vendored ADK samples
+# python/agents
+
+All ADK agents live here, in the `python/agents/<name>` layout that
+`google/adk-samples` uses. Two kinds:
+
+## Ours
+
+| Agent | Modelled on | Notes |
+|---|---|---|
+| [`account-research/`](account-research/) | `fomc-research` | Account briefs from the CRM master ledger; Claude on Vertex by default. Tests run in this repo's CI without credentials. |
+
+## Vendored samples
 
 Samples copied verbatim from [google/adk-samples](https://github.com/google/adk-samples),
 laid out under the same `python/agents/<name>` path they have upstream. Each
@@ -20,10 +31,6 @@ need Google Application Default Credentials at import time (every module in
 ```bash
 cd python/agents/brand-aligned-presentations && uv sync --dev && make test
 ```
-
-Our own agents, modelled on these samples rather than copied, live in
-[`../../agents/`](../../agents/) (e.g. `account-research`, derived from
-`fomc-research`).
 
 To bring a sample up to a newer upstream commit:
 

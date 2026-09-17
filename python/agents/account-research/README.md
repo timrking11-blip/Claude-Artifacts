@@ -15,7 +15,7 @@ what the company does, and whom to approach first.
 | Model | **Claude on Vertex AI** by default (`claude-fable-5-1`; ADK's `Claude` wrapper over `AnthropicVertex`), or Gemini with `ACCOUNT_RESEARCH_MODEL_PROVIDER=gemini` |
 
 **Composition diagram:** https://claude.ai/artifact/54uStUBsF87tb9uyrhLCav
-(source: [`artifact/agent-composition.html`](../../artifact/agent-composition.html))
+(source: [`artifact/agent-composition.html`](../../../artifact/agent-composition.html))
 
 ## How it maps to the template
 
@@ -32,7 +32,7 @@ what the company does, and whom to approach first.
 ## Setup
 
 ```bash
-cd agents/account-research
+cd python/agents/account-research
 cp .env-example .env          # fill in project, location, bucket
 set -o allexport; . .env; set +o allexport
 
@@ -40,7 +40,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh    # once
 uv sync --dev
 ```
 
-The ledger tools read `../../data/master/contacts.json` by default; set
+The ledger tools read `../../../data/master/contacts.json` by default; set
 `ACCOUNT_RESEARCH_LEDGER` to point elsewhere.
 
 **BigQuery (optional, for the warehouse step and the `gcp-bigquery` MCP server):**

@@ -100,15 +100,16 @@ ledger by list or region.
 
 ## Agents
 
-[`agents/account-research/`](agents/account-research/) — a Google ADK
+[`python/agents/account-research/`](python/agents/account-research/) — a Google ADK
 multi-agent workflow, modelled on Google's `fomc-research` sample, that writes
 an account brief for any company in the master ledger. See its README for
 setup, running with `adk run` / `adk web`, and deployment to Agent Runtime.
 
-[`python/agents/`](python/agents/) — samples vendored verbatim from
-`google/adk-samples`, pinned to a commit; currently
-`brand-aligned-presentations` (brand-adherent `.pptx` decks from research,
-RAG and a corporate template). See that directory's README for provenance.
+[`python/agents/brand-aligned-presentations/`](python/agents/brand-aligned-presentations/)
+— vendored verbatim from `google/adk-samples`, pinned to a commit
+(brand-adherent `.pptx` decks from research, RAG and a corporate template).
+[`python/agents/README.md`](python/agents/README.md) records provenance and
+which directories are ours versus copies.
 
 ## MCP servers
 

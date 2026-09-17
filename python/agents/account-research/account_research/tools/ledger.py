@@ -38,7 +38,7 @@ def default_ledger_path() -> Path:
     env = os.getenv("ACCOUNT_RESEARCH_LEDGER")
     if env:
         return Path(env)
-    return Path(__file__).resolve().parents[4] / "data" / "master" / "contacts.json"
+    return Path(__file__).resolve().parents[5] / "data" / "master" / "contacts.json"
 
 
 def load_ledger(path: Path | None = None) -> list[dict[str, Any]]:

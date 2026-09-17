@@ -27,7 +27,7 @@ flags.DEFINE_string("table_id", "contacts", "BigQuery table ID.")
 flags.DEFINE_string("location", "us-central1", "Location for the dataset.")
 flags.DEFINE_string(
     "ledger",
-    str(Path(__file__).resolve().parents[3] / "data" / "master" / "contacts.json"),
+    str(Path(__file__).resolve().parents[4] / "data" / "master" / "contacts.json"),
     "Path to the master ledger JSON.",
 )
 flags.mark_flags_as_required(["project_id", "dataset_id"])

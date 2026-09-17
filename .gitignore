@@ -7,21 +7,13 @@ __pycache__/
 .pytest_cache/
 .env
 
-# Agent packages
-agents/**/.env
-agents/**/.venv/
-agents/**/deployment/*.whl
-agents/**/dist/
-agents/**/*.egg-info/
-agents/**/.adk/
-agents/**/uv.lock.tmp
-agents/**/sessions.db
 
 # Vendored ADK samples: same per-agent hygiene as agents/
 python/agents/**/.env
 python/agents/**/.venv/
 python/agents/**/.adk/
-python/agents/**/sessions.db
-python/agents/**/__pycache__/
+python/python/agents/**/__pycache__/
 python/agents/**/*.egg-info/
 python/agents/**/dist/
+python/agents/**/deployment/*.whl
+python/agents/**/uv.lock.tmp
