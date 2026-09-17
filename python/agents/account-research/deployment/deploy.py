@@ -40,7 +40,9 @@ AGENT_WHL_FILE = "account_research-0.1.0-py3-none-any.whl"
 def create() -> None:
     adk_app = AdkApp(
         agent=root_agent,
-        enable_tracing=False,
+        enable_tracing=os.getenv(
+            "ACCOUNT_RESEARCH_ENABLE_TRACING", "0"
+        ).strip().lower() in ("1", "true", "yes"),
     )
 
     remote_agent = agent_engines.create(

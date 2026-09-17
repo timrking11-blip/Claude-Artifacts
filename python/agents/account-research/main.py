@@ -19,8 +19,17 @@ AGENTS_DIR = os.path.dirname(os.path.abspath(__file__))
 PORT = int(os.getenv("PORT", "8080"))
 HOST = os.getenv("HOST", "0.0.0.0")
 
+# Observability. Off by default; tracing sends agent spans (sub-agent
+# transfers, tool calls, model calls) to Cloud Trace. This is the ADK-native
+# path and is provider-agnostic -- it covers Claude on Vertex, which Gemini's
+# GenerativeModel.set_request_response_logging_config does not.
+TRACE_TO_CLOUD = os.getenv("ACCOUNT_RESEARCH_TRACE_TO_CLOUD", "0").strip().lower() in ("1", "true", "yes")
+OTEL_TO_CLOUD = os.getenv("ACCOUNT_RESEARCH_OTEL_TO_CLOUD", "0").strip().lower() in ("1", "true", "yes")
+
 app = get_fast_api_app(
     agents_dir=AGENTS_DIR,
+    trace_to_cloud=TRACE_TO_CLOUD,
+    otel_to_cloud=OTEL_TO_CLOUD,
     # Local SQLite session store next to the agent; swap for a
     # postgresql:// or agentengine:// URI in production.
     session_service_uri=os.getenv("SESSION_SERVICE_URI", "sqlite:///./sessions.db"),

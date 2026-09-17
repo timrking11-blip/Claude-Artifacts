@@ -126,6 +126,25 @@ adk deploy cloud_run --project=$GOOGLE_CLOUD_PROJECT --region=$GOOGLE_CLOUD_LOCA
 Set `SESSION_SERVICE_URI` to a Postgres or Agent Engine URI in production;
 the default is a local SQLite file.
 
+## Observability
+
+Agent tracing is off by default. Turn it on and ADK sends spans for the whole
+run -- each sub-agent transfer, tool call and model call -- to Cloud Trace:
+
+```bash
+ACCOUNT_RESEARCH_TRACE_TO_CLOUD=1 python main.py     # or adk web .
+ACCOUNT_RESEARCH_ENABLE_TRACING=1 python deployment/deploy.py --create
+```
+
+The running identity needs `roles/cloudtrace.agent`.
+
+**Not the same thing as Vertex request/response logging.** Vertex can mirror
+model requests and responses into a BigQuery table, but that is configured per
+publisher model through `GenerativeModel.set_request_response_logging_config`
+-- a *Gemini* class. This agent calls Claude through `AnthropicVertex`, which
+never goes through it, so that path captures none of the agent's traffic.
+ADK tracing above is provider-agnostic and does.
+
 ## Tests
 
 ```bash
