@@ -14,6 +14,9 @@ what the company does, and whom to approach first.
 | Data | `data/master/contacts.json` (the committed ledger), the company's website, optionally BigQuery and Agent Registry via MCP |
 | Model | Gemini on Vertex AI (`GOOGLE_GENAI_MODEL`, default `gemini-2.5-flash`) |
 
+**Composition diagram:** https://claude.ai/artifact/54uStUBsF87tb9uyrhLCav
+(source: [`artifact/agent-composition.html`](../../artifact/agent-composition.html))
+
 ## How it maps to the template
 
 | fomc-research | account_research | Change |
