@@ -13,3 +13,5 @@ agents/**/.venv/
 agents/**/deployment/*.whl
 agents/**/dist/
 agents/**/*.egg-info/
+agents/**/.adk/
+agents/**/uv.lock.tmp
