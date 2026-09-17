@@ -21,11 +21,19 @@ from anthropic import (
 
 MODEL = os.getenv("ACCOUNT_RESEARCH_CLAUDE_MODEL", "claude-fable-5-1")
 
+# The values .env-example ships. Copying it and loading it without editing
+# leaves these in the environment, and sending one to Vertex returns an
+# opaque 403/404 -- so treat them as "not configured", like an empty value.
+PLACEHOLDERS = {"", "YOUR_PROJECT_ID", "YOUR_VALUE_HERE", "YOUR_BUCKET"}
+
 
 def main() -> int:
-    project = os.getenv("GOOGLE_CLOUD_PROJECT")
-    if not project:
-        print("GOOGLE_CLOUD_PROJECT is not set (load .env first).", file=sys.stderr)
+    project = (os.getenv("GOOGLE_CLOUD_PROJECT") or "").strip()
+    if project.upper() in PLACEHOLDERS:
+        what = "is not set" if not project else f"is still the placeholder {project!r}"
+        print(f"GOOGLE_CLOUD_PROJECT {what}.", file=sys.stderr)
+        print("Edit .env, set GOOGLE_CLOUD_PROJECT to your project ID (not the "
+              "number), then: set -o allexport; . .env; set +o allexport", file=sys.stderr)
         return 2
     region = os.getenv("GOOGLE_CLOUD_LOCATION", "global")
 
