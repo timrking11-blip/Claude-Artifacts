@@ -45,6 +45,10 @@ jobs:
     env:
       APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
       EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
+      # Length-only probes of the *Variables* tab, which sits next to Secrets
+      # and is the usual place a key lands by mistake. Values are never printed.
+      APOLLO_IN_VARS: ${{ vars.APOLLO_API_KEY != '' }}
+      EXPLORIUM_IN_VARS: ${{ vars.EXPLORIUM_API_KEY != '' }}
     steps:
       - name: Verify repository secrets are present
         run: |
@@ -53,8 +57,12 @@ jobs:
           [ -z "$EXPLORIUM_API_KEY" ] && missing="$missing EXPLORIUM_API_KEY"
           if [ -n "$missing" ]; then
             echo "::error::Missing repository secret(s):$missing"
-            echo "Add them under Settings -> Secrets and variables -> Actions -> Repository secrets."
-            echo "Environment, Dependabot and Codespaces secrets are separate stores and will not work here."
+            if [ "$APOLLO_IN_VARS" = "true" ] || [ "$EXPLORIUM_IN_VARS" = "true" ]; then
+              echo "::error::Found under the VARIABLES tab instead (Apollo: $APOLLO_IN_VARS, Explorium: $EXPLORIUM_IN_VARS). Variables are plaintext and are read as vars.*, not secrets.*. Delete them there and re-add under the Secrets tab."
+            else
+              echo "Not found under Variables either. Check: Settings -> Secrets and variables -> Actions -> *Secrets* tab -> Repository secrets."
+              echo "Environment secrets need a job-level environment: (none declared here); Dependabot and Codespaces secrets are separate stores."
+            fi
             exit 1
           fi
           echo "Both secrets present (APOLLO_API_KEY: ${#APOLLO_API_KEY} chars, EXPLORIUM_API_KEY: ${#EXPLORIUM_API_KEY} chars)."
