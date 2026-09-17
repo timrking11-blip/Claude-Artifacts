@@ -143,6 +143,10 @@ def main() -> int:
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
+    # Validate the credential before doing anything, even on an empty roster:
+    # otherwise week one "succeeds" without ever proving the key works.
+    explorium_headers()
+
     roster = load_roster(args.roster)
     if args.limit:
         roster = roster[: args.limit]
