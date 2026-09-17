@@ -64,6 +64,19 @@ adk web .                     # dev UI; pick account_research in the dropdown
 Example: *"Research Northwind Analytics"* or *"northwind-analytics.com"*.
 If several ledger accounts match, it lists them and asks which.
 
+## Serve it as an API (Cloud Run)
+
+`main.py` wraps the agent with ADK's `get_fast_api_app` -- the same FastAPI +
+uvicorn shape as a plain web service, listening on `$PORT` (8080):
+
+```bash
+python main.py                 # http://0.0.0.0:8080 ; /healthz, /list-apps, /dev-ui/
+adk deploy cloud_run --project=$GOOGLE_CLOUD_PROJECT --region=$GOOGLE_CLOUD_LOCATION .
+```
+
+Set `SESSION_SERVICE_URI` to a Postgres or Agent Engine URI in production;
+the default is a local SQLite file.
+
 ## Tests
 
 ```bash
