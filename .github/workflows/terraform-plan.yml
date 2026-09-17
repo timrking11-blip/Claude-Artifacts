@@ -1,0 +1,86 @@
+name: Terraform plan
+
+# Plans the terraform/ root against the HCP Terraform workspace, so the result
+# is readable in CI rather than only on one person's machine.
+#
+# This workflow NEVER applies. Applying stays a deliberate local act.
+#
+# Note what is *not* here: any GCP credential. The `cloud {}` block means HCP
+# executes the run remotely, and HCP authenticates to Google with workload
+# identity federation (see terraform/setup-wif.ps1). GitHub only ever holds an
+# HCP token.
+#
+# Deliberately not triggered by `pull_request`: this repo is public, and
+# push-only means the workflow runs solely for people with write access.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform-plan.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  # One plan at a time: the HCP workspace serialises runs anyway, and a queued
+  # second run would just wait.
+  group: terraform-plan
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: terraform
+
+jobs:
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    env:
+      TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
+      TF_WORKSPACE: ${{ vars.TF_WORKSPACE }}
+      TF_IN_AUTOMATION: "true"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Fail with a name rather than a confusing Terraform error. This pattern
+      # is what diagnosed the empty Apollo/Explorium secrets earlier: report
+      # what is missing, and lengths rather than values.
+      - name: Preflight
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+        run: |
+          missing=""
+          [ -n "$TF_API_TOKEN" ]          || missing="$missing TF_API_TOKEN(secret)"
+          [ -n "$TF_CLOUD_ORGANIZATION" ] || missing="$missing TF_CLOUD_ORGANIZATION(variable)"
+          [ -n "$TF_WORKSPACE" ]          || missing="$missing TF_WORKSPACE(variable)"
+          if [ -n "$missing" ]; then
+            echo "::error::Not configured yet. Missing:$missing"
+            echo "Secret:    Settings -> Secrets and variables -> Actions -> Secrets"
+            echo "Variables: Settings -> Secrets and variables -> Actions -> Variables"
+            exit 1
+          fi
+          echo "organization: $TF_CLOUD_ORGANIZATION"
+          echo "workspace:    $TF_WORKSPACE"
+          echo "TF_API_TOKEN present (${#TF_API_TOKEN} chars)"
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          # Matches required_version in main.tf. The remote run uses the
+          # workspace's own Terraform version, which must agree with it too.
+          terraform_version: 1.16.3
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: terraform fmt -check
+        run: terraform fmt -check -diff
+
+      - name: terraform init
+        run: terraform init -input=false
+
+      - name: terraform validate
+        run: terraform validate
+
+      - name: terraform plan
+        run: terraform plan -no-color -input=false
