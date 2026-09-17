@@ -80,13 +80,31 @@ def main() -> int:
     args.out_dir.mkdir(parents=True, exist_ok=True)
     for stale in args.out_dir.glob("*.json"):
         stale.unlink()
+    for stale in args.out_dir.glob("docs/*.json"):
+        stale.unlink()
 
     docs = [c.to_dict() for c in sorted(contacts, key=lambda c: c.contact_id)]
+
+    # One file per document, referenced by path from the batch manifests, so a
+    # batch call carries 50 short entries instead of 50 inline bodies. The
+    # ArtifactData batch tool reads `file_path` entries itself.
+    docs_dir = args.out_dir / "docs"
+    docs_dir.mkdir(exist_ok=True)
+    for d in docs:
+        (docs_dir / f"{d['contact_id']}.json").write_text(
+            json.dumps(d, indent=2, ensure_ascii=False) + "\n"
+        )
+
     files = []
     for i in range(0, len(docs), BATCH_LIMIT):
         chunk = docs[i : i + BATCH_LIMIT]
         writes = [
-            {"op": "set", "collection": CONTACTS_COLLECTION, "doc_id": d["contact_id"], "data": d}
+            {
+                "op": "set",
+                "collection": CONTACTS_COLLECTION,
+                "doc_id": d["contact_id"],
+                "file_path": str(docs_dir / f"{d['contact_id']}.json"),
+            }
             for d in chunk
         ]
         path = args.out_dir / f"batch_{i // BATCH_LIMIT:03d}.json"
