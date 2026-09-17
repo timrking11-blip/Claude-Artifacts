@@ -62,6 +62,24 @@ In the workspace, as **environment** variables (not Terraform variables):
 Do **not** set `GOOGLE_CREDENTIALS` or `GOOGLE_APPLICATION_CREDENTIALS` in
 the workspace — they conflict with dynamic credentials and will break the run.
 
+### Why not Infra Manager?
+
+Fair question, since all of the above exists only to let a runner *outside*
+Google Cloud authenticate in. Google's
+[Infrastructure Manager](https://cloud.google.com/infrastructure-manager/docs)
+runs Terraform inside the project as a service account, which would delete
+this entire section — no pool, no OIDC provider, no attribute condition, no
+`TFC_GCP_*` variables.
+
+It was considered and not taken: HCP keeps the run history, policy hooks and
+UI, and leaves the `required_version` pin above valid. Infra Manager supports
+a conservative set of Terraform versions — run `gcloud infra-manager
+terraform-versions list` to see whether it offers the pinned one at all.
+
+If you do switch, it is a replacement rather than an addition: Infra Manager
+keeps its own GCS-backed state, so the `cloud {}` block in `main.tf` comes
+**out**. Do not try to run both.
+
 ## Running it
 
 ```bash
