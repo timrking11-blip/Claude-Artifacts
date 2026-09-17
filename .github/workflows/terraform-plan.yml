@@ -105,6 +105,31 @@ jobs:
           echo "workspace:    $TF_WORKSPACE"
           echo "TF_API_TOKEN present (${#TF_API_TOKEN} chars)"
 
+      # What the workspace actually holds. Terraform's error for a missing
+      # variable names variables.tf, not the workspace, and cannot distinguish
+      # "not set" from "set under the wrong category" or "in a variable set
+      # that is not applied here". This asks HCP directly.
+      #
+      # Prints keys and categories only -- never a value, sensitive or not.
+      - name: Workspace variables (diagnostic)
+        if: steps.preflight.outputs.configured == 'true'
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+        run: |
+          api() { curl -sS -H "Authorization: Bearer $TF_API_TOKEN" -H "Content-Type: application/vnd.api+json" "$1"; }
+          base=https://app.terraform.io/api/v2
+          ws=$(api "$base/organizations/$TF_CLOUD_ORGANIZATION/workspaces/$TF_WORKSPACE" | jq -r '.data.id // empty')
+          if [ -z "$ws" ]; then echo "::error::Could not resolve the workspace via the API."; exit 1; fi
+          echo "workspace id: $ws"
+          echo
+          echo "--- variables on the workspace (keys and categories only) ---"
+          api "$base/workspaces/$ws/vars" | jq -r '(.data // []) | if length == 0 then "  (none)" else .[] | "  \(.attributes.key)\t category=\(.attributes.category)\t sensitive=\(.attributes.sensitive)" end'
+          echo
+          echo "--- variable sets applied to this workspace ---"
+          api "$base/workspaces/$ws/varsets" | jq -r '(.data // []) | if length == 0 then "  (none)" else .[] | "  \(.attributes.name)" end'
+          echo
+          echo "project_id must appear above with category=terraform."
+
       - uses: hashicorp/setup-terraform@v3
         if: steps.preflight.outputs.configured == 'true'
         with:
