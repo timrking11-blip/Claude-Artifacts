@@ -16,3 +16,12 @@ agents/**/*.egg-info/
 agents/**/.adk/
 agents/**/uv.lock.tmp
 agents/**/sessions.db
+
+# Vendored ADK samples: same per-agent hygiene as agents/
+python/agents/**/.env
+python/agents/**/.venv/
+python/agents/**/.adk/
+python/agents/**/sessions.db
+python/agents/**/__pycache__/
+python/agents/**/*.egg-info/
+python/agents/**/dist/
