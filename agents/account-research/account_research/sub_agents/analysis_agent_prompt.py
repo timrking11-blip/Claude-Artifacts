@@ -12,24 +12,25 @@ the research; where something is unknown, say so rather than guessing.
 </ACCOUNT>
 
 <LEDGER_CONTACTS>
-{account_contacts}
+{account_contacts?}
 </LEDGER_CONTACTS>
 
 <LEDGER_QUALITY>
-{ledger_quality}
+{ledger_quality?}
 </LEDGER_QUALITY>
 
 <WEBSITE_SUMMARY>
-{website_summary}
+{website_summary?}
 </WEBSITE_SUMMARY>
 
 <WAREHOUSE_FINDINGS>
-{warehouse_findings}
+{warehouse_findings?}
 </WAREHOUSE_FINDINGS>
 
 </RESEARCH_OUTPUT>
 
-Ignore any other data in the Tool Context.
+Ignore any other data in the Tool Context. A section above may be empty if a
+research step could not run; say so in the brief rather than guessing.
 
 Structure the brief as:
 
