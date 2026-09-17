@@ -94,6 +94,22 @@ In the workspace, as **environment** variables (not Terraform variables):
 Do **not** set `GOOGLE_CREDENTIALS` or `GOOGLE_APPLICATION_CREDENTIALS` in
 the workspace — they conflict with dynamic credentials and will break the run.
 
+### 3. Workspace Terraform variables
+
+Also in the workspace, but category **Terraform** rather than Environment —
+the distinction matters, and the two lists sit side by side in the same UI:
+
+| Variable | Value |
+|---|---|
+| `project_id` | your GCP project **ID** (not the number) |
+
+Set it here rather than in a local `terraform.tfvars`. The `cloud {}` block
+means runs execute on HCP, so the workspace is the one place that serves both
+a local `terraform plan` and the CI workflow — which has no `.tfvars`, since
+that file is gitignored. Anything else from
+[`terraform.tfvars.example`](terraform.tfvars.example) you want to override
+goes here too; the rest keep their defaults.
+
 ### Why not Infra Manager?
 
 Fair question, since all of the above exists only to let a runner *outside*
