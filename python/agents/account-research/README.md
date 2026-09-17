@@ -53,8 +53,8 @@ python bigquery_setup.py --project_id=$GOOGLE_CLOUD_PROJECT \
 
 **MCP tools (optional):** set `ACCOUNT_RESEARCH_ENABLE_MCP=1` and have
 Application Default Credentials available (`gcloud auth application-default login`).
-The agent then attaches the BigQuery and Agent Registry MCP servers for
-project `922106495655` as tools. With it off, the warehouse step is skipped
+The agent then attaches the BigQuery and Agent Registry MCP servers for the
+project in `GOOGLE_CLOUD_PROJECT` as tools. With it off, the warehouse step is skipped
 and everything else works.
 
 ## Claude on Vertex AI

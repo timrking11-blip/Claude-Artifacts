@@ -19,6 +19,11 @@ if ! token=$(gcloud auth application-default print-access-token 2>/dev/null); th
   exit 1
 fi
 
-project="${GCP_PROJECT:-922106495655}"
+# GCP_PROJECT wins; otherwise fall back to gcloud's configured project.
+project="${GCP_PROJECT:-$(gcloud config get-value project 2>/dev/null)}"
+if [ -z "$project" ] || [ "$project" = "(unset)" ]; then
+  echo "No project. Set GCP_PROJECT, or: gcloud config set project <id>" >&2
+  exit 1
+fi
 printf 'export GCP_MCP_ACCESS_TOKEN=%q\n' "$token"
 printf 'export GCP_PROJECT=%q\n' "$project"

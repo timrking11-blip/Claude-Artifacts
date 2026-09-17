@@ -13,10 +13,13 @@ terraform {
   required_version = "1.16.3"
 
   cloud {
-    organization = "strategic-market-insights-crm"
+    # Your HCP Terraform organization NAME -- the /app/<name>/ segment of the
+    # app.terraform.io URL. Not the `org-...` External ID from Settings ->
+    # General; the cloud block does not take that.
+    organization = "REPLACE_WITH_HCP_ORG"
 
     workspaces {
-      name = "strategic-insights-crm-terminal-cl"
+      name = "REPLACE_WITH_HCP_WORKSPACE"
     }
   }
 

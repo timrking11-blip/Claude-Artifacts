@@ -23,10 +23,15 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+# The x-goog-user-project quota header. Google accepts either the project
+# number or the ID, so GOOGLE_CLOUD_PROJECT works as the last fallback and
+# most setups need nothing else. No default: a hardcoded project would send
+# someone else's quota header from a fork of this repo.
 PROJECT = (
     os.getenv("GCP_PROJECT")
     or os.getenv("GOOGLE_CLOUD_PROJECT_NUMBER")
-    or "922106495655"
+    or os.getenv("GOOGLE_CLOUD_PROJECT")
+    or ""
 )
 
 SERVERS = {
@@ -64,6 +69,13 @@ def google_cloud_toolsets() -> list[Any]:
     """The MCP toolsets to attach, or [] when disabled or not authenticated."""
     if not enabled():
         logger.info("Google Cloud MCP toolsets off (ACCOUNT_RESEARCH_ENABLE_MCP unset)")
+        return []
+    if not PROJECT:
+        logger.warning(
+            "Google Cloud MCP toolsets disabled: no project for the "
+            "x-goog-user-project header. Set GOOGLE_CLOUD_PROJECT (or "
+            "GOOGLE_CLOUD_PROJECT_NUMBER) before importing the agent."
+        )
         return []
     try:
         from google.adk.tools.mcp_tool import McpToolset, StreamableHTTPConnectionParams

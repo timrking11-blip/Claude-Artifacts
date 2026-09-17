@@ -1,9 +1,7 @@
 # terraform/
 
 Creates the BigQuery dataset that Vertex writes Claude request/response logs
-into, managed in **HCP Terraform** — organization
-`strategic-market-insights-crm`, workspace
-`strategic-insights-crm-terminal-cl` — authenticated to Google Cloud with
+into, managed in **HCP Terraform**, authenticated to Google Cloud with
 **workload identity federation** — no service account keys anywhere.
 
 It deliberately does **not** configure the logging itself. That is
@@ -17,12 +15,16 @@ command.
 
 ### Which workspace this targets
 
-Both names are already set in the `cloud` block of `main.tf` — organization
-`strategic-market-insights-crm`, workspace
-`strategic-insights-crm-terminal-cl`. They are easy to mix up: the
-organization is the `/app/<name>/` segment of the app.terraform.io URL, and
-`org-…` is its External ID, which the `cloud` block does **not** take. Point
-this root somewhere else by editing those two strings and nothing else.
+Set `organization` and `workspaces.name` in the `cloud` block of `main.tf`.
+They are easy to mix up: the organization is the `/app/<name>/` segment of
+the app.terraform.io URL, and the `org-…` string under Settings → General is
+its External ID, which the `cloud` block does **not** take. To list both
+after `terraform login`:
+
+```bash
+curl -s -H "Authorization: Bearer $(jq -r '.credentials["app.terraform.io"].token' ~/.terraform.d/credentials.tfrc.json)" \
+  https://app.terraform.io/api/v2/organizations | jq -r '.data[].attributes.name'
+```
 
 ### 1. Workload identity federation, on the GCP side
 
@@ -37,9 +39,10 @@ with Terraform would need the credentials that the pool exists to grant.
    `attribute.terraform_organization_name = assertion.terraform_organization_name`.
 3. Add an **attribute condition** pinning it to this organization *and*
    workspace, so no other workspace can assume the identity — e.g.
-   `assertion.terraform_organization_name == "strategic-market-insights-crm" && assertion.terraform_workspace_name == "strategic-insights-crm-terminal-cl"`.
-   Get this wrong and it fails *closed*: the run dies in token exchange, with
-   a credentials error rather than a Terraform one.
+   `assertion.terraform_organization_name == "<your org>" && assertion.terraform_workspace_name == "<your workspace>"`,
+   matching the `cloud` block exactly. Get this wrong and it fails *closed*:
+   the run dies in token exchange, with a credentials error rather than a
+   Terraform one.
 4. Create a service account for the runs and grant it what this root needs
    (BigQuery dataset creation and IAM on the project; `roles/bigquery.admin`
    is the blunt version — narrow it if you prefer).
@@ -110,5 +113,5 @@ environment this was authored in.
 `init`/`plan` against HCP Terraform were **not** run: they need credentials
 that belong on your machine, and nowhere else. On the first `plan`, expect
 **2 to add, 0 to change, 0 to destroy**. If it shows anything more, stop —
-`strategic-insights-crm-terminal-cl` is holding state for something else,
-and applying would act on it.
+the workspace is holding state for something else, and applying would act
+on it.

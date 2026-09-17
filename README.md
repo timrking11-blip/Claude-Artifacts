@@ -164,11 +164,11 @@ MCP endpoint. If it ever moves, it is defined in `.mcp.json` and
 
 ### Google Cloud MCP servers
 
-`.mcp.json` also registers two of Google Cloud's remote MCP servers for
-project `922106495655`. The registry names them by URN; the client connects
-by URL:
+`.mcp.json` also registers three of Google Cloud's remote MCP servers for
+your project — set `GCP_PROJECT` (see `scripts/gcp_mcp_env.sh`). The registry
+names them by URN; the client connects by URL:
 
-| URN (`urn:mcp:googleapis.com:projects:922106495655:locations:global:…`) | Entry | URL | What it does |
+| URN (`urn:mcp:googleapis.com:projects:<NUMBER>:locations:global:…`) | Entry | URL | What it does |
 |---|---|---|---|
 | `…:agentregistry` | `gcp-agent-registry` | `https://agentregistry.googleapis.com/mcp` | Discover agents, MCP servers and model endpoints catalogued in the project |
 | `…:aiplatform` | `gcp-agent-platform` | `https://aiplatform.googleapis.com/mcp/generate` | Agent Platform (Vertex AI) — the `generate` toolset; other toolsets live at their own `/mcp/<toolset>` path |
