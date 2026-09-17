@@ -61,8 +61,9 @@ jobs:
   pull-explorium:
     name: Enrich via Explorium
     runs-on: ubuntu-latest
-    # Serial mode needs this week's Apollo staging, so only then does it wait.
-    needs: ${{ inputs.explorium_roster == 'apollo' && fromJSON('["pull-apollo"]') || fromJSON('[]') }}
+    # Default mode: enriches the previous master, so it needs nothing from
+    # pull-apollo and the two run side by side. Skipped in serial mode.
+    if: ${{ inputs.explorium_roster != 'apollo' }}
     env:
       EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
     steps:
@@ -70,14 +71,34 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Fetch Apollo staging (serial mode only)
-        if: inputs.explorium_roster == 'apollo'
-        uses: actions/download-artifact@v4
+      - name: Enrich
+        run: python scripts/pull_explorium.py --roster master
+      - uses: actions/upload-artifact@v4
+        with:
+          name: staging-explorium
+          path: data/staging/explorium.json
+          retention-days: 14
+
+  pull-explorium-serial:
+    name: Enrich via Explorium (serial, this week's Apollo pull)
+    runs-on: ubuntu-latest
+    # Opt-in via workflow_dispatch: waits for pull-apollo and enriches that
+    # pull, so new contacts are enriched the same week at the cost of parallelism.
+    needs: pull-apollo
+    if: ${{ inputs.explorium_roster == 'apollo' }}
+    env:
+      EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
         with:
           name: staging-apollo
           path: data/staging
       - name: Enrich
-        run: python scripts/pull_explorium.py --roster "${{ inputs.explorium_roster || 'master' }}"
+        run: python scripts/pull_explorium.py --roster apollo
       - uses: actions/upload-artifact@v4
         with:
           name: staging-explorium
@@ -87,9 +108,10 @@ jobs:
   merge:
     name: Merge into master
     runs-on: ubuntu-latest
-    needs: [pull-apollo, pull-explorium]
-    # Run even if one pull failed; merge_master.py handles a missing file.
-    if: ${{ !cancelled() && (needs.pull-apollo.result == 'success' || needs.pull-explorium.result == 'success') }}
+    needs: [pull-apollo, pull-explorium, pull-explorium-serial]
+    # Run even if one pull failed or was skipped; merge_master.py handles a
+    # missing staging file and refuses only when nothing staged at all.
+    if: ${{ !cancelled() && (needs.pull-apollo.result == 'success' || needs.pull-explorium.result == 'success' || needs.pull-explorium-serial.result == 'success') }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
