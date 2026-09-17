@@ -13,6 +13,10 @@ dependencies = [
     "python-dotenv>=1.0.0",
 ]
 
+# `uv sync --dev` installs this group (PEP 735); `pip install -e .[dev]` the extra.
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
 
