@@ -19,6 +19,11 @@ from anthropic import (
     PermissionDeniedError,
 )
 
+# The Vertex client authenticates with Application Default Credentials, and
+# google-auth raises its own errors -- outside Anthropic's exception chain,
+# and lazily, at the first request rather than at construction.
+from google.auth.exceptions import DefaultCredentialsError, RefreshError
+
 MODEL = os.getenv("ACCOUNT_RESEARCH_CLAUDE_MODEL", "claude-fable-5-1")
 
 # The values .env-example ships. Copying it and loading it without editing
@@ -37,15 +42,23 @@ def main() -> int:
         return 2
     region = os.getenv("GOOGLE_CLOUD_LOCATION", "global")
 
-    client = AnthropicVertex(project_id=project, region=region)
     print(f"project={project} region={region} model={MODEL}")
 
     try:
+        client = AnthropicVertex(project_id=project, region=region)
         message = client.messages.create(
             model=MODEL,
             max_tokens=1024,
             messages=[{"role": "user", "content": "Hello! In one sentence, what can you help me with?"}],
         )
+    except DefaultCredentialsError:
+        print("No Application Default Credentials.", file=sys.stderr)
+        print("Run: gcloud auth application-default login", file=sys.stderr)
+        return 1
+    except RefreshError as exc:
+        print(f"Credentials could not be refreshed: {exc}", file=sys.stderr)
+        print("Run: gcloud auth application-default login", file=sys.stderr)
+        return 1
     except NotFoundError as exc:
         # Most often: the model is not enabled in Model Garden for this project,
         # or Vertex does not serve this id in this region.
