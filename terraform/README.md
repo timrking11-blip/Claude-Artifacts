@@ -110,6 +110,35 @@ that file is gitignored. Anything else from
 [`terraform.tfvars.example`](terraform.tfvars.example) you want to override
 goes here too; the rest keep their defaults.
 
+### 4. Set the workspace to Remote execution
+
+**This one is easy to miss and fails in a way that points elsewhere.** In the
+workspace's General settings, *Execution Mode* must be **Remote**.
+
+A `local` workspace stores state but runs the plan on the client. Workspace
+variables are not injected there and dynamic credentials never engage, so a
+`project_id` that is demonstrably present in the UI produces:
+
+```
+Error: No value for required variable
+  on variables.tf line 1: variable "project_id" {
+```
+
+which names a file in this repo rather than the setting that is actually
+wrong. The tell is speed: a local run fails in under a second with no
+`Running plan in HCP Terraform` line and no run URL.
+
+Check it without clicking through:
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" \
+  https://app.terraform.io/api/v2/organizations/<org>/workspaces/<workspace> \
+  | jq -r '.data.attributes["execution-mode"]'
+```
+
+The `Terraform plan` GitHub workflow prints this on every run, along with the
+workspace's variables and their categories.
+
 ### Why not Infra Manager?
 
 Fair question, since all of the above exists only to let a runner *outside*
