@@ -1,4 +1,4 @@
-name: HCP workspace variable
+name: HCP workspace settings
 
 # Creates or updates one variable on the HCP Terraform workspace, using the
 # TF_API_TOKEN this repository already holds. Exists because the variables are
@@ -30,6 +30,12 @@ on:
         default: terraform
         type: choice
         options: [terraform, env]
+      execution_mode:
+        description: "Also set the workspace's execution mode (leave as 'unchanged' to skip)"
+        required: false
+        default: unchanged
+        type: choice
+        options: [unchanged, remote, local]
 
 permissions:
   contents: read
@@ -48,6 +54,7 @@ jobs:
       VAR_KEY: ${{ inputs.key }}
       VAR_VALUE: ${{ inputs.value }}
       VAR_CATEGORY: ${{ inputs.category }}
+      EXEC_MODE: ${{ inputs.execution_mode }}
     steps:
       - name: Upsert
         run: |
@@ -84,6 +91,22 @@ jobs:
             exit 1
           fi
           echo "$resp" | jq -r '"set \(.data.attributes.key) (category=\(.data.attributes.category))"'
+
+          # Execution mode decides whether any of the above is ever used: a
+          # "local" workspace stores state but runs the plan on the client,
+          # where workspace variables and dynamic credentials do not apply.
+          if [ "$EXEC_MODE" != "unchanged" ]; then
+            echo
+            echo "setting execution-mode to $EXEC_MODE"
+            mode_payload=$(jq -nc --arg m "$EXEC_MODE" '{data:{type:"workspaces",attributes:{"execution-mode":$m}}}')
+            mresp=$(curl -sS -X PATCH -H "$auth" -H "$ctype" -d "$mode_payload" "$base/workspaces/$ws")
+            if echo "$mresp" | jq -e '.errors' >/dev/null 2>&1; then
+              echo "::error::HCP rejected the execution-mode change:"
+              echo "$mresp" | jq -r '.errors[]? | "  \(.status) \(.title): \(.detail // "")"'
+              exit 1
+            fi
+            echo "$mresp" | jq -r '"execution-mode is now \(.data.attributes["execution-mode"])"'
+          fi
 
           echo
           echo "--- workspace now holds (keys and categories only) ---"
