@@ -148,10 +148,21 @@ warns and runs untraced).
 
 Separately from tracing, Vertex can mirror the actual prompts and completions
 into a BigQuery table. Claude **is** supported -- models served through
-`rawPredict`/`streamRawPredict` under the `anthropic` publisher -- but only via
-REST (`setPublisherModelConfig`), and the Terraform google provider has no
-resource for it yet ([#24092](https://github.com/hashicorp/terraform-provider-google/issues/24092)).
-Hence a script:
+`rawPredict`/`streamRawPredict` under the `anthropic` publisher.
+
+Vertex has three request/response logging surfaces, and Google's docs show
+recipes for all of them. Only the third applies here:
+
+| Surface | Configured with | Terraform | Works for Claude |
+|---|---|---|---|
+| Gemini publisher model | `GenerativeModel("gemini-2.5-flash").set_request_response_logging_config(...)` | no | **No** — a Gemini class; Claude never goes through it |
+| Deployed endpoint (tuned / custom model) | `GenerativeModel(".../endpoints/ID")…`, or `google_vertex_ai_endpoint` → `predict_request_response_logging_config` | **yes** | **No** — Claude is a publisher model, not something you deploy to an endpoint |
+| Anthropic publisher model | REST `setPublisherModelConfig` | no | **Yes** |
+
+So the one surface Terraform can express is the one that does not cover Claude;
+that gap is
+[terraform-provider-google#24092](https://github.com/hashicorp/terraform-provider-google/issues/24092),
+open and unimplemented. Hence a script:
 
 ```bash
 bq mk --dataset --location=US "$GOOGLE_CLOUD_PROJECT:crm"   # if it doesn't exist
