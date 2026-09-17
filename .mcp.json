@@ -14,7 +14,7 @@
     "Remote Claude Code sessions cannot complete OAuth; for those, add the same",
     "URL as a custom connector in claude.ai (Settings -> Connectors).",
     "",
-    "gcp-agent-registry and gcp-agent-platform are Google Cloud's remote MCP",
+    "gcp-agent-registry, gcp-agent-platform and gcp-bigquery are Google Cloud's remote MCP",
     "servers for project 922106495655, i.e. the registry URNs",
     "urn:mcp:googleapis.com:projects:922106495655:locations:global:agentregistry",
     "and ...:aiplatform. Google's servers do NOT use the MCP OAuth flow; they take",
@@ -45,6 +45,14 @@
     "gcp-agent-platform": {
       "type": "http",
       "url": "https://aiplatform.googleapis.com/mcp/generate",
+      "headers": {
+        "Authorization": "Bearer ${GCP_MCP_ACCESS_TOKEN}",
+        "x-goog-user-project": "${GCP_PROJECT:-922106495655}"
+      }
+    },
+    "gcp-bigquery": {
+      "type": "http",
+      "url": "https://bigquery.googleapis.com/mcp",
       "headers": {
         "Authorization": "Bearer ${GCP_MCP_ACCESS_TOKEN}",
         "x-goog-user-project": "${GCP_PROJECT:-922106495655}"

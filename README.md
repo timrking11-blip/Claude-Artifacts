@@ -145,6 +145,7 @@ by URL:
 |---|---|---|---|
 | `…:agentregistry` | `gcp-agent-registry` | `https://agentregistry.googleapis.com/mcp` | Discover agents, MCP servers and model endpoints catalogued in the project |
 | `…:aiplatform` | `gcp-agent-platform` | `https://aiplatform.googleapis.com/mcp/generate` | Agent Platform (Vertex AI) — the `generate` toolset; other toolsets live at their own `/mcp/<toolset>` path |
+| `…:bigquery` | `gcp-bigquery` | `https://bigquery.googleapis.com/mcp` | List datasets and tables, read metadata, run SQL against the project's BigQuery data |
 
 Google's servers do **not** use the in-client OAuth flow the Explorium
 servers use. They take a Google bearer token and a quota-project header,
@@ -161,10 +162,17 @@ eval "$(scripts/gcp_mcp_env.sh)" && claude
 `scripts/gcp_mcp_env.sh` exports `GCP_MCP_ACCESS_TOKEN` from
 `gcloud auth application-default print-access-token` and `GCP_PROJECT`
 (override it to point the same entries at another project). The token never
-lands in the repo. In the project, enable `agentregistry.googleapis.com` and
-`aiplatform.googleapis.com` (Agent Registry also needs
-`cloudapiregistry.googleapis.com` / `apihub.googleapis.com`), and give your
-identity the Agent Registry viewer and Vertex AI user roles.
+lands in the repo. In the project, enable the APIs — the BigQuery MCP server
+is switched on by enabling the BigQuery API itself:
+
+```bash
+gcloud services enable agentregistry.googleapis.com cloudapiregistry.googleapis.com apihub.googleapis.com
+gcloud services enable aiplatform.googleapis.com
+gcloud services enable bigquery.googleapis.com
+```
+
+and give your identity the Agent Registry viewer, Vertex AI user, and
+BigQuery job user / data viewer roles as needed.
 
 These two entries work from a **local** Claude Code session with `gcloud`
 installed. Remote and web sessions have no `gcloud` and cannot mint the
