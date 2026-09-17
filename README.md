@@ -1,0 +1,132 @@
+# Claude Artifacts — CRM master ledger
+
+A weekly, two-way contact data exchange between **Apollo** and **Explorium**,
+reconciled into one master database that lives in a Claude artifact and is
+mirrored in this repo.
+
+**Master database (artifact):** https://claude.ai/artifact/VcbjegQv71QGNveHtt415f
+**Committed mirror:** [`data/master/contacts.json`](data/master/contacts.json)
+**Change history:** [`data/CHANGELOG.md`](data/CHANGELOG.md)
+
+## What runs, and when
+
+```
+  Monday 06:00 UTC  ─┬─  pull_apollo.py      ──┐
+  (GitHub Actions)   └─  pull_explorium.py   ──┼──▶  merge_master.py  ──▶  commit
+                          (run in parallel)    │
+                                               └──▶  push_apollo.py  (opt-in writeback)
+
+  After the Action   ─── Claude routine:  import artifact edits ▶ re-merge ▶ push master into artifact db
+```
+
+| Step | Script | Reads | Writes |
+|---|---|---|---|
+| Pull Apollo contacts | `scripts/pull_apollo.py` | Apollo API | `data/staging/apollo.json` |
+| Enrich via Explorium | `scripts/pull_explorium.py` | previous master + Explorium API | `data/staging/explorium.json` |
+| Merge | `scripts/merge_master.py` | both staging files | `data/master/contacts.json`, `data/CHANGELOG.md` |
+| Writeback (opt-in) | `scripts/push_apollo.py` | master | Apollo API |
+| Artifact → repo | `scripts/import_artifact_edits.py` | a db dump | master |
+| Repo → artifact | `scripts/export_artifact_batch.py` | master | `data/artifact/batch_*.json` (fed to the artifact db) |
+
+The two pulls are independent jobs in
+[`.github/workflows/weekly-crm-sync.yml`](.github/workflows/weekly-crm-sync.yml).
+Explorium enriches the *previous* master rather than this week's Apollo pull,
+which is what lets them run at the same time; a contact new to Apollo this
+week is enriched next week. Dispatch the workflow with
+`explorium_roster=apollo` to run them serially instead.
+
+## How the merge decides
+
+Every source normalizes into one canonical record (`crm/schema.py`). The merge
+(`crm/master.py`) is **field-level**: each field is resolved on its own, and the
+winning claim is recorded in `provenance` with its source and timestamp.
+
+1. An empty incoming value never overwrites a populated one.
+2. A higher-trust source wins (`FIELD_TRUST` in `crm/schema.py` — Explorium
+   outranks Apollo on firmographics, Apollo outranks Explorium on email).
+3. **Manual edits made in the artifact outrank both feeds.** A human
+   correction is never silently undone by the next sync.
+4. At equal trust, a materially fresher observation (>7 days) wins.
+5. Otherwise the incumbent holds and the disagreement is logged as a
+   **held conflict** — it shows in the artifact's review queue.
+
+Records match on email, then LinkedIn URL, then name + company domain. An
+incoming record that matches *two* master records is never fused; it is logged
+as an **ambiguous match** for a human to resolve. Ids are derived from the
+strongest identity key, so a rebuild from scratch yields the same ids and the
+master file stays diffable.
+
+`tests/test_merge.py` covers all of this. Run `python -m pytest tests -q`.
+
+## Setup
+
+Repository secrets (Settings → Secrets → Actions):
+
+| Secret | Used by |
+|---|---|
+| `APOLLO_API_KEY` | `pull_apollo.py`, `push_apollo.py` |
+| `EXPLORIUM_API_KEY` | `pull_explorium.py` |
+
+Nothing else to install — the scripts use only the Python standard library.
+
+Writeback to Apollo is off unless **both** `APOLLO_WRITEBACK_ENABLED=true`
+and `--apply` are set (the workflow's `writeback` input does both). Without
+them `push_apollo.py` prints what it *would* send. It never writes email back
+to Apollo.
+
+## The artifact as master
+
+The artifact holds one document per contact in its `contacts` collection and
+sync metadata in `meta/sync`. Any signed-in viewer can search and filter;
+anyone at *interact* level or above can edit a record in place. An edit is
+stored with `source: "manual"` and the editor's id, and the next sync respects
+it.
+
+To move data between the repo and the artifact from a Claude session:
+
+```bash
+# repo -> artifact (after a merge)
+python scripts/export_artifact_batch.py          # writes data/artifact/batch_*.json + meta_sync.json
+# then, per batch file:  ArtifactData(action="batch", url=<artifact>, writes=<file contents>)
+# and:                   ArtifactData(action="set", collection="meta", doc_id="sync", file_path="data/artifact/meta_sync.json")
+
+# artifact -> repo (before a merge, to capture edits)
+# ArtifactData(action="list", url=<artifact>, collection="contacts", out_dir="dump")
+python scripts/import_artifact_edits.py dump
+```
+
+The artifact database holds at most 5,000 documents. Past that, split the
+ledger by list or region.
+
+## MCP servers
+
+[`.mcp.json`](.mcp.json) registers two Explorium servers for Claude Code.
+They are different servers on different hosts:
+
+- **`explorium-docs`** — the Mintlify-hosted documentation MCP
+  (`search_explorium_docs`, `query_docs_filesystem_explorium_docs`,
+  `submit_feedback`). Read-only, no credentials.
+- **`explorium-agentsource`** — the B2B data API MCP (`enrich-business`,
+  `match-prospects`, `fetch-businesses-events`, …). Spends credits; needs
+  `EXPLORIUM_API_KEY`.
+
+The docs server URL follows Mintlify's `<docs-host>/mcp` convention and could
+not be verified from the environment this repo was built in (outbound access
+to `explorium.ai` was blocked). If it fails to connect, correct it in
+`.mcp.json` and `crm/config.py` — the only two places it appears.
+
+## Layout
+
+```
+.mcp.json                     MCP server registration
+crm/config.py                 every endpoint, credential and tunable, once
+crm/schema.py                 canonical record, identity keys, trust table
+crm/master.py                 field-level merge, load/save
+crm/http.py                   retrying stdlib JSON client
+scripts/                      the six entrypoints above
+tests/test_merge.py           merge behaviour
+data/master/contacts.json     committed mirror of the artifact database
+data/CHANGELOG.md             per-run record of what changed
+artifact/crm.html             the published ledger page
+.github/workflows/            weekly schedule
+```

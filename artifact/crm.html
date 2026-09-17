@@ -1,0 +1,857 @@
+<title>Master Contact Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #F6F7F5;
+    --surface: #FFFFFF;
+    --surface-2: #EEF1EF;
+    --ink: #1A222B;
+    --muted: #66707A;
+    --line: #DCE1E5;
+    --accent: #0E6B57;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #DDEFE8;
+    --warn: #A8681B;
+    --warn-soft: #F7EBDA;
+    --crit: #B3261E;
+    --crit-soft: #F8E1DF;
+    --apollo: #3B4FA6;
+    --apollo-soft: #E3E7F6;
+    --explorium: #8A4E9C;
+    --explorium-soft: #EFE3F3;
+    --manual: #0E6B57;
+    --manual-soft: #DDEFE8;
+    --shadow: 0 10px 30px rgba(26, 34, 43, 0.12);
+    --font-ui: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --font-data: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #101418;
+      --surface: #171C22;
+      --surface-2: #1F262D;
+      --ink: #E7EBEF;
+      --muted: #97A1AB;
+      --line: #29323B;
+      --accent: #43B597;
+      --accent-ink: #0B1F19;
+      --accent-soft: #16352D;
+      --warn: #E0A64C;
+      --warn-soft: #3A2C14;
+      --crit: #F08A82;
+      --crit-soft: #3E1D1A;
+      --apollo: #97A6E8;
+      --apollo-soft: #232B4A;
+      --explorium: #CDA3DB;
+      --explorium-soft: #35243C;
+      --manual: #43B597;
+      --manual-soft: #16352D;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #101418;
+    --surface: #171C22;
+    --surface-2: #1F262D;
+    --ink: #E7EBEF;
+    --muted: #97A1AB;
+    --line: #29323B;
+    --accent: #43B597;
+    --accent-ink: #0B1F19;
+    --accent-soft: #16352D;
+    --warn: #E0A64C;
+    --warn-soft: #3A2C14;
+    --crit: #F08A82;
+    --crit-soft: #3E1D1A;
+    --apollo: #97A6E8;
+    --apollo-soft: #232B4A;
+    --explorium: #CDA3DB;
+    --explorium-soft: #35243C;
+    --manual: #43B597;
+    --manual-soft: #16352D;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .mono { font-family: var(--font-data); font-size: 12.5px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ---- shell ---- */
+  .app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+  header.bar {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 5;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    padding-block: 12px;
+    padding-inline: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 10px; }
+  .brand h1 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+  .brand .eyebrow {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); font-weight: 600;
+  }
+  .sync {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 8px;
+    color: var(--muted); font-size: 12.5px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .dot.live { background: var(--accent); }
+  .dot.stale { background: var(--warn); }
+
+  main {
+    padding-block: 20px 40px;
+    padding-inline: 20px;
+    display: grid;
+    gap: 20px;
+    flex: 1;
+  }
+
+  /* ---- notice ---- */
+  .notice {
+    display: none;
+    border: 1px dashed var(--line);
+    background: var(--surface);
+    border-radius: 8px;
+    padding-block: 10px;
+    padding-inline: 14px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .notice strong { color: var(--ink); }
+  .notice.show { display: block; }
+
+  /* ---- stat strip ---- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding-block: 12px;
+    padding-inline: 14px;
+    display: grid; gap: 2px;
+  }
+  .stat .label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); font-weight: 600;
+  }
+  .stat .value { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .stat .sub { font-size: 12px; color: var(--muted); }
+  .stat.attn .value { color: var(--warn); }
+
+  /* ---- work area ---- */
+  .work {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    position: relative;
+  }
+  @media (min-width: 980px) {
+    .work.open { grid-template-columns: minmax(0, 1fr) 380px; }
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    min-width: 0;
+  }
+  .toolbar {
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    padding-block: 12px; padding-inline: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .search {
+    flex: 1 1 220px; min-width: 0;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding-inline: 10px;
+    height: 34px;
+  }
+  .search input { flex: 1; min-width: 0; border: 0; background: transparent; outline: 0; }
+  .search svg { width: 14px; height: 14px; color: var(--muted); flex: none; }
+
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    border: 1px solid var(--line);
+    background: transparent;
+    border-radius: 999px;
+    padding-block: 4px; padding-inline: 10px;
+    font-size: 12px; font-weight: 600;
+    color: var(--muted);
+  }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+  .chip .count { opacity: 0.7; margin-left: 4px; font-weight: 500; }
+
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 900px; }
+  th, td {
+    text-align: left;
+    padding-block: 9px; padding-inline: 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  th {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); font-weight: 600;
+    position: sticky; top: 0; background: var(--surface);
+  }
+  td.wrap { white-space: normal; max-width: 280px; overflow-wrap: normal; }
+  td.email { white-space: nowrap; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover { background: var(--surface-2); }
+  tbody tr[aria-selected="true"] { background: var(--accent-soft); }
+  tbody tr:last-child td { border-bottom: 0; }
+  .name { font-weight: 600; }
+  .sub { color: var(--muted); font-size: 12px; }
+  .empty { padding-block: 40px; text-align: center; color: var(--muted); }
+
+  .badge {
+    display: inline-flex; align-items: center;
+    padding-block: 2px; padding-inline: 7px;
+    border-radius: 4px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+  }
+  .badge.apollo { background: var(--apollo-soft); color: var(--apollo); }
+  .badge.explorium { background: var(--explorium-soft); color: var(--explorium); }
+  .badge.manual { background: var(--manual-soft); color: var(--manual); }
+  .badge.conflict { background: var(--warn-soft); color: var(--warn); }
+  .badge.example { background: var(--surface-2); color: var(--muted); border: 1px dashed var(--line); }
+  .badges { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+
+  /* ---- drawer ---- */
+  .drawer {
+    display: none;
+    position: fixed;
+    inset: env(safe-area-inset-top, 0px) 0 0 auto;
+    width: min(100%, 440px);
+    background: var(--surface);
+    border-left: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    z-index: 10;
+    overflow-y: auto;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .drawer.open { display: block; }
+  @media (min-width: 980px) {
+    .drawer {
+      inset: auto; width: auto;
+      border: 1px solid var(--line); border-radius: 8px;
+      box-shadow: none; max-height: calc(100vh - 140px);
+      position: sticky; top: calc(env(safe-area-inset-top, 0px) + 70px);
+    }
+  }
+  .drawer .head {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding-block: 14px; padding-inline: 16px;
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; background: var(--surface);
+  }
+  .drawer h2 { margin: 0; font-size: 16px; font-weight: 700; text-wrap: balance; }
+  .drawer .close {
+    margin-left: auto; border: 0; background: transparent;
+    width: 30px; height: 30px; border-radius: 6px; color: var(--muted);
+  }
+  .drawer .close:hover { background: var(--surface-2); }
+  .drawer .body { padding-block: 12px 18px; padding-inline: 16px; display: grid; gap: 16px; }
+
+  .section-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); font-weight: 600; margin: 0 0 6px;
+  }
+  .fields { display: grid; gap: 10px; }
+  .field { display: grid; gap: 4px; }
+  .field label { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .field .prov { margin-left: auto; font-size: 10.5px; color: var(--muted); font-family: var(--font-data); }
+  .field input {
+    height: 34px;
+    border: 1px solid var(--line);
+    background: var(--ground);
+    border-radius: 6px;
+    padding-inline: 10px;
+    min-width: 0; width: 100%;
+  }
+  .field input:read-only { background: transparent; border-color: transparent; padding-inline: 0; }
+  .field input.dirty { border-color: var(--accent); }
+
+  .kv { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; font-size: 13px; }
+  .kv dt { color: var(--muted); margin: 0; }
+  .kv dd { margin: 0; overflow-wrap: anywhere; }
+
+  .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    height: 34px; padding-inline: 14px;
+    border-radius: 6px; border: 1px solid var(--line);
+    background: var(--surface); font-weight: 600;
+  }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .hint { font-size: 12px; color: var(--muted); }
+  .hint.err { color: var(--crit); }
+  .hint.ok { color: var(--accent); }
+
+  .conflict-list { display: grid; gap: 8px; }
+  .conflict {
+    background: var(--warn-soft);
+    border-left: 3px solid var(--warn);
+    border-radius: 4px;
+    padding-block: 8px; padding-inline: 10px;
+    font-size: 12.5px;
+  }
+  .conflict .mono { display: block; margin-top: 2px; }
+
+  /* ---- attention queue ---- */
+  .queue { display: grid; gap: 8px; padding-block: 12px; padding-inline: 14px; }
+  .queue-item {
+    display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start;
+    font-size: 13px;
+  }
+  .queue-item .stripe { width: 3px; align-self: stretch; border-radius: 2px; background: var(--warn); }
+  .queue-item.amb .stripe { background: var(--crit); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .drawer.open { animation: slide 160ms ease-out; }
+    @keyframes slide { from { transform: translateX(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+  }
+</style>
+
+<div class="app">
+  <header class="bar">
+    <div class="brand">
+      <span class="eyebrow">CRM</span>
+      <h1>Master Contact Ledger</h1>
+    </div>
+    <div class="sync" id="sync-status">
+      <span class="dot" id="sync-dot"></span>
+      <span id="sync-text">Connecting to database…</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="notice" id="notice"></div>
+
+    <section class="stats" aria-label="Summary">
+      <div class="stat"><span class="label">Contacts</span><span class="value num" id="stat-total">—</span><span class="sub" id="stat-total-sub">in master</span></div>
+      <div class="stat"><span class="label">From Apollo</span><span class="value num" id="stat-apollo">—</span><span class="sub">system of record</span></div>
+      <div class="stat"><span class="label">Enriched</span><span class="value num" id="stat-explorium">—</span><span class="sub">via Explorium</span></div>
+      <div class="stat" id="stat-attn-tile"><span class="label">Needs review</span><span class="value num" id="stat-attn">—</span><span class="sub" id="stat-attn-sub">conflicts held</span></div>
+    </section>
+
+    <section class="work" id="work">
+      <div class="panel">
+        <div class="toolbar">
+          <label class="search" for="q">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+            <input id="q" type="search" placeholder="Search name, company, email, title" autocomplete="off">
+          </label>
+          <div class="chips" role="group" aria-label="Filter by source">
+            <button class="chip" data-filter="all" aria-pressed="true">All<span class="count" id="c-all"></span></button>
+            <button class="chip" data-filter="apollo" aria-pressed="false">Apollo<span class="count" id="c-apollo"></span></button>
+            <button class="chip" data-filter="explorium" aria-pressed="false">Explorium<span class="count" id="c-explorium"></span></button>
+            <button class="chip" data-filter="manual" aria-pressed="false">Edited<span class="count" id="c-manual"></span></button>
+            <button class="chip" data-filter="conflict" aria-pressed="false">Conflicts<span class="count" id="c-conflict"></span></button>
+          </div>
+        </div>
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th><th>Title</th><th>Company</th><th>Email</th><th>Sources</th><th>Updated</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+          <div class="empty" id="empty" hidden>No contacts match.</div>
+        </div>
+      </div>
+
+      <aside class="drawer" id="drawer" aria-label="Contact detail">
+        <div class="head">
+          <div>
+            <h2 id="d-name">—</h2>
+            <div class="sub mono" id="d-id"></div>
+          </div>
+          <button class="close" id="d-close" aria-label="Close">✕</button>
+        </div>
+        <div class="body">
+          <div id="d-conflicts" hidden>
+            <p class="section-title">Held conflicts</p>
+            <div class="conflict-list" id="d-conflict-list"></div>
+          </div>
+
+          <div>
+            <p class="section-title">Person</p>
+            <div class="fields" id="d-person"></div>
+          </div>
+          <div>
+            <p class="section-title">Company</p>
+            <div class="fields" id="d-company"></div>
+          </div>
+          <div>
+            <p class="section-title">Keys</p>
+            <dl class="kv mono" id="d-keys"></dl>
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="d-save" disabled>Save edits</button>
+            <button class="btn" id="d-revert" disabled>Revert</button>
+            <span class="hint" id="d-hint"></span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="panel" id="queue-panel" hidden>
+      <div class="toolbar"><strong>Review queue</strong><span class="sub">from the last sync — resolve by editing the record, then the next sync respects your call</span></div>
+      <div class="queue" id="queue"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------- state ----------
+  const state = {
+    db: null,
+    uid: null,
+    canWrite: null,           // null = platform said nothing; let a write decide
+    contacts: new Map(),      // id -> doc body
+    meta: null,               // meta/sync body
+    filter: "all",
+    query: "",
+    selected: null,
+    dirty: {},                // field -> new value (drawer edits)
+    example: false,
+  };
+
+  const EDITABLE_PERSON = ["first_name", "last_name", "email", "phone", "title", "seniority", "linkedin_url", "location"];
+  const EDITABLE_COMPANY = ["company_name", "company_domain", "industry", "employee_count"];
+  const LABELS = {
+    first_name: "First name", last_name: "Last name", email: "Email", phone: "Phone",
+    title: "Title", seniority: "Seniority", linkedin_url: "LinkedIn", location: "Location",
+    company_name: "Company", company_domain: "Domain", industry: "Industry", employee_count: "Employees",
+  };
+
+  // Plainly-marked example rows shown ONLY when the database has no records
+  // yet, so the page demonstrates its shape before the first weekly sync.
+  const EXAMPLES = [
+    ex("c_example01", "Priya", "Raman", "VP Sales", "Northwind Analytics", "northwind-analytics.example", "priya.raman@northwind-analytics.example", ["apollo", "explorium"]),
+    ex("c_example02", "Tomás", "Okafor", "Head of RevOps", "Halcyon Freight", "halcyonfreight.example", "t.okafor@halcyonfreight.example", ["apollo"]),
+    ex("c_example03", "Mei", "Lindqvist", "Director, Partnerships", "Tessellate Health", "tessellate.example", "mei@tessellate.example", ["apollo", "explorium", "manual"]),
+    ex("c_example04", "Jordan", "Achebe", "CTO", "Sable Robotics", "sablerobotics.example", "jordan@sablerobotics.example", ["explorium"]),
+    ex("c_example05", "Ingrid", "Baptiste", "Procurement Lead", "Meridian Foods", "meridianfoods.example", "ibaptiste@meridianfoods.example", ["apollo", "explorium"]),
+  ];
+  function ex(id, fn, ln, title, co, dom, email, sources) {
+    const prov = {};
+    for (const f of ["first_name", "last_name", "title", "company_name", "company_domain", "email"]) {
+      prov[f] = { source: sources[0], observed_at: "2026-09-14T06:00:00+00:00", confidence: 1 };
+    }
+    if (sources.includes("manual")) prov.title = { source: "manual", observed_at: "2026-09-15T14:12:00+00:00", confidence: 1 };
+    return { contact_id: id, first_name: fn, last_name: ln, title, company_name: co, company_domain: dom, email,
+             sources, provenance: prov, last_updated: "2026-09-14T06:00:00+00:00", first_seen: "2026-08-03T06:00:00+00:00",
+             technologies: [], _example: true };
+  }
+
+  // ---------- dom ----------
+  const $ = (id) => document.getElementById(id);
+  const rowsEl = $("rows"), emptyEl = $("empty"), drawer = $("drawer"), work = $("work");
+  const notice = $("notice");
+
+  function fmtDate(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+  function fmtDateTime(iso) {
+    if (!iso) return "never";
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  }
+  function fullName(c) { return [c.first_name, c.last_name].filter(Boolean).join(" ") || "(no name)"; }
+
+  function conflictsFor(id) {
+    const list = (state.meta && state.meta.conflicts_held) || [];
+    return list.filter((c) => c.contact_id === id);
+  }
+  function hasManual(c) {
+    return Object.values(c.provenance || {}).some((p) => p && p.source === "manual");
+  }
+
+  // ---------- render: stats + notice ----------
+  function renderStats() {
+    const all = [...state.contacts.values()];
+    const n = all.length;
+    const apollo = all.filter((c) => (c.sources || []).includes("apollo")).length;
+    const explorium = all.filter((c) => (c.sources || []).includes("explorium")).length;
+    const manual = all.filter(hasManual).length;
+    const conflicts = ((state.meta && state.meta.conflicts_held) || []).length;
+    const amb = ((state.meta && state.meta.ambiguous_matches) || []).length;
+    const conflictIds = new Set(((state.meta && state.meta.conflicts_held) || []).map((c) => c.contact_id));
+
+    $("stat-total").textContent = n;
+    $("stat-total-sub").textContent = state.example ? "example rows" : (state.meta && state.meta.generated_at ? `synced ${fmtDate(state.meta.generated_at)}` : "in master");
+    $("stat-apollo").textContent = apollo;
+    $("stat-explorium").textContent = explorium;
+    $("stat-attn").textContent = conflicts + amb;
+    $("stat-attn-sub").textContent = amb ? `${conflicts} conflicts · ${amb} ambiguous` : "conflicts held";
+    $("stat-attn-tile").classList.toggle("attn", conflicts + amb > 0);
+
+    $("c-all").textContent = n;
+    $("c-apollo").textContent = apollo;
+    $("c-explorium").textContent = explorium;
+    $("c-manual").textContent = manual;
+    $("c-conflict").textContent = conflictIds.size;
+  }
+
+  function setNotice(html) {
+    notice.innerHTML = html;
+    notice.classList.toggle("show", Boolean(html));
+  }
+
+  // ---------- render: table ----------
+  function visibleContacts() {
+    const q = state.query.trim().toLowerCase();
+    const conflictIds = new Set(((state.meta && state.meta.conflicts_held) || []).map((c) => c.contact_id));
+    let list = [...state.contacts.values()];
+    if (state.filter === "apollo" || state.filter === "explorium") {
+      list = list.filter((c) => (c.sources || []).includes(state.filter));
+    } else if (state.filter === "manual") {
+      list = list.filter(hasManual);
+    } else if (state.filter === "conflict") {
+      list = list.filter((c) => conflictIds.has(c.contact_id));
+    }
+    if (q) {
+      list = list.filter((c) =>
+        [fullName(c), c.company_name, c.email, c.title, c.company_domain]
+          .filter(Boolean).some((v) => String(v).toLowerCase().includes(q)));
+    }
+    list.sort((a, b) => (a.last_name || "").localeCompare(b.last_name || "") || (a.first_name || "").localeCompare(b.first_name || ""));
+    return list;
+  }
+
+  function renderTable() {
+    const list = visibleContacts();
+    const conflictIds = new Set(((state.meta && state.meta.conflicts_held) || []).map((c) => c.contact_id));
+    rowsEl.replaceChildren();
+    emptyEl.hidden = list.length > 0;
+    for (const c of list) {
+      const tr = document.createElement("tr");
+      tr.tabIndex = 0;
+      tr.dataset.id = c.contact_id;
+      tr.setAttribute("aria-selected", String(state.selected === c.contact_id));
+
+      const tdName = td();
+      const nm = document.createElement("div"); nm.className = "name"; nm.textContent = fullName(c);
+      tdName.appendChild(nm);
+      if (c.location) { const s = document.createElement("div"); s.className = "sub"; s.textContent = c.location; tdName.appendChild(s); }
+
+      const tdTitle = td(c.title || "—"); tdTitle.classList.add("wrap");
+      const tdCo = td(); tdCo.classList.add("wrap");
+      const co = document.createElement("div"); co.textContent = c.company_name || "—"; tdCo.appendChild(co);
+      if (c.company_domain) { const s = document.createElement("div"); s.className = "sub mono"; s.textContent = c.company_domain; tdCo.appendChild(s); }
+
+      const tdEmail = td(c.email || "—"); tdEmail.classList.add("mono", "email");
+
+      const tdSrc = td();
+      const badges = document.createElement("div"); badges.className = "badges";
+      for (const s of c.sources || []) if (s !== "manual") badges.appendChild(badge(s, s));
+      if (hasManual(c)) badges.appendChild(badge("manual", "edited"));
+      if (conflictIds.has(c.contact_id)) badges.appendChild(badge("conflict", "conflict"));
+      if (c._example) badges.appendChild(badge("example", "example"));
+      tdSrc.appendChild(badges);
+
+      const tdUpd = td(fmtDate(c.last_updated)); tdUpd.classList.add("sub", "num");
+
+      tr.append(tdName, tdTitle, tdCo, tdEmail, tdSrc, tdUpd);
+      tr.addEventListener("click", () => select(c.contact_id));
+      tr.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(c.contact_id); } });
+      rowsEl.appendChild(tr);
+    }
+  }
+  function td(text) { const el = document.createElement("td"); if (text !== undefined) el.textContent = text; return el; }
+  function badge(kind, text) { const b = document.createElement("span"); b.className = "badge " + kind; b.textContent = text; return b; }
+
+  // ---------- render: queue ----------
+  function renderQueue() {
+    const conflicts = (state.meta && state.meta.conflicts_held) || [];
+    const amb = (state.meta && state.meta.ambiguous_matches) || [];
+    const panel = $("queue-panel"), q = $("queue");
+    panel.hidden = conflicts.length + amb.length === 0;
+    q.replaceChildren();
+    for (const c of conflicts.slice(0, 25)) {
+      const contact = state.contacts.get(c.contact_id);
+      const item = document.createElement("div"); item.className = "queue-item";
+      const stripe = document.createElement("div"); stripe.className = "stripe";
+      const body = document.createElement("div");
+      const head = document.createElement("div");
+      const who = document.createElement("strong"); who.textContent = contact ? fullName(contact) : c.contact_id;
+      head.append(who, document.createTextNode(` — ${LABELS[c.field] || c.field}`));
+      const detail = document.createElement("div"); detail.className = "sub";
+      detail.textContent = `kept "${c.kept ?? "—"}", ${c.source} proposed "${c.rejected ?? "—"}"`;
+      body.append(head, detail);
+      item.append(stripe, body);
+      item.addEventListener("click", () => select(c.contact_id));
+      item.style.cursor = "pointer";
+      q.appendChild(item);
+    }
+    for (const a of amb.slice(0, 25)) {
+      const item = document.createElement("div"); item.className = "queue-item amb";
+      const stripe = document.createElement("div"); stripe.className = "stripe";
+      const body = document.createElement("div");
+      const head = document.createElement("div"); head.innerHTML = "<strong>Possible duplicate</strong> — one incoming record matched two people";
+      const detail = document.createElement("div"); detail.className = "sub mono";
+      detail.textContent = (a.candidates || []).join("  ·  ");
+      body.append(head, detail);
+      item.append(stripe, body);
+      q.appendChild(item);
+    }
+  }
+
+  // ---------- drawer ----------
+  function select(id) {
+    state.selected = id;
+    state.dirty = {};
+    renderTable();
+    renderDrawer();
+    drawer.classList.add("open");
+    work.classList.add("open");
+  }
+  function closeDrawer() {
+    state.selected = null; state.dirty = {};
+    drawer.classList.remove("open"); work.classList.remove("open");
+    renderTable();
+  }
+  $("d-close").addEventListener("click", closeDrawer);
+
+  function provLabel(c, f) {
+    const p = (c.provenance || {})[f];
+    if (!p) return "";
+    return `${p.source} · ${fmtDate(p.observed_at)}`;
+  }
+
+  function fieldRow(c, f, editable) {
+    const wrap = document.createElement("div"); wrap.className = "field";
+    const label = document.createElement("label"); label.htmlFor = "f-" + f;
+    label.textContent = LABELS[f] || f;
+    const prov = document.createElement("span"); prov.className = "prov"; prov.textContent = provLabel(c, f);
+    label.appendChild(prov);
+    const input = document.createElement("input");
+    input.id = "f-" + f; input.name = f;
+    input.type = f === "employee_count" ? "number" : "text";
+    input.value = c[f] == null ? "" : String(c[f]);
+    input.readOnly = !editable;
+    if (editable) {
+      input.addEventListener("input", () => {
+        const original = c[f] == null ? "" : String(c[f]);
+        if (input.value === original) { delete state.dirty[f]; input.classList.remove("dirty"); }
+        else { state.dirty[f] = input.value; input.classList.add("dirty"); }
+        updateActions();
+      });
+    }
+    wrap.append(label, input);
+    return wrap;
+  }
+
+  function renderDrawer() {
+    const c = state.contacts.get(state.selected);
+    if (!c) return;
+    const editable = !c._example && state.canWrite !== false;
+
+    $("d-name").textContent = fullName(c);
+    $("d-id").textContent = c.contact_id;
+
+    const conflicts = conflictsFor(c.contact_id);
+    $("d-conflicts").hidden = conflicts.length === 0;
+    const cl = $("d-conflict-list"); cl.replaceChildren();
+    for (const k of conflicts) {
+      const el = document.createElement("div"); el.className = "conflict";
+      el.textContent = `${LABELS[k.field] || k.field}: kept "${k.kept ?? "—"}"`;
+      const alt = document.createElement("span"); alt.className = "mono";
+      alt.textContent = `${k.source} proposed "${k.rejected ?? "—"}" — edit the field to settle it`;
+      el.appendChild(alt);
+      cl.appendChild(el);
+    }
+
+    const person = $("d-person"); person.replaceChildren();
+    for (const f of EDITABLE_PERSON) person.appendChild(fieldRow(c, f, editable));
+    const company = $("d-company"); company.replaceChildren();
+    for (const f of EDITABLE_COMPANY) company.appendChild(fieldRow(c, f, editable));
+
+    const keys = $("d-keys"); keys.replaceChildren();
+    for (const [k, v] of [
+      ["apollo", c.apollo_contact_id], ["explorium", c.explorium_prospect_id],
+      ["first seen", fmtDate(c.first_seen)], ["sources", (c.sources || []).join(", ") || "—"],
+      ["tech", (c.technologies || []).length ? c.technologies.join(", ") : "—"],
+    ]) {
+      const dt = document.createElement("dt"); dt.textContent = k;
+      const dd = document.createElement("dd"); dd.textContent = v || "—";
+      keys.append(dt, dd);
+    }
+
+    const hint = $("d-hint"); hint.className = "hint";
+    if (c._example) hint.textContent = "Example record — not editable.";
+    else if (state.canWrite === false) hint.textContent = "You can view this ledger but not edit it.";
+    else if (!state.db) hint.textContent = "Database unavailable; edits are off.";
+    else hint.textContent = "Edits are kept with your id and outrank the next sync.";
+    updateActions();
+  }
+
+  function updateActions() {
+    const n = Object.keys(state.dirty).length;
+    const can = n > 0 && state.db && !state.contacts.get(state.selected)?._example;
+    $("d-save").disabled = !can;
+    $("d-revert").disabled = n === 0;
+    $("d-save").textContent = n > 1 ? `Save ${n} edits` : "Save edits";
+  }
+  $("d-revert").addEventListener("click", () => { state.dirty = {}; renderDrawer(); });
+
+  let saving = false;
+  $("d-save").addEventListener("click", async () => {
+    if (saving || !state.db || !state.selected) return;
+    const c = state.contacts.get(state.selected);
+    if (!c || c._example) return;
+    saving = true;
+    const hint = $("d-hint"); hint.className = "hint"; hint.textContent = "Saving…";
+    const now = new Date().toISOString().replace(/\.\d{3}Z$/, "+00:00");
+    const patch = { last_updated: now, provenance: {} };
+    for (const [f, raw] of Object.entries(state.dirty)) {
+      let v = raw.trim();
+      if (f === "employee_count") v = v === "" ? null : Number(v);
+      else if (f === "email") v = v.toLowerCase();
+      else if (v === "") v = null;
+      patch[f] = v;
+      patch.provenance[f] = { source: "manual", observed_at: now, confidence: 1, edited_by: state.uid };
+    }
+    if (!(c.sources || []).includes("manual")) patch.sources = [...(c.sources || []), "manual"];
+    try {
+      // `update` merges nested objects, so provenance for untouched fields survives.
+      await state.db.doc("contacts/" + c.contact_id).update(patch);
+      state.dirty = {};
+      hint.className = "hint ok"; hint.textContent = "Saved.";
+    } catch (e) {
+      const code = e && e.code;
+      hint.className = "hint err";
+      if (code === "invalid_argument") { state.canWrite = false; hint.textContent = "This ledger is read-only for you."; }
+      else if (code === "quota_exceeded") hint.textContent = "Database is full; nothing was saved.";
+      else hint.textContent = "Could not save. Try again in a moment.";
+    } finally {
+      saving = false;
+      updateActions();
+    }
+  });
+
+  // ---------- filters ----------
+  for (const chip of document.querySelectorAll(".chip")) {
+    chip.addEventListener("click", () => {
+      state.filter = chip.dataset.filter;
+      for (const c of document.querySelectorAll(".chip")) c.setAttribute("aria-pressed", String(c === chip));
+      renderTable();
+    });
+  }
+  $("q").addEventListener("input", (e) => { state.query = e.target.value; renderTable(); });
+
+  // Remember the last filter as a per-viewer convenience only.
+  try {
+    const saved = localStorage.getItem("ledger.filter");
+    if (saved) { const chip = document.querySelector(`.chip[data-filter="${saved}"]`); if (chip) chip.click(); }
+  } catch (_) {}
+  for (const chip of document.querySelectorAll(".chip")) {
+    chip.addEventListener("click", () => { try { localStorage.setItem("ledger.filter", chip.dataset.filter); } catch (_) {} });
+  }
+
+  // ---------- data ----------
+  function showExamples() {
+    state.example = true;
+    state.contacts = new Map(EXAMPLES.map((c) => [c.contact_id, c]));
+    setNotice("<strong>Showing example rows.</strong> The master database is empty until the first weekly sync writes to it. Nothing here is real data.");
+    renderAll();
+  }
+  function renderAll() { renderStats(); renderTable(); renderQueue(); if (state.selected) renderDrawer(); }
+  function setSync(kind, text) {
+    $("sync-dot").className = "dot " + kind;
+    $("sync-text").textContent = text;
+  }
+
+  // First paint: examples, before any capability answers.
+  showExamples();
+
+  (async () => {
+    // A copy opened outside the claude.ai viewer has no runtime at all.
+    if (!window.claude || typeof window.claude.use !== "function") {
+      setSync("stale", "Open in claude.ai to connect to the database");
+      return;
+    }
+    const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+    if (user) {
+      state.uid = await user.id();
+      state.canWrite = await user.can("data.write");
+    }
+    if (!db) {
+      setSync("stale", "Database unavailable in this view");
+      return;
+    }
+    state.db = db;
+    setSync("", "Loading…");
+
+    let gotContacts = false;
+    db.collection("contacts").limit(1000).onSnapshot(
+      (snap) => {
+        if (snap.empty && !gotContacts && snap.metadata.fromCache) return; // wait for definitive
+        gotContacts = true;
+        if (snap.empty) { showExamples(); setSync("stale", "Master is empty — awaiting first sync"); return; }
+        state.example = false;
+        setNotice("");
+        state.contacts = new Map(snap.docs.map((d) => [d.id, d.data()]));
+        setSync("live", `${snap.size} contacts · live`);
+        renderAll();
+      },
+      (e) => { setSync("stale", e.code === "revoked" ? "Access changed — reload to continue" : "Live updates paused"); }
+    );
+    db.doc("meta/sync").onSnapshot(
+      (snap) => {
+        state.meta = snap.exists ? snap.data() : null;
+        if (state.meta && state.meta.generated_at && !state.example) {
+          setSync("live", `${state.contacts.size} contacts · synced ${fmtDateTime(state.meta.generated_at)}`);
+        }
+        renderAll();
+      },
+      () => {}
+    );
+  })();
+})();
+</script>

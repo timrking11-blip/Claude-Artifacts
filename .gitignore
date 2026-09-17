@@ -1,0 +1,8 @@
+# Derived per-run output; master/ and CHANGELOG.md are the committed record.
+data/staging/
+data/artifact/
+
+__pycache__/
+*.pyc
+.pytest_cache/
+.env

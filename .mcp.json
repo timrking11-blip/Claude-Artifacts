@@ -1,0 +1,27 @@
+{
+  "$comment": [
+    "MCP servers for this repo. Claude Code loads this automatically.",
+    "explorium-docs is the Mintlify-hosted documentation MCP (search_explorium_docs,",
+    "query_docs_filesystem_explorium_docs, submit_feedback). It is READ-ONLY apart from",
+    "submit_feedback and needs no credentials.",
+    "explorium-agentsource is the separate B2B *data* API MCP (enrich-business,",
+    "match-prospects, fetch-businesses-events). It is the one that spends credits.",
+    "These are two different servers on two different hosts -- do not merge them.",
+    "If explorium-docs fails to connect, the docs host is the only thing to change:",
+    "see EXPLORIUM_DOCS_MCP_URL in crm/config.py, which is the single source of truth",
+    "for the scripts, and mirror any correction into the url below."
+  ],
+  "mcpServers": {
+    "explorium-docs": {
+      "type": "http",
+      "url": "https://developers.explorium.ai/mcp"
+    },
+    "explorium-agentsource": {
+      "type": "http",
+      "url": "https://mcp.explorium.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer ${EXPLORIUM_API_KEY}"
+      }
+    }
+  }
+}

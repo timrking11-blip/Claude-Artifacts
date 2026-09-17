@@ -1,0 +1,143 @@
+name: Weekly CRM sync
+
+# Two source pulls run as parallel jobs; the merge waits on both. A failure in
+# one source does not block the other from staging, and the merge still runs
+# with whatever staged successfully (it refuses only when *both* failed).
+
+on:
+  schedule:
+    # Mondays 06:00 UTC. Apollo's weekly credit window resets on a rolling
+    # basis, so the exact hour is a preference, not a constraint.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      apollo_list_id:
+        description: "Restrict the Apollo pull to one list (label) id"
+        required: false
+        type: string
+      explorium_roster:
+        description: "master (parallel, default) or apollo (serial, enriches this week's pull)"
+        required: false
+        default: master
+        type: choice
+        options: [master, apollo]
+      writeback:
+        description: "Push master-resolved fields back to Apollo"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: crm-sync
+  cancel-in-progress: false
+
+jobs:
+  pull-apollo:
+    name: Pull Apollo contacts
+    runs-on: ubuntu-latest
+    env:
+      APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Pull
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.apollo_list_id }}" ]; then
+            ARGS="--list-id ${{ inputs.apollo_list_id }}"
+          fi
+          python scripts/pull_apollo.py $ARGS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: staging-apollo
+          path: data/staging/apollo.json
+          retention-days: 14
+
+  pull-explorium:
+    name: Enrich via Explorium
+    runs-on: ubuntu-latest
+    # Serial mode needs this week's Apollo staging, so only then does it wait.
+    needs: ${{ inputs.explorium_roster == 'apollo' && fromJSON('["pull-apollo"]') || fromJSON('[]') }}
+    env:
+      EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fetch Apollo staging (serial mode only)
+        if: inputs.explorium_roster == 'apollo'
+        uses: actions/download-artifact@v4
+        with:
+          name: staging-apollo
+          path: data/staging
+      - name: Enrich
+        run: python scripts/pull_explorium.py --roster "${{ inputs.explorium_roster || 'master' }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: staging-explorium
+          path: data/staging/explorium.json
+          retention-days: 14
+
+  merge:
+    name: Merge into master
+    runs-on: ubuntu-latest
+    needs: [pull-apollo, pull-explorium]
+    # Run even if one pull failed; merge_master.py handles a missing file.
+    if: ${{ !cancelled() && (needs.pull-apollo.result == 'success' || needs.pull-explorium.result == 'success') }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: staging-*
+          path: data/staging
+          merge-multiple: true
+      - name: Run tests
+        run: pip install -q pytest && python -m pytest tests -q
+      - name: Merge
+        run: python scripts/merge_master.py
+      - name: Commit master
+        run: |
+          git config user.name "crm-sync[bot]"
+          git config user.email "crm-sync[bot]@users.noreply.github.com"
+          git add data/master data/CHANGELOG.md
+          if git diff --cached --quiet; then
+            echo "No changes to master this week."
+          else
+            git commit -m "chore(crm): weekly sync $(date -u +%Y-%m-%d)"
+            git push
+          fi
+      - name: Upload master snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: master-contacts
+          path: |
+            data/master/contacts.json
+            data/CHANGELOG.md
+          retention-days: 90
+
+  writeback:
+    name: Push to Apollo
+    runs-on: ubuntu-latest
+    needs: merge
+    if: ${{ inputs.writeback == true }}
+    env:
+      APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
+      APOLLO_WRITEBACK_ENABLED: "true"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - run: git pull --ff-only
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python scripts/push_apollo.py --apply
