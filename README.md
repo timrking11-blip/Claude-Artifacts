@@ -111,6 +111,9 @@ setup, running with `adk run` / `adk web`, and deployment to Agent Runtime.
 [`python/agents/README.md`](python/agents/README.md) records provenance and
 which directories are ours versus copies.
 
+[`terraform/`](terraform/) — the BigQuery dataset for Claude request/response
+logging, managed in HCP Terraform with workload identity federation.
+
 ## MCP servers
 
 [`.mcp.json`](.mcp.json) registers two Explorium servers for Claude Code.

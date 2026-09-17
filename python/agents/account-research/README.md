@@ -164,6 +164,10 @@ that gap is
 [terraform-provider-google#24092](https://github.com/hashicorp/terraform-provider-google/issues/24092),
 open and unimplemented. Hence a script:
 
+The dataset can be created by hand, or managed in HCP Terraform — see
+[`terraform/`](../../../terraform/) at the repo root, which also grants Vertex
+write access to it and prints the enable command as an output.
+
 ```bash
 bq mk --dataset --location=US "$GOOGLE_CLOUD_PROJECT:crm"   # if it doesn't exist
 
