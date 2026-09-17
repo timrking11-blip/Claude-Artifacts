@@ -135,6 +135,41 @@ been observed answering with an OAuth challenge, which confirms it is a live
 MCP endpoint. If it ever moves, it is defined in `.mcp.json` and
 `crm/config.py` only.
 
+### Google Cloud MCP servers
+
+`.mcp.json` also registers two of Google Cloud's remote MCP servers for
+project `922106495655`. The registry names them by URN; the client connects
+by URL:
+
+| URN (`urn:mcp:googleapis.com:projects:922106495655:locations:global:…`) | Entry | URL | What it does |
+|---|---|---|---|
+| `…:agentregistry` | `gcp-agent-registry` | `https://agentregistry.googleapis.com/mcp` | Discover agents, MCP servers and model endpoints catalogued in the project |
+| `…:aiplatform` | `gcp-agent-platform` | `https://aiplatform.googleapis.com/mcp/generate` | Agent Platform (Vertex AI) — the `generate` toolset; other toolsets live at their own `/mcp/<toolset>` path |
+
+Google's servers do **not** use the in-client OAuth flow the Explorium
+servers use. They take a Google bearer token and a quota-project header,
+which `.mcp.json` reads from the environment:
+
+```bash
+# once per machine
+gcloud auth application-default login
+
+# before each Claude Code session (token lives ~1 h)
+eval "$(scripts/gcp_mcp_env.sh)" && claude
+```
+
+`scripts/gcp_mcp_env.sh` exports `GCP_MCP_ACCESS_TOKEN` from
+`gcloud auth application-default print-access-token` and `GCP_PROJECT`
+(override it to point the same entries at another project). The token never
+lands in the repo. In the project, enable `agentregistry.googleapis.com` and
+`aiplatform.googleapis.com` (Agent Registry also needs
+`cloudapiregistry.googleapis.com` / `apihub.googleapis.com`), and give your
+identity the Agent Registry viewer and Vertex AI user roles.
+
+These two entries work from a **local** Claude Code session with `gcloud`
+installed. Remote and web sessions have no `gcloud` and cannot mint the
+token, so there they will show as failed to connect — that is expected.
+
 ## Layout
 
 ```

@@ -12,7 +12,18 @@
     "Authorization header here -- it disables the OAuth flow. API keys are only",
     "for the REST scripts and live in crm/config.py (from env), never in this file.",
     "Remote Claude Code sessions cannot complete OAuth; for those, add the same",
-    "URL as a custom connector in claude.ai (Settings -> Connectors)."
+    "URL as a custom connector in claude.ai (Settings -> Connectors).",
+    "",
+    "gcp-agent-registry and gcp-agent-platform are Google Cloud's remote MCP",
+    "servers for project 922106495655, i.e. the registry URNs",
+    "urn:mcp:googleapis.com:projects:922106495655:locations:global:agentregistry",
+    "and ...:aiplatform. Google's servers do NOT use the MCP OAuth flow; they take",
+    "a gcloud bearer token plus a quota-project header. The token comes from the",
+    "GCP_MCP_ACCESS_TOKEN env var, which scripts/gcp_mcp_env.sh sets from",
+    "`gcloud auth application-default print-access-token` (1h lifetime). These",
+    "two entries only connect from a local session with gcloud installed.",
+    "Agent Platform is split into toolsets, one path each; /mcp/generate is the",
+    "documented one. Add more as gcp-agent-platform-<toolset> on the same pattern."
   ],
   "mcpServers": {
     "explorium-docs": {
@@ -22,6 +33,22 @@
     "explorium-agentsource": {
       "type": "http",
       "url": "https://mcp.explorium.ai/mcp"
+    },
+    "gcp-agent-registry": {
+      "type": "http",
+      "url": "https://agentregistry.googleapis.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${GCP_MCP_ACCESS_TOKEN}",
+        "x-goog-user-project": "${GCP_PROJECT:-922106495655}"
+      }
+    },
+    "gcp-agent-platform": {
+      "type": "http",
+      "url": "https://aiplatform.googleapis.com/mcp/generate",
+      "headers": {
+        "Authorization": "Bearer ${GCP_MCP_ACCESS_TOKEN}",
+        "x-goog-user-project": "${GCP_PROJECT:-922106495655}"
+      }
     }
   }
 }
