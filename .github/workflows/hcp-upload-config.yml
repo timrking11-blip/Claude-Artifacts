@@ -1,0 +1,179 @@
+name: HCP upload config version
+
+# Makes the workspace's "Start new run" / "Confirm & Apply" buttons usable.
+#
+# Why this exists: the workspace is CLI-driven, and every run it has seen came
+# from `terraform plan` in terraform-plan.yml. A CLI *plan* uploads a
+# SPECULATIVE configuration version -- plan-only by design, and never
+# applyable. So the HCP UI has no config it is allowed to apply and reports
+# "config version is missing".
+#
+# This uploads a real (speculative=false) configuration version from the
+# terraform/ directory and queues one run against it. The run stops at
+# "Planned" and waits for a human to press Confirm & Apply in the browser.
+#
+# It deliberately does NOT apply:
+#   - the run is created without auto-apply
+#   - if the WORKSPACE has auto-apply switched on, the job aborts before
+#     creating the run, because in that case queueing a run would apply it
+#
+# Applying stays a human act. This only puts the button within reach.
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: "Run message shown in the HCP UI"
+        required: false
+        default: "Queued from GitHub Actions for manual confirmation"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcp-upload-config
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    env:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
+      TF_WORKSPACE: ${{ vars.TF_WORKSPACE }}
+      RUN_MESSAGE: ${{ inputs.message }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve the workspace
+        id: ws
+        run: |
+          if [ -z "$TF_API_TOKEN" ] || [ -z "$TF_CLOUD_ORGANIZATION" ] || [ -z "$TF_WORKSPACE" ]; then
+            echo "::error::TF_API_TOKEN / TF_CLOUD_ORGANIZATION / TF_WORKSPACE are not all set."
+            exit 1
+          fi
+          base=https://app.terraform.io/api/v2
+          info=$(curl -sS -H "Authorization: Bearer $TF_API_TOKEN" \
+            "$base/organizations/$TF_CLOUD_ORGANIZATION/workspaces/$TF_WORKSPACE")
+          ws=$(echo "$info" | jq -r '.data.id // empty')
+          if [ -z "$ws" ]; then echo "::error::Could not resolve workspace $TF_WORKSPACE."; exit 1; fi
+
+          mode=$(echo "$info" | jq -r '.data.attributes["execution-mode"]')
+          auto=$(echo "$info" | jq -r '.data.attributes["auto-apply"]')
+          echo "workspace:      $TF_WORKSPACE ($ws)"
+          echo "execution-mode: $mode"
+          echo "auto-apply:     $auto"
+
+          if [ "$mode" != "remote" ]; then
+            echo "::error::Execution mode is '$mode'. A local workspace runs nothing on HCP."
+            exit 1
+          fi
+          # The whole point is that a person confirms the apply. If the
+          # workspace applies on its own, queueing a run here IS the apply,
+          # so stop and say so rather than doing it by side effect.
+          if [ "$auto" = "true" ]; then
+            echo "::error::This workspace has auto-apply ON, so a queued run would apply itself."
+            echo "Turn auto-apply off (Settings -> General -> Apply Method -> Manual apply)"
+            echo "and re-run, or apply deliberately from a terminal instead."
+            exit 1
+          fi
+          echo "ws=$ws" >> "$GITHUB_OUTPUT"
+
+      - name: Upload a configuration version
+        id: cv
+        env:
+          WS_ID: ${{ steps.ws.outputs.ws }}
+        run: |
+          base=https://app.terraform.io/api/v2
+          auth="Authorization: Bearer $TF_API_TOKEN"
+          ctype="Content-Type: application/vnd.api+json"
+          ws=$WS_ID
+
+          # speculative=false is what makes it applyable; auto-queue-runs=false
+          # keeps the upload from starting a run before the checks above.
+          payload='{"data":{"type":"configuration-versions","attributes":{"auto-queue-runs":false,"speculative":false}}}'
+          cv=$(curl -sS -X POST -H "$auth" -H "$ctype" -d "$payload" "$base/workspaces/$ws/configuration-versions")
+          cv_id=$(echo "$cv" | jq -r '.data.id // empty')
+          upload=$(echo "$cv" | jq -r '.data.attributes["upload-url"] // empty')
+          if [ -z "$cv_id" ] || [ -z "$upload" ]; then
+            echo "::error::HCP did not return a configuration version:"
+            echo "$cv" | jq -r '.errors[]? | "  \(.status) \(.title): \(.detail // "")"'
+            exit 1
+          fi
+          echo "configuration version: $cv_id"
+
+          # Archive the CONTENTS of terraform/, so main.tf sits at the root of
+          # the config exactly as `terraform plan` in that directory sees it.
+          tar -czf /tmp/content.tar.gz -C terraform .
+          echo "archive: $(stat -c%s /tmp/content.tar.gz) bytes"
+          tar -tzf /tmp/content.tar.gz | sed 's/^/  /'
+
+          curl -sS -X PUT -H "Content-Type: application/octet-stream" \
+            --data-binary @/tmp/content.tar.gz "$upload"
+
+          for i in $(seq 1 30); do
+            status=$(curl -sS -H "$auth" "$base/configuration-versions/$cv_id" \
+              | jq -r '.data.attributes.status')
+            echo "  status: $status"
+            [ "$status" = "uploaded" ] && break
+            if [ "$status" = "errored" ]; then echo "::error::Upload errored."; exit 1; fi
+            sleep 2
+          done
+          if [ "$status" != "uploaded" ]; then echo "::error::Upload did not finish."; exit 1; fi
+          echo "cv_id=$cv_id" >> "$GITHUB_OUTPUT"
+
+      - name: Queue a run for manual confirmation
+        env:
+          WS_ID: ${{ steps.ws.outputs.ws }}
+          CV_ID: ${{ steps.cv.outputs.cv_id }}
+        run: |
+          base=https://app.terraform.io/api/v2
+          auth="Authorization: Bearer $TF_API_TOKEN"
+          ctype="Content-Type: application/vnd.api+json"
+          ws=$WS_ID
+          cv_id=$CV_ID
+
+          payload=$(jq -nc --arg m "$RUN_MESSAGE" --arg ws "$ws" --arg cv "$cv_id" \
+            '{data:{type:"runs",attributes:{message:$m},relationships:{
+               workspace:{data:{type:"workspaces",id:$ws}},
+               "configuration-version":{data:{type:"configuration-versions",id:$cv}}}}}')
+          run=$(curl -sS -X POST -H "$auth" -H "$ctype" -d "$payload" "$base/runs")
+          run_id=$(echo "$run" | jq -r '.data.id // empty')
+          if [ -z "$run_id" ]; then
+            echo "::error::HCP rejected the run:"
+            echo "$run" | jq -r '.errors[]? | "  \(.status) \(.title): \(.detail // "")"'
+            exit 1
+          fi
+
+          url="https://app.terraform.io/app/$TF_CLOUD_ORGANIZATION/workspaces/$TF_WORKSPACE/runs/$run_id"
+          echo "run: $run_id"
+          echo "$url"
+
+          # Follow it to a resting state so the log says what the plan found,
+          # rather than leaving you to go and look.
+          for i in $(seq 1 60); do
+            status=$(curl -sS -H "$auth" "$base/runs/$run_id" | jq -r '.data.attributes.status')
+            echo "  status: $status"
+            case "$status" in
+              planned|planned_and_finished|errored|canceled|policy_checked|policy_override) break ;;
+            esac
+            sleep 5
+          done
+
+          {
+            echo "### HCP run queued"
+            echo
+            echo "- status: \`$status\`"
+            echo "- [$run_id]($url)"
+            echo
+            if [ "$status" = "planned" ]; then
+              echo "Open the link and press **Confirm & Apply**."
+            elif [ "$status" = "planned_and_finished" ]; then
+              echo "No changes were needed -- nothing to apply."
+            else
+              echo "Read the run log at the link above."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$status" = "errored" ]; then exit 1; fi

@@ -11,11 +11,10 @@ from pathlib import Path
 
 # --- Endpoints -------------------------------------------------------------
 
-# The Mintlify-hosted Explorium *documentation* MCP. Read-only; no credentials.
-# NOTE: this URL follows Mintlify's `<docs-host>/mcp` convention and was not
-# reachable from the environment this repo was scaffolded in (egress blocked),
-# so it is unverified. If `explorium-docs` fails to connect, correct it here
-# and in .mcp.json -- those are the only two places it appears.
+# The Mintlify-hosted Explorium *documentation* MCP. Read-only; OAuth login.
+# Follows Mintlify's `<docs-host>/mcp` convention and has been observed
+# answering with an OAuth challenge. If it ever moves, it is defined here and
+# in .mcp.json only.
 EXPLORIUM_DOCS_MCP_URL = os.environ.get(
     "EXPLORIUM_DOCS_MCP_URL", "https://developers.explorium.ai/mcp"
 )

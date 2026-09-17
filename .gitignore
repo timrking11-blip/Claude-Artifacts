@@ -6,3 +6,28 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .env
+
+
+# Vendored ADK samples: same per-agent hygiene as agents/
+python/agents/**/.env
+python/agents/**/.venv/
+python/agents/**/.adk/
+python/python/agents/**/__pycache__/
+python/agents/**/*.egg-info/
+python/agents/**/dist/
+python/agents/**/deployment/*.whl
+python/agents/**/uv.lock.tmp
+
+# Terraform: state lives in HCP, never here.
+# The dependency lockfile is normally committed, but is NOT generated here:
+# this environment cannot reach registry.terraform.io, so the only lockfile it
+# can produce covers one platform and would break `init` elsewhere. Run
+# `terraform init` once with registry access, then commit the result and
+# delete this ignore line.
+terraform/.terraform.lock.hcl
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/terraform.tfvars
+terraform/*.auto.tfvars
+crash.log

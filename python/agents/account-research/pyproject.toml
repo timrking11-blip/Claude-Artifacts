@@ -1,0 +1,32 @@
+[project]
+name = "account_research"
+version = "0.1.0"
+description = "Account Research agent: account briefs from the CRM master ledger, built on Google ADK"
+requires-python = ">=3.11"
+dependencies = [
+    "absl-py>=2.2.1",
+    "anthropic[vertex]>=1.6",
+    "google-adk>=1.31.0",
+    "mcp>=1.0",
+    "google-cloud-bigquery>=3.30.0",
+    "google-genai>=1.5.0",
+    "google-cloud-aiplatform[adk,agent-engines]>=1.93.0",
+    "python-dotenv>=1.0.0",
+]
+
+# `uv sync --dev` installs this group (PEP 735); `pip install -e .[dev]` the extra.
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+# Needed only when ACCOUNT_RESEARCH_TRACE_TO_CLOUD / _OTEL_TO_CLOUD /
+# _ENABLE_TRACING are on: `uv sync --extra trace`.
+trace = ["opentelemetry-exporter-gcp-trace>=1.9"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["account_research*"]

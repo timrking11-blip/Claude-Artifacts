@@ -1,0 +1,114 @@
+name: HCP workspace settings
+
+# Creates or updates one variable on the HCP Terraform workspace, using the
+# TF_API_TOKEN this repository already holds. Exists because the variables are
+# what a plan needs and setting them by hand has not been landing on the right
+# workspace -- this way the result is visible in a log.
+#
+# Values arrive as dispatch inputs and are passed through the ENVIRONMENT, never
+# interpolated into the script: ${{ inputs.* }} inside a run block is a shell
+# injection, which is the bug fixed in 8057440.
+#
+# Not for secrets. A dispatch input is recorded in the run's parameters and
+# visible to anyone who can see the run, so anything sensitive belongs in the
+# HCP UI instead. The `sensitive` flag here only controls read-back from HCP.
+
+on:
+  workflow_dispatch:
+    inputs:
+      key:
+        description: "Variable name, e.g. project_id"
+        required: true
+        type: string
+      value:
+        description: "Variable value (do NOT use for secrets)"
+        required: true
+        type: string
+      category:
+        description: "terraform = an input variable; env = an environment variable"
+        required: true
+        default: terraform
+        type: choice
+        options: [terraform, env]
+      execution_mode:
+        description: "Also set the workspace's execution mode (leave as 'unchanged' to skip)"
+        required: false
+        default: unchanged
+        type: choice
+        options: [unchanged, remote, local]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcp-workspace-var
+  cancel-in-progress: false
+
+jobs:
+  set:
+    runs-on: ubuntu-latest
+    env:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
+      TF_WORKSPACE: ${{ vars.TF_WORKSPACE }}
+      VAR_KEY: ${{ inputs.key }}
+      VAR_VALUE: ${{ inputs.value }}
+      VAR_CATEGORY: ${{ inputs.category }}
+      EXEC_MODE: ${{ inputs.execution_mode }}
+    steps:
+      - name: Upsert
+        run: |
+          if [ -z "$TF_API_TOKEN" ] || [ -z "$TF_CLOUD_ORGANIZATION" ] || [ -z "$TF_WORKSPACE" ]; then
+            echo "::error::TF_API_TOKEN / TF_CLOUD_ORGANIZATION / TF_WORKSPACE are not all set."
+            exit 1
+          fi
+          base=https://app.terraform.io/api/v2
+          auth="Authorization: Bearer $TF_API_TOKEN"
+          ctype="Content-Type: application/vnd.api+json"
+
+          ws=$(curl -sS -H "$auth" "$base/organizations/$TF_CLOUD_ORGANIZATION/workspaces/$TF_WORKSPACE" | jq -r '.data.id // empty')
+          if [ -z "$ws" ]; then echo "::error::Could not resolve workspace $TF_WORKSPACE."; exit 1; fi
+          echo "workspace: $TF_WORKSPACE ($ws)"
+
+          # jq --arg keeps the value out of the shell's hands entirely.
+          existing=$(curl -sS -H "$auth" "$base/workspaces/$ws/vars" \
+            | jq -r --arg k "$VAR_KEY" '.data[]? | select(.attributes.key == $k) | .id')
+
+          payload=$(jq -nc --arg k "$VAR_KEY" --arg v "$VAR_VALUE" --arg c "$VAR_CATEGORY" \
+            '{data:{type:"vars",attributes:{key:$k,value:$v,category:$c,hcl:false,sensitive:false}}}')
+
+          if [ -n "$existing" ]; then
+            echo "updating existing variable $existing"
+            resp=$(curl -sS -X PATCH -H "$auth" -H "$ctype" -d "$payload" "$base/workspaces/$ws/vars/$existing")
+          else
+            echo "creating new variable"
+            resp=$(curl -sS -X POST -H "$auth" -H "$ctype" -d "$payload" "$base/workspaces/$ws/vars")
+          fi
+
+          if echo "$resp" | jq -e '.errors' >/dev/null 2>&1; then
+            echo "::error::HCP rejected the request:"
+            echo "$resp" | jq -r '.errors[]? | "  \(.status) \(.title): \(.detail // "")"'
+            exit 1
+          fi
+          echo "$resp" | jq -r '"set \(.data.attributes.key) (category=\(.data.attributes.category))"'
+
+          # Execution mode decides whether any of the above is ever used: a
+          # "local" workspace stores state but runs the plan on the client,
+          # where workspace variables and dynamic credentials do not apply.
+          if [ "$EXEC_MODE" != "unchanged" ]; then
+            echo
+            echo "setting execution-mode to $EXEC_MODE"
+            mode_payload=$(jq -nc --arg m "$EXEC_MODE" '{data:{type:"workspaces",attributes:{"execution-mode":$m}}}')
+            mresp=$(curl -sS -X PATCH -H "$auth" -H "$ctype" -d "$mode_payload" "$base/workspaces/$ws")
+            if echo "$mresp" | jq -e '.errors' >/dev/null 2>&1; then
+              echo "::error::HCP rejected the execution-mode change:"
+              echo "$mresp" | jq -r '.errors[]? | "  \(.status) \(.title): \(.detail // "")"'
+              exit 1
+            fi
+            echo "$mresp" | jq -r '"execution-mode is now \(.data.attributes["execution-mode"])"'
+          fi
+
+          echo
+          echo "--- workspace now holds (keys and categories only) ---"
+          curl -sS -H "$auth" "$base/workspaces/$ws/vars" \
+            | jq -r '(.data // []) | if length == 0 then "  (none)" else .[] | "  \(.attributes.key)\t category=\(.attributes.category)" end'

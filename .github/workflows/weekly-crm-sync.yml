@@ -79,12 +79,18 @@ jobs:
         with:
           python-version: "3.11"
       - name: Pull
+        # The dispatch input goes through the environment, never spliced into
+        # the script. Interpolating ${{ inputs.* }} into a run block lets
+        # anyone who can dispatch this workflow execute shell in a job that
+        # holds APOLLO_API_KEY. Quoted at use, so it stays one argument.
+        env:
+          APOLLO_LIST_ID: ${{ inputs.apollo_list_id }}
         run: |
-          ARGS=""
-          if [ -n "${{ inputs.apollo_list_id }}" ]; then
-            ARGS="--list-id ${{ inputs.apollo_list_id }}"
+          if [ -n "$APOLLO_LIST_ID" ]; then
+            python scripts/pull_apollo.py --list-id "$APOLLO_LIST_ID"
+          else
+            python scripts/pull_apollo.py
           fi
-          python scripts/pull_apollo.py $ARGS
       - uses: actions/upload-artifact@v4
         with:
           name: staging-apollo

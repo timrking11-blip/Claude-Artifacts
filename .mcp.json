@@ -2,14 +2,33 @@
   "$comment": [
     "MCP servers for this repo. Claude Code loads this automatically.",
     "explorium-docs is the Mintlify-hosted documentation MCP (search_explorium_docs,",
-    "query_docs_filesystem_explorium_docs, submit_feedback). It is READ-ONLY apart from",
-    "submit_feedback and needs no credentials.",
+    "query_docs_filesystem_explorium_docs, submit_feedback). Read-only apart from",
+    "submit_feedback.",
     "explorium-agentsource is the separate B2B *data* API MCP (enrich-business,",
-    "match-prospects, fetch-businesses-events). It is the one that spends credits.",
+    "match-prospects, fetch-businesses-events). It spends credits.",
     "These are two different servers on two different hosts -- do not merge them.",
-    "If explorium-docs fails to connect, the docs host is the only thing to change:",
-    "see EXPLORIUM_DOCS_MCP_URL in crm/config.py, which is the single source of truth",
-    "for the scripts, and mirror any correction into the url below."
+    "BOTH authorize with OAuth: in a local Claude Code session run /mcp, pick the",
+    "server, choose Authenticate, and log in in the browser. Do not add an",
+    "Authorization header here -- it disables the OAuth flow. API keys are only",
+    "for the REST scripts and live in crm/config.py (from env), never in this file.",
+    "Remote Claude Code sessions cannot complete OAuth; for those, add the same",
+    "URL as a custom connector in claude.ai (Settings -> Connectors).",
+    "",
+    "gcp-agent-registry, gcp-agent-platform and gcp-bigquery are Google Cloud's remote MCP",
+    "servers. GCP_PROJECT must be set -- scripts/gcp_mcp_env.sh does it.",
+    "Registry URN shape: urn:mcp:googleapis.com:projects:<NUMBER>:locations:global:agentregistry",
+    "and ...:aiplatform. Google's servers do NOT use the MCP OAuth flow; they take",
+    "a gcloud bearer token plus a quota-project header. The token comes from the",
+    "GCP_MCP_ACCESS_TOKEN env var, which scripts/gcp_mcp_env.sh sets from",
+    "`gcloud auth application-default print-access-token` (1h lifetime). These",
+    "two entries only connect from a local session with gcloud installed.",
+    "Agent Platform is split into toolsets, one path each; /mcp/generate is the",
+    "documented one. Add more as gcp-agent-platform-<toolset> on the same pattern.",
+    "",
+    "adk-docs serves the Agent Development Kit docs (adk.dev/llms.txt) over",
+    "stdio via mcpdoc, for the ADK agents under python/agents/. No credentials",
+    "and no OAuth -- it just needs uvx (ships with uv) on PATH. The 'mcp<2' pin",
+    "is load-bearing: mcpdoc imports mcp.server.fastmcp, which mcp 2.x removed."
   ],
   "mcpServers": {
     "explorium-docs": {
@@ -18,10 +37,46 @@
     },
     "explorium-agentsource": {
       "type": "http",
-      "url": "https://mcp.explorium.ai/mcp",
+      "url": "https://mcp.explorium.ai/mcp"
+    },
+    "gcp-agent-registry": {
+      "type": "http",
+      "url": "https://agentregistry.googleapis.com/mcp",
       "headers": {
-        "Authorization": "Bearer ${EXPLORIUM_API_KEY}"
+        "Authorization": "Bearer ${GCP_MCP_ACCESS_TOKEN}",
+        "x-goog-user-project": "${GCP_PROJECT}"
       }
+    },
+    "gcp-agent-platform": {
+      "type": "http",
+      "url": "https://aiplatform.googleapis.com/mcp/generate",
+      "headers": {
+        "Authorization": "Bearer ${GCP_MCP_ACCESS_TOKEN}",
+        "x-goog-user-project": "${GCP_PROJECT}"
+      }
+    },
+    "gcp-bigquery": {
+      "type": "http",
+      "url": "https://bigquery.googleapis.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${GCP_MCP_ACCESS_TOKEN}",
+        "x-goog-user-project": "${GCP_PROJECT}"
+      }
+    },
+    "adk-docs": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "mcpdoc",
+        "--with",
+        "mcp<2",
+        "mcpdoc",
+        "--urls",
+        "AgentDevelopmentKit:https://adk.dev/llms.txt",
+        "--transport",
+        "stdio"
+      ]
     }
   }
 }

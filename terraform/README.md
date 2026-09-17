@@ -1,0 +1,214 @@
+# terraform/
+
+Creates the BigQuery dataset that Vertex writes Claude request/response logs
+into, managed in **HCP Terraform**, authenticated to Google Cloud with
+**workload identity federation** — no service account keys anywhere.
+
+It deliberately does **not** configure the logging itself. That is
+`setPublisherModelConfig`, which has no Terraform resource
+([#24092](https://github.com/hashicorp/terraform-provider-google/issues/24092)).
+Terraform owns the destination; the script points the model at it. After
+`apply`, `terraform output enable_logging_command` prints the exact next
+command.
+
+## One-time setup
+
+### Which workspace this targets
+
+Nothing in this repo names an HCP account. The `cloud {}` block reads both
+values from the environment:
+
+```powershell
+$env:TF_CLOUD_ORGANIZATION = "your-org"        # the /app/<name>/ segment of
+$env:TF_WORKSPACE          = "your-workspace"  # the app.terraform.io URL
+```
+
+```bash
+export TF_CLOUD_ORGANIZATION=your-org
+export TF_WORKSPACE=your-workspace
+```
+
+The two are easy to mix up, and the `org-…` string under Settings → General
+is the External ID, which is **not** what `TF_CLOUD_ORGANIZATION` takes.
+Read the organization name off the URL after `/app/`, or list them from the
+API after `terraform login` — the credentials file lives in a different place
+on each platform:
+
+```bash
+# macOS / Linux
+curl -s -H "Authorization: Bearer $(jq -r '.credentials["app.terraform.io"].token' ~/.terraform.d/credentials.tfrc.json)" \
+  https://app.terraform.io/api/v2/organizations | jq -r '.data[].attributes.name'
+```
+
+```powershell
+# Windows PowerShell -- credentials live under %APPDATA%, and no jq needed
+$tok = (Get-Content "$env:APPDATA\terraform.d\credentials.tfrc.json" | ConvertFrom-Json).credentials.'app.terraform.io'.token
+(Invoke-RestMethod "https://app.terraform.io/api/v2/organizations" -Headers @{Authorization="Bearer $tok"}).data.attributes.name
+```
+
+### 1. Workload identity federation, on the GCP side
+
+This part is `gcloud` work rather than Terraform: bootstrapping the pool with
+Terraform would need the credentials that the pool exists to grant.
+
+**[`setup-wif.ps1`](setup-wif.ps1) does all of it.** It is idempotent — every
+step is skipped if the resource already exists — and `-DryRun` prints the
+commands without running them:
+
+```powershell
+.\setup-wif.ps1 -ProjectId <project> -HcpOrg <org> -HcpWorkspace <workspace> -DryRun
+.\setup-wif.ps1 -ProjectId <project> -HcpOrg <org> -HcpWorkspace <workspace>
+```
+
+It prints the three `TFC_GCP_*` values to paste into the workspace at the end.
+The steps it performs, if you would rather do them by hand:
+
+1. Create a **workload identity pool**, then an **OIDC provider** in it with
+   issuer `https://app.terraform.io`.
+2. Map the claims HCP Terraform sends, e.g.
+   `google.subject = assertion.sub`,
+   `attribute.terraform_workspace_name = assertion.terraform_workspace_name`,
+   `attribute.terraform_organization_name = assertion.terraform_organization_name`.
+3. Add an **attribute condition** pinning it to this organization *and*
+   workspace, so no other workspace can assume the identity — e.g.
+   `assertion.terraform_organization_name == "<your org>" && assertion.terraform_workspace_name == "<your workspace>"`,
+   matching the `cloud` block exactly. Get this wrong and it fails *closed*:
+   the run dies in token exchange, with a credentials error rather than a
+   Terraform one.
+4. Create a service account for the runs and grant it what this root needs
+   (BigQuery dataset creation and IAM on the project; `roles/bigquery.admin`
+   is the blunt version — narrow it if you prefer).
+5. Bind the pool principal to that service account with
+   `roles/iam.workloadIdentityUser`.
+
+### 2. Workspace environment variables
+
+In the workspace, as **environment** variables (not Terraform variables):
+
+| Variable | Value |
+|---|---|
+| `TFC_GCP_PROVIDER_AUTH` | `true` |
+| `TFC_GCP_RUN_SERVICE_ACCOUNT_EMAIL` | the service account from step 1.4 |
+| `TFC_GCP_WORKLOAD_PROVIDER_NAME` | `projects/<PROJECT_NUMBER>/locations/global/workloadIdentityPools/<POOL>/providers/<PROVIDER>` |
+
+Do **not** set `GOOGLE_CREDENTIALS` or `GOOGLE_APPLICATION_CREDENTIALS` in
+the workspace — they conflict with dynamic credentials and will break the run.
+
+### 3. Workspace Terraform variables
+
+Also in the workspace, but category **Terraform** rather than Environment —
+the distinction matters, and the two lists sit side by side in the same UI:
+
+| Variable | Value |
+|---|---|
+| `project_id` | your GCP project **ID** (not the number) |
+
+Set it here rather than in a local `terraform.tfvars`. The `cloud {}` block
+means runs execute on HCP, so the workspace is the one place that serves both
+a local `terraform plan` and the CI workflow — which has no `.tfvars`, since
+that file is gitignored. Anything else from
+[`terraform.tfvars.example`](terraform.tfvars.example) you want to override
+goes here too; the rest keep their defaults.
+
+### 4. Set the workspace to Remote execution
+
+**This one is easy to miss and fails in a way that points elsewhere.** In the
+workspace's General settings, *Execution Mode* must be **Remote**.
+
+A `local` workspace stores state but runs the plan on the client. Workspace
+variables are not injected there and dynamic credentials never engage, so a
+`project_id` that is demonstrably present in the UI produces:
+
+```
+Error: No value for required variable
+  on variables.tf line 1: variable "project_id" {
+```
+
+which names a file in this repo rather than the setting that is actually
+wrong. The tell is speed: a local run fails in under a second with no
+`Running plan in HCP Terraform` line and no run URL.
+
+Check it without clicking through:
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" \
+  https://app.terraform.io/api/v2/organizations/<org>/workspaces/<workspace> \
+  | jq -r '.data.attributes["execution-mode"]'
+```
+
+The `Terraform plan` GitHub workflow prints this on every run, along with the
+workspace's variables and their categories.
+
+### Why not Infra Manager?
+
+Fair question, since all of the above exists only to let a runner *outside*
+Google Cloud authenticate in. Google's
+[Infrastructure Manager](https://cloud.google.com/infrastructure-manager/docs)
+runs Terraform inside the project as a service account, which would delete
+this entire section — no pool, no OIDC provider, no attribute condition, no
+`TFC_GCP_*` variables.
+
+It was considered and not taken: HCP keeps the run history, policy hooks and
+UI, and leaves the `required_version` pin above valid. Infra Manager supports
+a conservative set of Terraform versions — run `gcloud infra-manager
+terraform-versions list` to see whether it offers the pinned one at all.
+
+If you do switch, it is a replacement rather than an addition: Infra Manager
+keeps its own GCS-backed state, so the `cloud {}` block in `main.tf` comes
+**out**. Do not try to run both.
+
+## Running it
+
+```bash
+cd terraform
+# TF_CLOUD_ORGANIZATION and TF_WORKSPACE must be set -- see above
+terraform login            # stores a token locally (~/.terraform.d, or %APPDATA%\terraform.d
+                           # on Windows) -- never paste it anywhere
+terraform init             # generates .terraform.lock.hcl — commit it (see below)
+terraform plan             # expect: 1 dataset + 1 dataset IAM member
+terraform apply
+terraform output enable_logging_command
+```
+
+Then run that command, and confirm with
+`python python/agents/account-research/scripts/claude_request_logging.py --show`.
+
+## Variables worth a decision
+
+| Variable | Default | Note |
+|---|---|---|
+| `project_id` | — | required; the project **ID**, not the number |
+| `dataset_id` | `crm` | |
+| `dataset_location` | `US` | immutable after creation |
+| `retention_days` | `0` (forever) | see below |
+| `vertex_service_agent` | derived | override if a write is denied for a different principal |
+
+**These rows are sensitive.** They contain the prompts sent to Claude and the
+completions returned — which here means contact records from the CRM ledger
+and the account briefs written about them. `dataset_location`,
+`retention_days` and who can read the dataset are choices to make before
+enabling logging, not after.
+
+## The dependency lockfile
+
+`.terraform.lock.hcl` is normally committed, and should be — but it is not in
+this repo yet. The environment this was authored in cannot reach
+`registry.terraform.io`, so the only lockfile it could produce held a single
+`linux_amd64` hash, which would make `terraform init` fail on any other
+platform. Your first `terraform init` generates a complete one: commit it, and
+drop the `terraform/.terraform.lock.hcl` line from `.gitignore`.
+
+## Verified
+
+Under **Terraform v1.16.3** — the version `required_version` pins, fetched
+from releases.hashicorp.com to check the pin names a real release —
+`terraform fmt -check` is clean and `terraform validate` passes against the
+real `hashicorp/google` 6.50.0 schema. The provider comes from a local
+filesystem mirror because `registry.terraform.io` is unreachable from the
+environment this was authored in.
+
+`init`/`plan` against HCP Terraform were **not** run: they need credentials
+that belong on your machine, and nowhere else. On the first `plan`, expect
+**2 to add, 0 to change, 0 to destroy**. If it shows anything more, stop —
+the workspace is holding state for something else, and applying would act
+on it.

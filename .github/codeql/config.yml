@@ -1,0 +1,23 @@
+name: "Claude-Artifacts CodeQL config"
+
+# python/agents/brand-aligned-presentations is vendored verbatim from
+# google/adk-samples at SHA 4fddcec8b2e632a74d404334e4be3134213c044a. Its test
+# suite trips py/incomplete-url-substring-sanitization twice:
+#
+#   tests/test_deep_research.py            assert "http://test.com" in result
+#   tests/test_research_programmatic_urls.py
+#                                          assert "https://verified-source.com" in result
+#
+# CodeQL scores that query 7.8, which GitHub bands as High. The query is sound
+# in general -- "http://test.com" is a substring of "http://test.com.evil.com",
+# so such a check can be fooled -- but these are assertions about a tool's
+# rendered output in a unit test over mocked data. They decide nothing at
+# runtime, and rewriting them would diverge from the pinned upstream.
+#
+# Only the vendored *tests* are excluded. presentation_agent/, the code that
+# actually runs, is still analysed.
+#
+# Note: paths-ignore applies to interpreted languages. Both of ours (python,
+# actions) qualify; it would not work for a compiled language added later.
+paths-ignore:
+  - "python/agents/brand-aligned-presentations/tests/**"
