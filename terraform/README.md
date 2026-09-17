@@ -18,12 +18,23 @@ command.
 Set `organization` and `workspaces.name` in the `cloud` block of `main.tf`.
 They are easy to mix up: the organization is the `/app/<name>/` segment of
 the app.terraform.io URL, and the `org-…` string under Settings → General is
-its External ID, which the `cloud` block does **not** take. To list both
-after `terraform login`:
+its External ID, which the `cloud` block does **not** take.
+
+Simplest way to read the organization name: open app.terraform.io and take
+the segment after `/app/` in the URL. To list them from the API instead,
+after `terraform login` — note the credentials file lives in a different
+place on each platform:
 
 ```bash
+# macOS / Linux
 curl -s -H "Authorization: Bearer $(jq -r '.credentials["app.terraform.io"].token' ~/.terraform.d/credentials.tfrc.json)" \
   https://app.terraform.io/api/v2/organizations | jq -r '.data[].attributes.name'
+```
+
+```powershell
+# Windows PowerShell -- credentials live under %APPDATA%, and no jq needed
+$tok = (Get-Content "$env:APPDATA\terraform.d\credentials.tfrc.json" | ConvertFrom-Json).credentials.'app.terraform.io'.token
+(Invoke-RestMethod "https://app.terraform.io/api/v2/organizations" -Headers @{Authorization="Bearer $tok"}).data.attributes.name
 ```
 
 ### 1. Workload identity federation, on the GCP side
@@ -84,7 +95,8 @@ keeps its own GCS-backed state, so the `cloud {}` block in `main.tf` comes
 
 ```bash
 cd terraform
-terraform login            # stores a token in ~/.terraform.d — never paste it anywhere
+terraform login            # stores a token locally (~/.terraform.d, or %APPDATA%\terraform.d
+                           # on Windows) -- never paste it anywhere
 terraform init             # generates .terraform.lock.hcl — commit it (see below)
 terraform plan             # expect: 1 dataset + 1 dataset IAM member
 terraform apply
