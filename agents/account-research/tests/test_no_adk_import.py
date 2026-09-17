@@ -14,8 +14,8 @@ AGENT_DIR = Path(__file__).resolve().parents[1]
 PROBE = """
 import sys
 sys.path.insert(0, %r)
-import account_research.tools.ledger
-import account_research.tools.store_state  # noqa: F401 -- type-only ADK use
+import account_research.tools.ledger  # the promise covers the ledger tools only;
+# store_state / fetch_page take a real ToolContext and do import ADK.
 leaked = sorted(m for m in sys.modules if m == "google.adk" or m.startswith("google.adk."))
 anthropic = [m for m in sys.modules if m == "anthropic" or m.startswith("anthropic.")]
 print("ADK:", leaked)
