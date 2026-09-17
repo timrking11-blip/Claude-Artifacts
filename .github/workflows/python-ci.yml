@@ -10,6 +10,11 @@ on:
   pull_request:
     branches: [ "claude/explorium-docs-mcp-brregp" ]
 
+# Least privilege, and explicit: without this the workflow inherits whatever
+# the repository default happens to be. It only reads code and runs tests.
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
