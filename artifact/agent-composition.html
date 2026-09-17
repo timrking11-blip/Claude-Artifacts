@@ -297,7 +297,7 @@
     <div class="grid2">
       <div class="note"><h3>Rate limit</h3><p><code>rate_limit_callback</code> on every agent: 1000 model calls per 60 s, then sleep. Unchanged from the template.</p></div>
       <div class="note"><h3>Degrades, doesn't crash</h3><p>MCP tools attach only with <code>ACCOUNT_RESEARCH_ENABLE_MCP=1</code> and Application Default Credentials; otherwise the agent runs without them. Optional prompt keys render empty rather than raising.</p></div>
-      <div class="note"><h3>Model</h3><p>Gemini on Vertex AI — <code>GOOGLE_GENAI_MODEL</code>, default <code>gemini-2.5-flash</code>. Project from ADC, location from <code>.env</code>.</p></div>
+      <div class="note"><h3>Model</h3><p>Claude on Vertex AI by default — <code>claude-fable-5-1</code> through ADK's <code>Claude</code> wrapper (<code>AnthropicVertex</code>, ADC auth, region <code>global</code>); <code>ACCOUNT_RESEARCH_MODEL_PROVIDER=gemini</code> switches to Gemini.</p></div>
       <div class="note"><h3>Three ways to run</h3><p><code>adk web .</code> for development · <code>python main.py</code> as a FastAPI service on <code>$PORT</code> for Cloud Run · <code>deployment/deploy.py</code> to Agent Runtime.</p></div>
     </div>
   </section>

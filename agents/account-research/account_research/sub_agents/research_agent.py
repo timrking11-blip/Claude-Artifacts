@@ -3,7 +3,7 @@
 from google.adk.agents import Agent
 from google.adk.tools.agent_tool import AgentTool
 
-from .. import MODEL
+from .. import GENERATE_CONFIG, MODEL
 from ..shared_libraries.callbacks import rate_limit_callback
 from ..tools.fetch_page import fetch_page_tool
 from ..tools.ledger import assess_ledger_quality_tool, list_account_contacts_tool
@@ -30,5 +30,6 @@ ResearchAgent = Agent(
         # ACCOUNT_RESEARCH_ENABLE_MCP=1 and credentials are available.
         *google_cloud_toolsets(),
     ],
+    generate_content_config=GENERATE_CONFIG,
     before_model_callback=rate_limit_callback,
 )

@@ -12,7 +12,7 @@ what the company does, and whom to approach first.
 | Interaction | Workflow — one question (which account), then it runs |
 | Agents | `root_agent` → `research_agent` → `analysis_agent`, plus `summarize_page_agent` as a tool |
 | Data | `data/master/contacts.json` (the committed ledger), the company's website, optionally BigQuery and Agent Registry via MCP |
-| Model | Gemini on Vertex AI (`GOOGLE_GENAI_MODEL`, default `gemini-2.5-flash`) |
+| Model | **Claude on Vertex AI** by default (`claude-fable-5-1`; ADK's `Claude` wrapper over `AnthropicVertex`), or Gemini with `ACCOUNT_RESEARCH_MODEL_PROVIDER=gemini` |
 
 **Composition diagram:** https://claude.ai/artifact/54uStUBsF87tb9uyrhLCav
 (source: [`artifact/agent-composition.html`](../../artifact/agent-composition.html))
@@ -56,6 +56,35 @@ Application Default Credentials available (`gcloud auth application-default logi
 The agent then attaches the BigQuery and Agent Registry MCP servers for
 project `922106495655` as tools. With it off, the warehouse step is skipped
 and everything else works.
+
+## Claude on Vertex AI
+
+The agent runs on Claude by default, through ADK's `Claude` model wrapper --
+the same `AnthropicVertex(project_id, region)` client the Anthropic SDK
+documents, authenticated with Application Default Credentials.
+
+```bash
+gcloud auth application-default login          # once
+python scripts/claude_vertex_smoke.py          # one request; proves project, region, model and ADC
+```
+
+Before the first run, enable the Claude model in **Vertex AI → Model Garden**
+for the project. The smoke script's `NotFound` message is what you see when
+it isn't. Variables:
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `ACCOUNT_RESEARCH_MODEL_PROVIDER` | `claude` | `claude` or `gemini` |
+| `ACCOUNT_RESEARCH_CLAUDE_MODEL` | `claude-fable-5-1` | Bare first-party id; `claude-opus-5` is the drop-in alternative |
+| `ACCOUNT_RESEARCH_CLAUDE_EFFORT` | unset (`high`) | `low` … `max`; ADK's `AnthropicGenerateContentConfig` |
+| `ACCOUNT_RESEARCH_MAX_TOKENS` | `16000` | Output cap per model call |
+| `GOOGLE_CLOUD_LOCATION` | `global` | Claude accepts `global`; Gemini wants a region |
+
+Two things to know on Claude Fable 5.1: thinking is always on (ADK sends no
+`thinking` parameter, which is the correct configuration for it), and a safety
+decline comes back as `stop_reason: "refusal"`, which ADK maps to a `SAFETY`
+finish -- the run stops there, because Vertex has no server-side fallback
+model. Fable 5.1 also requires 30-day data retention on the org.
 
 ## Run
 

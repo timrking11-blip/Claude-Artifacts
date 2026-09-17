@@ -2,7 +2,7 @@
 
 from google.adk.agents import Agent
 
-from .. import MODEL
+from .. import GENERATE_CONFIG, MODEL
 from ..shared_libraries.callbacks import rate_limit_callback
 from . import analysis_agent_prompt
 
@@ -11,5 +11,6 @@ AnalysisAgent = Agent(
     name="analysis_agent",
     description="Write the account brief from the gathered research.",
     instruction=analysis_agent_prompt.PROMPT,
+    generate_content_config=GENERATE_CONFIG,
     before_model_callback=rate_limit_callback,
 )

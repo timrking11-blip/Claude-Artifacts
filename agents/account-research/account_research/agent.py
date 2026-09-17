@@ -5,7 +5,7 @@ import warnings
 
 from google.adk.agents import Agent
 
-from . import MODEL, root_agent_prompt
+from . import GENERATE_CONFIG, MODEL, model_name, root_agent_prompt
 from .shared_libraries.callbacks import rate_limit_callback
 from .sub_agents.analysis_agent import AnalysisAgent
 from .sub_agents.research_agent import ResearchAgent
@@ -15,7 +15,7 @@ from .tools.store_state import store_state_tool
 warnings.filterwarnings("ignore", category=UserWarning, module=".*pydantic.*")
 
 logger = logging.getLogger(__name__)
-logger.debug("Using MODEL: %s", MODEL)
+logger.debug("Using MODEL: %s", model_name())
 
 root_agent = Agent(
     model=MODEL,
@@ -30,5 +30,6 @@ root_agent = Agent(
         ResearchAgent,
         AnalysisAgent,
     ],
+    generate_content_config=GENERATE_CONFIG,
     before_model_callback=rate_limit_callback,
 )
