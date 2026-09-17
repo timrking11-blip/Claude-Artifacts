@@ -127,6 +127,17 @@ Both servers use **OAuth**. `.mcp.json` deliberately carries no
 `Authorization` header: setting one disables the OAuth flow, and the REST
 API key in `crm/config.py` is not a token for the MCP endpoint anyway.
 
+### ADK documentation
+
+[`adk-docs`](https://github.com/langchain-ai/mcpdoc) serves
+[adk.dev/llms.txt](https://adk.dev/llms.txt) over stdio, for working on the
+agents under [`python/agents/`](python/agents/). It needs no credentials —
+only `uvx` (ships with [uv](https://docs.astral.sh/uv/)) on your PATH.
+
+The `--with mcp<2` pin in its `args` is required, not cosmetic: `mcpdoc`
+imports `mcp.server.fastmcp`, which `mcp` 2.x removed (renamed `MCPServer`),
+so without the pin `uvx` resolves 2.x and the server exits on import.
+
 ### Authorizing the MCP servers
 
 `/mcp enable`, `disable` and `reconnect` never authenticate — they only

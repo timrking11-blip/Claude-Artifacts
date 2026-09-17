@@ -23,7 +23,12 @@
     "`gcloud auth application-default print-access-token` (1h lifetime). These",
     "two entries only connect from a local session with gcloud installed.",
     "Agent Platform is split into toolsets, one path each; /mcp/generate is the",
-    "documented one. Add more as gcp-agent-platform-<toolset> on the same pattern."
+    "documented one. Add more as gcp-agent-platform-<toolset> on the same pattern.",
+    "",
+    "adk-docs serves the Agent Development Kit docs (adk.dev/llms.txt) over",
+    "stdio via mcpdoc, for the ADK agents under python/agents/. No credentials",
+    "and no OAuth -- it just needs uvx (ships with uv) on PATH. The 'mcp<2' pin",
+    "is load-bearing: mcpdoc imports mcp.server.fastmcp, which mcp 2.x removed."
   ],
   "mcpServers": {
     "explorium-docs": {
@@ -57,6 +62,21 @@
         "Authorization": "Bearer ${GCP_MCP_ACCESS_TOKEN}",
         "x-goog-user-project": "${GCP_PROJECT:-922106495655}"
       }
+    },
+    "adk-docs": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "mcpdoc",
+        "--with",
+        "mcp<2",
+        "mcpdoc",
+        "--urls",
+        "AgentDevelopmentKit:https://adk.dev/llms.txt",
+        "--transport",
+        "stdio"
+      ]
     }
   }
 }
