@@ -26,6 +26,16 @@ HOST = os.getenv("HOST", "0.0.0.0")
 TRACE_TO_CLOUD = os.getenv("ACCOUNT_RESEARCH_TRACE_TO_CLOUD", "0").strip().lower() in ("1", "true", "yes")
 OTEL_TO_CLOUD = os.getenv("ACCOUNT_RESEARCH_OTEL_TO_CLOUD", "0").strip().lower() in ("1", "true", "yes")
 
+if TRACE_TO_CLOUD or OTEL_TO_CLOUD:
+    try:  # ADK imports this lazily, deep in get_fast_api_app
+        import opentelemetry.exporter.cloud_trace  # noqa: F401
+    except ImportError:
+        raise SystemExit(
+            "Tracing is enabled but the Cloud Trace exporter is not installed.\n"
+            "  uv sync --extra trace      (or: pip install opentelemetry-exporter-gcp-trace)\n"
+            "Or unset ACCOUNT_RESEARCH_TRACE_TO_CLOUD / ACCOUNT_RESEARCH_OTEL_TO_CLOUD."
+        ) from None
+
 app = get_fast_api_app(
     agents_dir=AGENTS_DIR,
     trace_to_cloud=TRACE_TO_CLOUD,

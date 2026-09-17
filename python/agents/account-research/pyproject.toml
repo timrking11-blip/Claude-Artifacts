@@ -20,6 +20,9 @@ dev = ["pytest>=8.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+# Needed only when ACCOUNT_RESEARCH_TRACE_TO_CLOUD / _OTEL_TO_CLOUD /
+# _ENABLE_TRACING are on: `uv sync --extra trace`.
+trace = ["opentelemetry-exporter-gcp-trace>=1.9"]
 
 [build-system]
 requires = ["setuptools>=68"]
