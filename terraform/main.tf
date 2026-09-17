@@ -6,14 +6,17 @@
 # in the `enable_logging_command` output to point Vertex at this dataset.
 
 terraform {
-  required_version = ">= 1.9"
+  # Exact pin, because a `cloud` block runs plan/apply REMOTELY: this has to
+  # match the workspace's Terraform Version setting in HCP as well as the
+  # local CLI, or the run errors before it plans. Loosen to `~> 1.16` if that
+  # coupling gets in the way.
+  required_version = "1.16.3"
 
   cloud {
-    # The HCP Terraform organization that owns the workspace below.
-    organization = "REPLACE_WITH_HCP_ORG"
+    organization = "strategic-market-insights-crm"
 
     workspaces {
-      name = "strategic-market-insights-crm"
+      name = "strategic-insights-crm-terminal-cl"
     }
   }
 

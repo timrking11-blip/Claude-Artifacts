@@ -1,8 +1,9 @@
 # terraform/
 
 Creates the BigQuery dataset that Vertex writes Claude request/response logs
-into, managed in **HCP Terraform** (workspace
-`strategic-market-insights-crm`), authenticated to Google Cloud with
+into, managed in **HCP Terraform** — organization
+`strategic-market-insights-crm`, workspace
+`strategic-insights-crm-terminal-cl` — authenticated to Google Cloud with
 **workload identity federation** — no service account keys anywhere.
 
 It deliberately does **not** configure the logging itself. That is
@@ -14,12 +15,16 @@ command.
 
 ## One-time setup
 
-### 1. Fill in the organization
+### Which workspace this targets
 
-`main.tf` ships `organization = "REPLACE_WITH_HCP_ORG"`. Set it to your HCP
-Terraform organization name. The workspace name is already correct.
+Both names are already set in the `cloud` block of `main.tf` — organization
+`strategic-market-insights-crm`, workspace
+`strategic-insights-crm-terminal-cl`. They are easy to mix up: the
+organization is the `/app/<name>/` segment of the app.terraform.io URL, and
+`org-…` is its External ID, which the `cloud` block does **not** take. Point
+this root somewhere else by editing those two strings and nothing else.
 
-### 2. Workload identity federation, on the GCP side
+### 1. Workload identity federation, on the GCP side
 
 This part is console/`gcloud` work rather than code: bootstrapping the pool
 with Terraform would need the credentials that the pool exists to grant.
@@ -32,21 +37,23 @@ with Terraform would need the credentials that the pool exists to grant.
    `attribute.terraform_organization_name = assertion.terraform_organization_name`.
 3. Add an **attribute condition** pinning it to this organization *and*
    workspace, so no other workspace can assume the identity — e.g.
-   `assertion.terraform_organization_name == "<your org>" && assertion.terraform_workspace_name == "strategic-market-insights-crm"`.
+   `assertion.terraform_organization_name == "strategic-market-insights-crm" && assertion.terraform_workspace_name == "strategic-insights-crm-terminal-cl"`.
+   Get this wrong and it fails *closed*: the run dies in token exchange, with
+   a credentials error rather than a Terraform one.
 4. Create a service account for the runs and grant it what this root needs
    (BigQuery dataset creation and IAM on the project; `roles/bigquery.admin`
    is the blunt version — narrow it if you prefer).
 5. Bind the pool principal to that service account with
    `roles/iam.workloadIdentityUser`.
 
-### 3. Workspace environment variables
+### 2. Workspace environment variables
 
 In the workspace, as **environment** variables (not Terraform variables):
 
 | Variable | Value |
 |---|---|
 | `TFC_GCP_PROVIDER_AUTH` | `true` |
-| `TFC_GCP_RUN_SERVICE_ACCOUNT_EMAIL` | the service account from step 2.4 |
+| `TFC_GCP_RUN_SERVICE_ACCOUNT_EMAIL` | the service account from step 1.4 |
 | `TFC_GCP_WORKLOAD_PROVIDER_NAME` | `projects/<PROJECT_NUMBER>/locations/global/workloadIdentityPools/<POOL>/providers/<PROVIDER>` |
 
 Do **not** set `GOOGLE_CREDENTIALS` or `GOOGLE_APPLICATION_CREDENTIALS` in
@@ -93,8 +100,15 @@ drop the `terraform/.terraform.lock.hcl` line from `.gitignore`.
 
 ## Verified
 
-`terraform fmt` is clean and `terraform validate` passes against the real
-`hashicorp/google` 6.50.0 schema (provider fetched from releases.hashicorp.com
-into a local mirror, since the registry is unreachable from there).
-`init`/`plan` against HCP Terraform were **not** run — they need the
-organization name and credentials that belong on your machine.
+Under **Terraform v1.16.3** — the version `required_version` pins, fetched
+from releases.hashicorp.com to check the pin names a real release —
+`terraform fmt -check` is clean and `terraform validate` passes against the
+real `hashicorp/google` 6.50.0 schema. The provider comes from a local
+filesystem mirror because `registry.terraform.io` is unreachable from the
+environment this was authored in.
+
+`init`/`plan` against HCP Terraform were **not** run: they need credentials
+that belong on your machine, and nowhere else. On the first `plan`, expect
+**2 to add, 0 to change, 0 to destroy**. If it shows anything more, stop —
+`strategic-insights-crm-terminal-cl` is holding state for something else,
+and applying would act on it.
