@@ -6,3 +6,10 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .env
+
+# Agent packages
+agents/**/.env
+agents/**/.venv/
+agents/**/deployment/*.whl
+agents/**/dist/
+agents/**/*.egg-info/

@@ -98,6 +98,13 @@ python scripts/import_artifact_edits.py dump
 The artifact database holds at most 5,000 documents. Past that, split the
 ledger by list or region.
 
+## Agents
+
+[`agents/account-research/`](agents/account-research/) — a Google ADK
+multi-agent workflow, modelled on Google's `fomc-research` sample, that writes
+an account brief for any company in the master ledger. See its README for
+setup, running with `adk run` / `adk web`, and deployment to Agent Runtime.
+
 ## MCP servers
 
 [`.mcp.json`](.mcp.json) registers two Explorium servers for Claude Code.
