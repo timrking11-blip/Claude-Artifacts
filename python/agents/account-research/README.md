@@ -69,6 +69,22 @@ gcloud auth application-default login          # once
 python scripts/claude_vertex_smoke.py          # one request; proves project, region, model and ADC
 ```
 
+Google's ADC helper is an alternative to the first line and does a little
+more -- it installs the SDK if missing, sets the ADC *quota project* (which
+is also what the `x-goog-user-project` header on the repo's Google MCP
+servers needs), and sends a test request:
+
+```bash
+bash <(curl -sSL https://storage.googleapis.com/cloud-samples-data/adc/setup_adc.sh)
+```
+
+Note what it does **not** prove: its test request goes to a *Gemini* model
+(`publishers/google/models/<gemini>:generateContent`). Claude on Vertex is
+licensed separately, so a green run there says nothing about Claude access.
+`scripts/claude_vertex_smoke.py` is the Claude gate -- run it second. The
+Project **ID** the helper asks for is the same value `.env` needs for
+`GOOGLE_CLOUD_PROJECT`.
+
 Before the first run, enable the Claude model in **Vertex AI → Model Garden**
 for the project. The smoke script's `NotFound` message is what you see when
 it isn't. Variables:
