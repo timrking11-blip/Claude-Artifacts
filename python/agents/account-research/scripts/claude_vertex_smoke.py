@@ -11,6 +11,7 @@ Auth is Application Default Credentials: `gcloud auth application-default login`
 import os
 import sys
 
+import anthropic
 from anthropic import (
     AnthropicVertex,
     APIConnectionError,
@@ -43,6 +44,7 @@ def main() -> int:
     region = os.getenv("GOOGLE_CLOUD_LOCATION", "global")
 
     print(f"project={project} region={region} model={MODEL}")
+    print(f"anthropic {anthropic.__version__} | python {sys.executable}")
 
     try:
         client = AnthropicVertex(project_id=project, region=region)
@@ -81,7 +83,7 @@ def main() -> int:
     # Fable 5.1 can decline a request with HTTP 200 and stop_reason "refusal";
     # check it before reading content. Vertex has no server-side fallbacks.
     if message.stop_reason == "refusal":
-        details = message.stop_details
+        details = getattr(message, "stop_details", None)
         print(f"Refused ({details.category if details else 'no category'}): "
               f"{details.explanation if details else ''}", file=sys.stderr)
         return 1
