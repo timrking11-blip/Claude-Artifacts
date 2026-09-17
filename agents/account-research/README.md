@@ -59,7 +59,8 @@ and everything else works.
 
 ## Claude on Vertex AI
 
-The agent runs on Claude by default, through ADK's `Claude` model wrapper --
+The provider is chosen in `account_research/model.py` (the tools never import
+it, so they stay ADK-free). The agent runs on Claude by default, through ADK's `Claude` model wrapper --
 the same `AnthropicVertex(project_id, region)` client the Anthropic SDK
 documents, authenticated with Application Default Credentials.
 

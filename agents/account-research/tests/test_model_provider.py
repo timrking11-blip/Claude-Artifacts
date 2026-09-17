@@ -1,4 +1,4 @@
-"""The provider switch in account_research/__init__.py."""
+"""The provider switch in account_research/model.py."""
 
 import importlib
 import sys
@@ -13,8 +13,8 @@ def _reload(monkeypatch, provider, **env):
     monkeypatch.setenv("ACCOUNT_RESEARCH_MODEL_PROVIDER", provider)
     for k, v in env.items():
         monkeypatch.setenv(k, v)
-    sys.modules.pop("account_research", None)
-    return importlib.import_module("account_research")
+    sys.modules.pop("account_research.model", None)
+    return importlib.import_module("account_research.model")
 
 
 def test_gemini_provider_is_a_plain_model_name(monkeypatch):

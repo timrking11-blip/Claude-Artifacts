@@ -5,7 +5,8 @@ import warnings
 
 from google.adk.agents import Agent
 
-from . import GENERATE_CONFIG, MODEL, model_name, root_agent_prompt
+from . import root_agent_prompt
+from .model import GENERATE_CONFIG, MODEL, model_name
 from .shared_libraries.callbacks import rate_limit_callback
 from .sub_agents.analysis_agent import AnalysisAgent
 from .sub_agents.research_agent import ResearchAgent

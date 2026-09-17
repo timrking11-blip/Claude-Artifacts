@@ -2,7 +2,7 @@
 
 from google.adk.agents import Agent
 
-from .. import GENERATE_CONFIG, MODEL
+from ..model import GENERATE_CONFIG, MODEL
 from ..shared_libraries.callbacks import rate_limit_callback
 from . import analysis_agent_prompt
 
