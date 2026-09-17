@@ -18,6 +18,9 @@ on:
   push:
     paths:
       - "terraform/**"
+      # Documentation changes cannot affect a plan, and a run that tells you
+      # nothing still costs a red check while the setup is incomplete.
+      - "!terraform/**.md"
       - ".github/workflows/terraform-plan.yml"
 
 permissions:
