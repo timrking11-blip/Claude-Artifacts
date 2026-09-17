@@ -118,9 +118,14 @@ jobs:
         run: |
           api() { curl -sS -H "Authorization: Bearer $TF_API_TOKEN" -H "Content-Type: application/vnd.api+json" "$1"; }
           base=https://app.terraform.io/api/v2
-          ws=$(api "$base/organizations/$TF_CLOUD_ORGANIZATION/workspaces/$TF_WORKSPACE" | jq -r '.data.id // empty')
+          info=$(api "$base/organizations/$TF_CLOUD_ORGANIZATION/workspaces/$TF_WORKSPACE")
+          ws=$(echo "$info" | jq -r '.data.id // empty')
           if [ -z "$ws" ]; then echo "::error::Could not resolve the workspace via the API."; exit 1; fi
           echo "workspace id: $ws"
+          # execution-mode decides whether workspace variables are injected at
+          # all: "remote" runs the plan on HCP with them; "local" only stores
+          # state, runs the plan here, and injects nothing.
+          echo "$info" | jq -r '"execution-mode: \(.data.attributes["execution-mode"])   terraform-version: \(.data.attributes["terraform-version"])   vcs: \(if .data.attributes["vcs-repo"] then "connected" else "none" end)"'
           echo
           echo "--- variables on the workspace (keys and categories only) ---"
           api "$base/workspaces/$ws/vars" | jq -r '(.data // []) | if length == 0 then "  (none)" else .[] | "  \(.attributes.key)\t category=\(.attributes.category)\t sensitive=\(.attributes.sensitive)" end'
