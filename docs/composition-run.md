@@ -25,12 +25,12 @@ press Run ──► db  runs/<run_id> = {manifest, status: queued}
                                    2 summarise page (when our fetch got it)
                                    scripts/compose_account.py brief        ──► proposal_prompt.md, research filled in
                                    3 draft the SMI proposal (ValueFirst "Why now" section required)
-                                   scripts/compose_account.py finalize     ──► data/proposals/<slug>-<date>.{json,md}
+                                   scripts/compose_account.py finalize     ──► data/proposals/<slug>-<date>-<run_id>.{json,md}
                                    ArtifactData batch: ONE merged note into the CRM record's pre-qual
-                                     phase — proposal · founder note · research coverage · sync schedule
-                                   ArtifactData update runs/<id> ◄── run_final.json (founder note, proposal, ids)
+                                     phase — proposal · note to the founder · review · research coverage · sync schedule
+                                   ArtifactData update runs/<id> ◄── run_final.json (review, note to the founder, proposal, ids)
                                    git commit data/runs/<id> + data/proposals · push
-page renders live: sequence lamps · note to the founder · proposal · CRM ids
+page renders live: sequence lamps · review · note to the founder · proposal (Download PDF) · CRM ids
 ```
 
 The CRM refresh is unchanged: the Monday chain (06:00 UTC Action merge →
@@ -71,7 +71,7 @@ past it.
 - **Empty means empty.** When no source finds anything on the intake domain,
   the proposal is a not-found note: it must say "not found", may cite only
   that domain and primary macro sources (.gov, Federal Reserve banks,
-  BIS/IMF/OECD), and the founder note carries a HOLD to confirm the domain.
+  BIS/IMF/OECD), and the review carries a HOLD to confirm the domain.
 - **One proposal per run.** A filed run cannot be re-finalized; a changed
   proposal is a new run started on the intake page, so every CRM note traces
   to one form submission.
@@ -83,7 +83,7 @@ past it.
 
 1. **Intake** — request, account, options, disposition; press Run.
 2. **Gate and ledger** — `prepare`: find_account, contacts, ledger quality,
-   our own fetch of the site, warehouse sentinel, founder criteria.
+   our own fetch of the site, warehouse sentinel, review criteria.
 3. **Data sources** — the session pulls Apollo (organization enrich, people at
    the domain) and Vibe Prospecting (business match, firmographics, events),
    surfacing any credit cost first, and records each source's outcome in
@@ -94,8 +94,8 @@ past it.
 5. **Brief and draft** — `brief` fills the SMI proposal prompt; the session
    drafts it, including the ValueFirst **Why now** section.
 6. **File and note** — `finalize` validates, files the proposal, and plans one
-   merged note for the CRM record: the proposal, the founder note, research
-   coverage per source, and the Apollo / CRM sync schedule for the record.
+   merged note for the CRM record: the proposal, the note to the founder, the
+   review, research coverage per source, and the Apollo / CRM sync schedule for the record.
    `pre_qual` is set on the record; `stage` is never touched.
 7. **Sync** — the Monday chain carries the record on: 06:00 UTC merge into the
    data layer, 11:00 Apollo ⇄ CRM (uploads `pending_apollo` accounts and
@@ -113,9 +113,9 @@ a source link and an evidence tag -- `[supported]`, `[needs stipulation]`,
 `web_research.md` plus `web_sources.txt`; `brief` stores both in the run state.
 It runs even when our own page fetch failed: a site that blocks plain HTTP
 fetchers is often still readable from the search side. A run whose research
-found nothing gets a Note in the founder note. Any data source that came back
+found nothing gets a Note in the review. Any data source that came back
 empty or errored (no credits, plan refusal, host blocked by the environment's
-network policy) also becomes a Note, so the founder sees what the proposal
+network policy) also becomes a Note, so the sender sees what the proposal
 was and was not built on.
 
 ## The proposal
@@ -135,28 +135,60 @@ sources -- the same checks as the agent's `write_proposal` tool.
 
 | Step | On the page | In the run |
 |---|---|---|
-| 00 LinkedIn request | request text (required), post URL, requester | `request_text` for the composer; the founder note reads it for pricing asks |
+| 00 LinkedIn request | request text (required), post URL, founder (the requester) and their LinkedIn | `request_text` for the composer; `request.founder` (also written as `request.requester`) is who the proposal's next step and the note to the founder address; the review reads the request for pricing asks |
 | 01 Precondition | account name / domain / existing CRM id, LinkedIn-source tick (`state.account.source`, `crm.pre_qual`); an account not in the ledger is researched as a prospect | `find_account` against `data/master/contacts.json`; an unknown account still runs, with a Note |
-| 02 Optional state | include/skip + settings, as before | opt-outs are recorded in the manifest and the founder note |
+| 02 Optional state | include/skip + settings, as before | opt-outs are recorded in the manifest and the review |
 | 03 Disposition | apollo / manual | `manual` mints `crm_<date>_<rand>` with `pending_apollo`; `apollo` gets a HOLD only if `meta/config.account_lists` is empty at run time |
 | 04 Run | **Run composition** | writes `runs/<id>` in the page's database, fires the routine; the sequence lamps follow `steps` live |
-| 05 Result | note to the founder, proposal, CRM ids, run history | rendered from `runs/<id>` via `onSnapshot` |
+| 05 Result | review before sending, note to the founder (Copy note), proposal with **Download PDF** and Copy proposal, CRM ids, run history | rendered from `runs/<id>` via `onSnapshot` |
 | 06 By hand | the old copy-manifest path | only when the connector is not available in that view |
 
 Per-viewer drafts stay in the browser (`localStorage`). Run records are
 shared (`db` capability); Claude reads and updates them with `ArtifactData`
 against the intake artifact URL.
 
-## The note to the founder
+## Founder = requester
 
-Computed by `crm/founder_note.py` from the manifest, the run state and the
-CRM dump; tested criterion by criterion in `tests/test_founder_note.py`.
+Small startups are the ICP, so the person who sends the request is the
+founder. The intake form's founder field is the requester: the manifest
+carries it as `request.founder` and, for older readers, `request.requester`
+(`crm/note_to_founder.py founder_of` reads either). Two things are addressed
+to them:
 
-**HOLD** — the proposal is drafted and filed, the run ends `needs_founder`,
+- the proposal's **Next step**, by first name (the prompt's `FOUNDER` slot);
+- the **note to the founder** (`crm/note_to_founder.py`, tested in
+  `tests/test_note_to_founder.py`): a cover note of at most 170 words that
+  goes with the proposal. It says plainly when nothing public was found about
+  the company and asks for what would sharpen the draft, answers a pricing
+  ask with "we scope before we quote", and carries any `--founder-line` the
+  composer adds at finalize (a scope limit, what to send us). It never
+  mentions money and never carries internal review items.
+
+Neither is ever invented: no founder on the form, no name in either.
+
+## Download PDF
+
+Under **Proposal as drafted**, the Intake page's **Download PDF** button lays
+the proposal out on US Letter pages in the browser (jsPDF 2.5.1 from cdnjs,
+jsDelivr as fallback; Helvetica): the brand eyebrow, the account as the title,
+"Prepared for <founder>, <account>", the date and the proposal id, section
+rules, the "What we heard" table with its header repeated across pages, live
+source links, muted evidence tags, and page numbers. The page offers the file
+through the `downloads` capability, so the viewer confirms the save. The
+button is hidden where downloads are unavailable and disabled for voided
+runs. The review and the note to the founder are not in the PDF.
+
+## Review before sending
+
+Computed by `crm/review.py` from the manifest, the run state and the CRM
+dump; tested criterion by criterion in `tests/test_review.py`. It is for the
+sender, never the founder.
+
+**HOLD** — the proposal is drafted and filed, the run ends `needs_review`,
 `proposal_status` stays `drafted`, nothing goes out:
 
 1. The request talks about money, rates, budget, retainer, hourly, pricing or
-   a quote. No market rates are set; the founder decides what to say.
+   a quote. No market rates are set; decide what to say before sending.
 2. A matched CRM contact already carries a `proposal_ref` (a repeat).
 3. A matched contact is flagged `disqualified` or `removed_from_list`.
 4. A matched contact is at stage `meeting`, `proposal` or `won` (open deal).
@@ -177,11 +209,14 @@ CRM dump; tested criterion by criterion in `tests/test_founder_note.py`.
     or every ledger contact older than 90 days.
 11. Website fetch failed; web research found no sources; warehouse findings
     are the sentinel.
-12. Keys opted out at intake.
+12. Keys opted out at intake; no founder named on the intake form.
 
-The note is stored in the proposal record (`founder_note`), printed under the
-proposal in the contact's CRM notes (`Founder note:` block), shown on the
-page, and written to `data/runs/<id>/founder.json`.
+The review is stored in the proposal record (`review`), printed in the
+merged CRM note after the note to the founder (`Review before sending:`
+block), shown on the page, and written to `data/runs/<id>/review.json`.
+Records and runs filed before the rename carry `founder_note` /
+`founder_status` / `needs_founder` and `founder.json`; the page, finalize and
+`push_proposals_to_crm.py` still read those.
 
 ## Files a run leaves behind
 
@@ -189,7 +224,7 @@ page, and written to `data/runs/<id>/founder.json`.
 data/runs/<run_id>/
   manifest.json        exactly what the page sent
   state.json           account, account_contacts, ledger_quality, website_summary, warehouse_findings
-  founder.json         holds, notes, text, matched_doc_ids
+  review.json          holds, notes, text, matched_doc_ids (the review before sending)
   prompts.md           the research brief and the page-summary prompt
   data_sources.md      Apollo and Vibe Prospecting findings; coverage.json per-source outcome
   web_research.md      the research memo; web_sources.txt its URLs
@@ -197,8 +232,8 @@ data/runs/<run_id>/
   proposal_prompt.md   the SMI proposal prompt with the research filled in (from `brief`)
   proposal.md          the draft as composed
   run_update.json      first page update (steps after the deterministic legs)
-  run_final.json       last page update (status, founder note, proposal, CRM ids)
-data/proposals/<slug>-<date>.json|md   the filed proposal (push_proposals_to_crm.py reads the JSON)
+  run_final.json       last page update (status, review, note to the founder, founder, proposal, CRM ids)
+data/proposals/<slug>-<date>-<run_id>.json|md   the filed proposal (push_proposals_to_crm.py reads the JSON)
 data/artifact/crm/compose_<run_id>/    the ArtifactData batch (gitignored)
 ```
 
@@ -215,7 +250,7 @@ python3 scripts/compose_account.py brief <id> --web-research data/runs/<id>/web_
     --coverage data/runs/<id>/coverage.json [--website-summary data/runs/<id>/website_summary.txt]
 # answer data/runs/<id>/proposal_prompt.md → proposal.md
 python3 scripts/compose_account.py finalize <id> --proposal data/runs/<id>/proposal.md \
-    --website-summary data/runs/<id>/website_summary.txt --crm-dump <dump> [--composer-flag "…"]
+    --website-summary data/runs/<id>/website_summary.txt --crm-dump <dump> [--composer-flag "…"] [--founder-line "…"]
 # then ArtifactData batch with data/artifact/crm/compose_<id>/writes.json
 ```
 

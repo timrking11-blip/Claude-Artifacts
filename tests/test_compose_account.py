@@ -142,7 +142,7 @@ def test_prepare_runs_ledger_legs_and_respects_limit(ledger, dump):
     assert steps["compose_proposal"] == "pending" and steps["crm_write"] == "pending"
     assert steps["web_research"] == "pending", "the crawler runs even when our own fetch failed"
     assert s["request_id"] == "run_t" and s["lead_source"] == ""
-    assert r["founder"].matched_doc_ids == ["ap_ada"]
+    assert r["review"].matched_doc_ids == ["ap_ada"]
     assert r["halted"] is False
 
 
@@ -155,8 +155,8 @@ def test_prepare_unknown_account_proceeds_with_a_note(ledger, dump):
                                      "employee_count": None, "in_ledger": False, "prospect": True,
                                      "crm_account_id": None}
     assert r["steps"]["list_account_contacts"] == "empty"
-    assert any("not in the enriched data layer" in n for n in r["founder"].notes)
-    assert any("No CRM contact matched" in n for n in r["founder"].notes)
+    assert any("not in the enriched data layer" in n for n in r["review"].notes)
+    assert any("No CRM contact matched" in n for n in r["review"].notes)
 
 
 def test_prepare_halt_on_fetch_error(ledger, dump):
@@ -174,15 +174,15 @@ def test_prepare_honours_opt_outs(ledger, dump):
     r = compose.prepare(m, "run_t", compose.load_crm_dump(dump), NOW, fetch=False)
     assert {r["steps"][k] for k in ("list_account_contacts", "assess_ledger_quality", "fetch_page", "warehouse_findings")} == {"skipped"}
     assert "warehouse_findings" not in r["state"]
-    assert r["founder"].matched_doc_ids == ["ap_ada"], "domain fallback still finds the contact"
-    assert any("Opted out at intake" in n for n in r["founder"].notes)
+    assert r["review"].matched_doc_ids == ["ap_ada"], "domain fallback still finds the contact"
+    assert any("Opted out at intake" in n for n in r["review"].notes)
 
 
 def test_write_prepare_emits_prompts_and_run_update(ledger, dump, tmp_path):
     r = compose.prepare(manifest(), "run_t", compose.load_crm_dump(dump), NOW, fetch=False)
     run_dir = tmp_path / "runs" / "run_t"
     compose.write_prepare(run_dir, manifest(), r, "run_t", NOW)
-    assert {p.name for p in run_dir.iterdir()} == {"manifest.json", "state.json", "founder.json", "prompts.md", "run_update.json"}
+    assert {p.name for p in run_dir.iterdir()} == {"manifest.json", "state.json", "review.json", "prompts.md", "run_update.json"}
     prompts = (run_dir / "prompts.md").read_text()
     assert "research desk" in prompts and "Website: https://example.com" in prompts, "crawler brief is prompt 1"
     assert "skip this leg" in prompts, "no page fetched -> summariser leg skipped"
@@ -231,15 +231,16 @@ def test_finalize_plans_contact_note_and_mints_account(ledger, dump, tmp_path):
     res = compose.finalize(run_dir, PROPOSAL, "Example Co makes examples.", ["Deadline is unrealistic"], master, docs, {}, NOW)
     rec = res["record"]
     assert rec["proposal_id"].startswith("prq_") and rec["run_id"] == "run_t"
-    assert rec["founder_note"]["status"] == "needs_founder"
-    assert rec["founder_note"]["holds"] == ["Composer: Deadline is unrealistic"]
+    assert rec["review"]["status"] == "needs_review"
+    assert rec["review"]["holds"] == ["Composer: Deadline is unrealistic"]
     assert rec["request"]["source_url"] == "https://linkedin.example/post/1"
     assert res["state"]["website_summary"] == "Example Co makes examples."
 
     contact, account = res["writes"]
     assert contact["collection"] == "contacts" and contact["doc_id"] == "ap_ada" and contact["if_version"] == 4
     assert contact["data"]["notes"].startswith("hand-written\n\n--- Prequalification proposal")
-    assert "Founder note:\nHOLD — Composer: Deadline is unrealistic" in contact["data"]["notes"]
+    assert "Review before sending:\nHOLD — Composer: Deadline is unrealistic" in contact["data"]["notes"]
+    assert "Note to the founder:\nAda —" in contact["data"]["notes"], "the requester is the founder"
     assert contact["data"]["proposal_status"] == "drafted" and contact["data"]["proposal_ref"] == rec["proposal_id"]
     assert "stage" not in contact["data"]
 
@@ -277,7 +278,9 @@ def test_write_finalize_emits_batch_files_and_run_final(ledger, dump, tmp_path):
     docs, master = compose.load_crm_dump(dump), load_master(ledger)
     res = compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW)
     json_path, md_path = compose.write_proposal_files(res["record"], tmp_path / "proposals", NOW)
-    assert json_path.name == "example-co-2026-09-24-run_t.json" and "**Founder note**" in md_path.read_text()
+    md = md_path.read_text()
+    assert json_path.name == "example-co-2026-09-24-run_t.json"
+    assert md.index("**Note to the founder**") < md.index("**Review before sending**")
     writes_path = compose.write_finalize(run_dir, res, tmp_path / "batch", json_path, md_path, NOW)
     entries = json.loads(writes_path.read_text())
     assert [e["collection"] for e in entries] == ["contacts", "accounts"]
@@ -288,6 +291,8 @@ def test_write_finalize_emits_batch_files_and_run_final(ledger, dump, tmp_path):
     assert final["status"] == "done" and final["steps"]["compose_proposal"] == "done"
     assert final["crm"]["contact_ids"] == ["ap_ada"] and final["crm"]["writes_planned"] == 2
     assert final["proposal_markdown"].startswith("# Example Co -- Prequalification Proposal")
+    assert final["review_status"] == "done" and final["note_to_founder"].startswith("Ada —")
+    assert final["founder"]["name"] == "Ada Lovelace" and "founder_note" not in final
 
 
 def test_cli_prepare_then_finalize(ledger, dump, tmp_path):
@@ -333,12 +338,16 @@ def test_linkedin_prospect_gets_the_proposal_on_its_account(ledger, dump, tmp_pa
     res = compose.finalize(run_dir, draft, None, [], load_master(ledger), compose.load_crm_dump(dump), {}, NOW)
     rec = res["record"]
     assert rec["lead_source"] == "linkedin" and rec["account"]["prospect"] is True
-    assert any("no sources" in n for n in rec["founder_note"]["notes"])
-    assert any("not-found note" in h for h in rec["founder_note"]["holds"])
+    assert any("no sources" in n for n in rec["review"]["notes"])
+    assert any("not-found note" in h for h in rec["review"]["holds"])
     assert [w["collection"] for w in res["writes"]] == ["accounts"], "no contacts -> the account only"
     d = res["writes"][0]["data"]
     assert d["source"] == "linkedin" and d["pre_qual"] is True and d["proposal_ref"] == rec["proposal_id"]
-    assert "## Engagement summary" in d["notes"] and "Founder note:" in d["notes"]
+    assert "## Engagement summary" in d["notes"]
+    order = [d["notes"].index(k) for k in ("## Engagement summary", "Note to the founder:", "Review before sending:",
+                                             "Research coverage:", "Sync schedule")]
+    assert order == sorted(order), "merged note: proposal, note to the founder, review, coverage, schedule"
+    assert "could not find public information about Brand New LLC" in rec["note_to_founder"]
     # The Monday catch-up sees proposal_ref on the account and does not add it again.
     push = compose.push_proposals_to_crm
     again, _ = push.plan([rec], load_master(ledger), compose.load_crm_dump(dump),
@@ -396,8 +405,8 @@ def test_empty_means_empty(ledger, dump, tmp_path):
     ok = ok.replace("## What we heard\nYou asked for help planning a second location.",
                     "## What we heard\nWhat the company does: not found.")
     res = compose.finalize(run_dir, ok, None, [], master, docs, {}, NOW)
-    assert any("not-found note" in h for h in res["record"]["founder_note"]["holds"])
-    assert res["record"]["founder_note"]["status"] == "needs_founder"
+    assert any("not-found note" in h for h in res["record"]["review"]["holds"])
+    assert res["record"]["review"]["status"] == "needs_review"
 
 
 def test_credit_spend_needs_the_intake_tick(ledger, dump, tmp_path):
@@ -416,3 +425,58 @@ def test_credit_spend_needs_the_intake_tick(ledger, dump, tmp_path):
     compose.brief(rd, "## Company\nExamples ([site](https://example.com/about)) [supported]", [], None,
                   coverage={"apollo": "ok: enriched (1 credit)"})
     assert compose.finalize(rd, PROPOSAL, None, [], master, docs, {}, NOW)["record"]["proposal_id"]
+
+
+# ---------- founder = requester ---------------------------------------------
+
+def test_the_requester_is_the_founder(ledger, dump, tmp_path):
+    run_dir = _prepared(ledger, dump, tmp_path)
+    state = json.loads((run_dir / "state.json").read_text())
+    assert state["founder"] == {"name": "Ada Lovelace", "linkedin_url": None}
+    assert json.loads((run_dir / "run_update.json").read_text())["founder"]["name"] == "Ada Lovelace"
+    assert "The founder is the requester: Ada Lovelace" in (run_dir / "prompts.md").read_text()
+    prompt = compose.brief(run_dir, "## Company\nExamples ([site](https://example.com/about)) [supported]", [], None)
+    assert "<FOUNDER>" in prompt and '"name": "Ada Lovelace"' in prompt and "{founder" not in prompt
+    docs, master = compose.load_crm_dump(dump), load_master(ledger)
+    res = compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW,
+                           founder_lines=["Send us the deck before the call"])
+    rec = res["record"]
+    assert rec["founder"]["name"] == "Ada Lovelace"
+    note = rec["note_to_founder"]
+    assert note.startswith("Ada —\n") and "Send us the deck before the call." in note
+    assert "HOLD" not in note and "CRM" not in note, "the internal review never reaches the founder"
+
+
+def test_explicit_founder_field_and_no_founder(ledger, dump, tmp_path):
+    m = manifest()
+    m["request"]["founder"] = {"name": "Grace Hopper", "linkedin_url": "https://www.linkedin.com/in/grace/"}
+    r = compose.prepare(m, "run_f", compose.load_crm_dump(dump), NOW, fetch=False)
+    assert r["state"]["founder"]["name"] == "Grace Hopper", "an explicit founder wins over requester"
+    m = manifest()
+    m["request"]["requester"] = {"name": None, "linkedin_url": None}
+    r = compose.prepare(m, "run_n", compose.load_crm_dump(dump), NOW, fetch=False)
+    assert "founder" not in r["state"]
+    assert any("No founder named" in n for n in r["review"].notes)
+
+
+def test_money_in_a_founder_line_is_refused(ledger, dump, tmp_path):
+    run_dir = _prepared(ledger, dump, tmp_path)
+    docs, master = compose.load_crm_dump(dump), load_master(ledger)
+    with pytest.raises(SystemExit):
+        compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW, founder_lines=["It costs $4,000"])
+
+
+def test_run_prepared_before_the_rename_still_finalizes(ledger, dump, tmp_path):
+    run_dir = _prepared(ledger, dump, tmp_path)
+    (run_dir / "review.json").rename(run_dir / "founder.json")
+    docs, master = compose.load_crm_dump(dump), load_master(ledger)
+    rec = compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW)["record"]
+    assert rec["review"]["status"] in ("done", "needs_review") and rec["note_to_founder"]
+
+
+def test_push_reads_records_filed_before_the_rename():
+    push = compose.push_proposals_to_crm
+    legacy = {"proposal_id": "prq_x", "proposal_markdown": "# P", "founder_note": {"text": "HOLD — old"}}
+    assert "Review before sending:\nHOLD — old" in push.note_block(legacy, "2026-09-24")
+    assert "Note to the founder" not in push.note_block(legacy, "2026-09-24")
+

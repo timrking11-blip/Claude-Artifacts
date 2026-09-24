@@ -12,8 +12,10 @@ proposal is for, it plans one `update` that:
   - fills proposal_scope from the request's first line when empty,
   - records proposal_ref = the proposal id, which is what makes a re-run a
     no-op for contacts that already carry this proposal,
-  - carries the founder note (crm/founder_note.py) under the proposal when the
-    record has one, so the extenuating criteria travel with the draft.
+  - carries the note to the founder (the requester; crm/note_to_founder.py)
+    and the review before sending (crm/review.py) under the proposal when the
+    record has them, so the cover note and the extenuating criteria travel
+    with the draft.
 
 Contacts are found by the Apollo ids the proposal file carries, then by the
 master contact ids it carries, then -- for a request that named a company
@@ -110,6 +112,20 @@ def first_line(text: str | None, limit: int = 120) -> str:
     return ""
 
 
+def note_block(p: dict[str, Any], date: str) -> str:
+    """The merged pre-qual note: proposal, note to the founder, review, coverage and sync schedule."""
+    block = NOTES_HEADER.format(date=date, pid=p["proposal_id"]) + "\n" + p["proposal_markdown"].strip()
+    if p.get("note_to_founder"):
+        block += "\n\nNote to the founder:\n" + str(p["note_to_founder"]).strip()
+    review = p.get("review") or p.get("founder_note")  # founder_note: records filed before the rename
+    text = review.get("text") if isinstance(review, dict) else review
+    if text:
+        block += "\n\nReview before sending:\n" + str(text).strip()
+    if p.get("notes_appendix"):
+        block += "\n\n" + str(p["notes_appendix"]).strip()
+    return block
+
+
 def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str, dict],
          now: str | None = None, accounts: dict[str, dict] | None = None,
          ) -> tuple[list[dict[str, Any]], list[str]]:
@@ -131,7 +147,7 @@ def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str,
                 acc = (accounts or {})[acc_id]
                 if acc.get("proposal_ref") == pid or pid in (acc.get("notes") or ""):
                     continue
-                block = NOTES_HEADER.format(date=date, pid=pid) + "\n" + p["proposal_markdown"].strip()
+                block = note_block(p, date)
                 existing = (acc.get("notes") or "").rstrip()
                 data = {
                     "notes": (existing + "\n\n" + block) if existing else block,
@@ -154,12 +170,7 @@ def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str,
             if doc.get("proposal_ref") == pid or pid in (doc.get("notes") or ""):
                 skipped += 1
                 continue
-            block = NOTES_HEADER.format(date=date, pid=pid) + "\n" + p["proposal_markdown"].strip()
-            founder = (p.get("founder_note") or {}).get("text") if isinstance(p.get("founder_note"), dict) else p.get("founder_note")
-            if founder:
-                block += "\n\nFounder note:\n" + str(founder).strip()
-            if p.get("notes_appendix"):
-                block += "\n\n" + str(p["notes_appendix"]).strip()
+            block = note_block(p, date)
             existing = (doc.get("notes") or "").rstrip()
             data: dict[str, Any] = {
                 "notes": (existing + "\n\n" + block) if existing else block,

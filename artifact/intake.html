@@ -1,8 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Linkedin RFP Request and Proposal Generation with Agentic AI</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
@@ -181,6 +176,8 @@
   .fnote .ln.n{color:var(--ink-2)}
   .fnote .ln.n b{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.08em;margin-right:8px}
   .fnote .ln.ok{color:var(--go)}
+  .ntf{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+  pre.prop.note{max-height:none;background:var(--surface);white-space:pre-wrap}
   .kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;font-size:13px;margin-top:12px}
   .kv dt{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding-top:2px}
   .kv dd{margin:0;word-break:break-word}
@@ -216,8 +213,6 @@
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
-</head>
-<body>
 <div class="wrap">
 
   <header class="mast">
@@ -228,7 +223,7 @@
       <span class="stamp">v2 · one button</span>
     </div>
     <h1>Account Composition Intake</h1>
-    <p class="lead">Paste the LinkedIn request, name the account, press <b>Run composition</b>. The research agents read the ledger, crawl the company's site and the open web, draft the SMI prequalification proposal and file it into the CRM (the contact's notes, or the account's for a new prospect); the note to the founder shows up below. This is the only way proposals are made. Nothing to copy into a terminal.</p>
+    <p class="lead">Paste the LinkedIn request, name the account, press <b>Run composition</b>. The research agents read the ledger, crawl the company's site and the open web, draft the SMI prequalification proposal and file it into the CRM (the contact's notes, or the account's for a new prospect); the review, the note to the founder and the proposal show up below, with a PDF to download. This is the only way proposals are made. Nothing to copy into a terminal.</p>
 
     <div class="gate" id="gate" data-ok="no">
       <div class="gate-msg">
@@ -261,6 +256,7 @@
         <b>This page can</b>
         <div class="cap" id="cap-db" data-on="no"><i></i>keep run records (db)</div>
         <div class="cap" id="cap-mcp" data-on="no"><i></i>fire the run (Claude Code Remote)</div>
+        <div class="cap" id="cap-dl" data-on="no"><i></i>save the proposal as a PDF</div>
       </div>
     </aside>
 
@@ -269,12 +265,12 @@
       <!-- 00 -->
       <section class="step" id="s0">
         <div class="step-head"><span class="step-num">00</span><h3>LinkedIn request</h3></div>
-        <p class="step-desc">The live request you are answering. This becomes <code>request_text</code> — the prequal composer restates it, and the founder note reads it for pricing asks.</p>
+        <p class="step-desc">The live request you are answering. This becomes <code>request_text</code>: the prequal composer restates it and addresses its next step to the founder, and the review reads it for pricing asks. Small startups are the ICP, so the person who asked is the founder.</p>
         <div class="card required" id="cardRequest" data-filled="no">
           <div class="card-top">
             <div class="card-id">
               <div class="kname">request</div>
-              <div class="kmeta">read by <em>prequal composer</em>, <em>founder note</em> · stored with the proposal</div>
+              <div class="kmeta">read by <em>prequal composer</em>, <em>note to the founder</em>, <em>review</em> · stored with the proposal</div>
             </div>
             <span class="chip hold" id="c-request-2">required</span>
           </div>
@@ -288,12 +284,12 @@
               <input type="text" id="reqUrl" placeholder="https://www.linkedin.com/…" autocomplete="off">
             </div>
             <div class="field">
-              <label for="reqName">Requester <span class="hint">name as shown</span></label>
+              <label for="reqName">Founder (requester) <span class="hint">name as shown</span></label>
               <input type="text" id="reqName" placeholder="Jane Doe" autocomplete="off">
             </div>
           </div>
           <div class="field">
-            <label for="reqLinkedin">Requester LinkedIn profile</label>
+            <label for="reqLinkedin">Founder's LinkedIn profile</label>
             <input type="text" id="reqLinkedin" placeholder="https://linkedin.com/in/…" autocomplete="off">
           </div>
         </div>
@@ -302,7 +298,7 @@
       <!-- 01 -->
       <section class="step" id="s1">
         <div class="step-head"><span class="step-num">01</span><h3>Precondition</h3></div>
-        <p class="step-desc">Resolved by <code>find_account</code> against the enriched data layer. An account that is not there still runs — the founder note says so — but nothing runs without a name or domain. <b>The domain is the specification:</b> the run researches the company at this domain only; a similarly named company at another domain is never used, and when nothing is found here the proposal is a not-found note.</p>
+        <p class="step-desc">Resolved by <code>find_account</code> against the enriched data layer. An account that is not there still runs (the review says so), but nothing runs without a name or domain. <b>The domain is the specification:</b> the run researches the company at this domain only; a similarly named company at another domain is never used, and when nothing is found here the proposal is a not-found note.</p>
         <div class="card required" id="cardAccount" data-filled="no">
           <div class="card-top">
             <div class="card-id">
@@ -338,7 +334,7 @@
       <!-- 02 -->
       <section class="step" id="s2">
         <div class="step-head"><span class="step-num">02</span><h3>Optional state</h3></div>
-        <p class="step-desc">Each key below is read by the analysis but not required by it. Opt out and the run proceeds without that input; the opt-out is recorded in the manifest and in the founder note.</p>
+        <p class="step-desc">Each key below is read by the analysis but not required by it. Opt out and the run proceeds without that input; the opt-out is recorded in the manifest and in the review.</p>
 
         <div class="card" id="cardContacts" data-on="yes">
           <div class="card-top">
@@ -361,7 +357,7 @@
 
         <div class="card" id="cardLedger" data-on="yes">
           <div class="card-top">
-            <div class="card-id"><div class="kname">ledger_quality</div><div class="kmeta">written by <em>assess_ledger_quality</em> · read by <em>analysis</em>, <em>founder note</em></div></div>
+            <div class="card-id"><div class="kname">ledger_quality</div><div class="kmeta">written by <em>assess_ledger_quality</em> · read by <em>analysis</em>, <em>review</em></div></div>
             <div class="toggle" role="group" aria-label="Include ledger_quality">
               <button type="button" data-k="ledger" data-v="on" aria-pressed="true">Include</button>
               <button type="button" class="off" data-k="ledger" data-v="off" aria-pressed="false">Skip</button>
@@ -450,14 +446,14 @@
             <span class="d">Creates <code>accounts/crm_&lt;date&gt;_&lt;rand&gt;</code> with <code>origin:"crm"</code>. CRM-owned fields — stage, notes, next_step, activity — stay untouched by any later sync.</span></span>
         </label>
         <div class="warn" id="apolloWarn" hidden>
-          <b>Check before choosing Apollo.</b> Account ingest reads the lists in <code>meta/config.account_lists</code>. The Strategic Market Insights list was re-added on 24 Sep 2026. The run reads that setting first; if it is ever empty again the founder note HOLDs until the list id is back or you switch to manual.
+          <b>Check before choosing Apollo.</b> Account ingest reads the lists in <code>meta/config.account_lists</code>. The Strategic Market Insights list was re-added on 24 Sep 2026. The run reads that setting first; if it is ever empty again the review HOLDs until the list id is back or you switch to manual.
         </div>
       </section>
 
       <!-- 04 -->
       <section class="step" id="s4">
         <div class="step-head"><span class="step-num">04</span><h3>Run</h3></div>
-        <p class="step-desc">One press writes the run record and wakes the session that owns the repo. In order: re-gate the manifest → ledger tools → the company's site → Apollo and Vibe Prospecting → open-web research (company, market, competitors, adjacent, macroeconomics) → the SMI proposal with a ValueFirst "why now" → founder note → one merged note into the CRM record's pre-qual phase, with the Apollo and CRM sync schedule that follows. Each step reports back here as it returns.</p>
+        <p class="step-desc">One press writes the run record and wakes the session that owns the repo. In order: re-gate the manifest → ledger tools → the company's site → Apollo and Vibe Prospecting → open-web research (company, market, competitors, adjacent, macroeconomics) → the SMI proposal with a ValueFirst "why now" → the review and the note to the founder → one merged note into the CRM record's pre-qual phase, with the Apollo and CRM sync schedule that follows. Each step reports back here as it returns.</p>
         <div class="card">
           <div class="launch-bar">
             <button type="button" class="btn btn-primary" id="btnRun" disabled>Run composition</button>
@@ -488,20 +484,31 @@
       <!-- 05 -->
       <section class="step" id="s5">
         <div class="step-head"><span class="step-num">05</span><h3>Result</h3></div>
-        <p class="step-desc">The note to the founder first — <b>HOLD</b> lines mean the draft is filed but needs your decision before it goes anywhere; <b>Note</b> lines are context. Then the proposal as drafted and where it landed.</p>
+        <p class="step-desc">The review first: it is for you, never the founder. <b>HOLD</b> lines mean the draft is filed but needs your decision before it goes anywhere; <b>Note</b> lines are context. Then the note to the founder that goes with the proposal, and the proposal as drafted, ready to download as a PDF.</p>
         <div class="card" id="resultCard">
           <div id="resultEmpty" class="blocked">No run selected. Press Run composition, or pick a run from the list below.</div>
           <div id="resultBody" hidden>
             <div class="card-top">
-              <div class="card-id"><div class="kname">Note to the founder</div><div class="kmeta" id="fnMeta"></div></div>
+              <div class="card-id"><div class="kname">Review before sending</div><div class="kmeta" id="fnMeta"></div></div>
               <span class="chip skip" id="fnStatus">—</span>
             </div>
             <div class="fnote" id="fnote"></div>
             <dl class="kv" id="resultKv"></dl>
+            <div class="ntf">
+              <div class="card-top">
+                <div class="card-id"><div class="kname">Note to the founder</div><div class="kmeta" id="ntfMeta">goes with the proposal</div></div>
+              </div>
+              <pre class="prop note" id="ntfText">Drafted with the proposal.</pre>
+              <div class="launch-bar" style="margin-top:10px"><button type="button" class="btn btn-ghost btn-sm" id="btnCopyNote" disabled>Copy note</button></div>
+            </div>
             <details class="fold" id="foldProp" open>
               <summary>Proposal as drafted</summary>
               <pre class="prop" id="propText">(not yet drafted)</pre>
-              <div class="launch-bar" style="margin-top:10px"><button type="button" class="btn btn-ghost btn-sm" id="btnCopyProp">Copy proposal</button></div>
+              <div class="launch-bar" style="margin-top:10px">
+                <button type="button" class="btn btn-primary btn-sm" id="btnPdf" hidden disabled>Download PDF</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="btnCopyProp">Copy proposal</button>
+                <span class="launch-note" id="pdfNote" role="status" aria-live="polite"></span>
+              </div>
             </details>
           </div>
         </div>
@@ -536,7 +543,7 @@
               <tr><td>Artifact database reach</td><td><span class="sev stop">Blocking</span></td><td>The CRM db is read and written with <code>ArtifactData</code>. A bare terminal session may not have it; the button path uses the session that does.</td></tr>
               <tr><td>Apollo connector auth</td><td><span class="sev stop">Blocking</span></td><td>OAuth does not carry into a terminal. No auth → manual disposition; the Monday sync picks the record up.</td></tr>
               <tr><td>BigQuery absent</td><td><span class="sev hold">Degrades</span></td><td>The sentinel goes into <code>warehouse_findings</code>; an unset key reads differently downstream.</td></tr>
-              <tr><td>Sync window</td><td><span class="sev hold">Degrades</span></td><td>Apollo ⇄ CRM sync Mon 07:00 ET, enrichment push 07:30, Command Center 08:00. A run inside 06:45–08:15 ET gets a HOLD in the founder note.</td></tr>
+              <tr><td>Sync window</td><td><span class="sev hold">Degrades</span></td><td>Apollo ⇄ CRM sync Mon 07:00 ET, enrichment push 07:30, Command Center 08:00. A run inside 06:45–08:15 ET gets a HOLD in the review.</td></tr>
               <tr><td><code>account_lists</code> empty</td><td><span class="sev stop">Blocking on Apollo</span></td><td>Re-added 24 Sep (Strategic Market Insights). The run reads <code>meta/config.account_lists</code> first; empty → HOLD. By hand, confirm it is not empty or choose manual.</td></tr>
               <tr><td>Empty-value overwrite</td><td><span class="sev stop">Blocking</span></td><td>Never let an empty field overwrite a populated one. The run's writes are field merges of only what changed.</td></tr>
             </tbody>
@@ -550,6 +557,363 @@
     </main>
   </div>
 </div>
+
+<script id="proposal-pdf">
+/* Proposal PDF. Lays out the SMI prequalification proposal (Markdown) on US
+   Letter pages with jsPDF's built-in Helvetica: a brand header, section rules,
+   wrapped paragraphs with bold, italic and live links, lists, the "What we
+   heard" table (header row repeats across pages), muted evidence tags, and a
+   footer with page numbers. Pure: a jsPDF constructor and the Markdown in, a
+   jsPDF document out. */
+(function(root){
+  "use strict";
+  var W = 612, H = 792, MX = 72, TOP = 64, LIMIT = H - 78;
+  var CW = W - 2 * MX;
+  var C = { ink:[20,26,33], ink2:[63,74,87], muted:[106,118,132], line:[214,220,227], fill:[238,241,245], accent:[28,107,102] };
+  var BODY = 10.5, LEAD = 15;
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  /* Helvetica here is WinAnsi: Latin-1 plus the characters in WIN. Anything
+     else is mapped to a plain equivalent or dropped, never printed as junk. */
+  var WIN = "€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ";
+  var MAP = { "→":"->", "←":"<-", "↔":"<->", "⇄":"<->", "⇒":"=>", "≤":"<=", "≥":">=",
+              "≈":"~", "≠":"!=", "−":"-", "‐":"-", "‑":"-", "‒":"-", "―":"-",
+              "′":"'", "″":"\"", " ":" ", " ":" ", " ":" ", " ":" ", " ":" ", " ":" ",
+              "✓":"v", "✔":"v", "✗":"x", "✘":"x", "↑":"up", "↓":"down" };
+  function clean(s){
+    var out = "";
+    for (var ch of String(s == null ? "" : s)) {
+      var c = ch.codePointAt(0);
+      if (c === 9) { out += " "; continue; }
+      if ((c >= 0x20 && c <= 0x7e) || (c >= 0xa0 && c <= 0xff) || WIN.indexOf(ch) !== -1) { out += ch; continue; }
+      if (MAP[ch] !== undefined) { out += MAP[ch]; continue; }
+      var base = ch.normalize ? ch.normalize("NFD").replace(/[̀-ͯ]/g, "") : "";
+      if (base && base.length === 1 && base.charCodeAt(0) <= 0xff && base.charCodeAt(0) >= 0x20) out += base;
+    }
+    return out;
+  }
+
+  /* ---- inline Markdown -> runs {t, b, i, code, url, tag} ---- */
+  var TAG = /^\[(supported|needs stipulation|unsupported)\]/i;
+  function inline(src, base){
+    var runs = [], b = !!(base && base.b), it = !!(base && base.i), buf = "", s = String(src || ""), k = 0;
+    function push(t, extra){
+      if (!t) return;
+      var r = { t: clean(t), b: b, i: it };
+      if (base && base.color) r.color = base.color;
+      for (var key in extra) r[key] = extra[key];
+      if (r.t) runs.push(r);
+    }
+    function flush(){ push(buf); buf = ""; }
+    while (k < s.length) {
+      var rest = s.slice(k), ch = s[k], m;
+      if (ch === "\\" && k + 1 < s.length && /[\\`*_\[\]()#|>-]/.test(s[k + 1])) { buf += s[k + 1]; k += 2; continue; }
+      if ((m = rest.match(TAG))) { flush(); push(m[0], { tag: true }); k += m[0].length; continue; }
+      if ((m = rest.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/))) { flush(); push(m[1], { url: m[2] }); k += m[0].length; continue; }
+      if ((m = rest.match(/^https?:\/\/[^\s)\]>]+/))) {
+        var u = m[0].replace(/[.,;:]+$/, "");
+        flush(); push(u, { url: u }); k += u.length; continue;
+      }
+      if ((m = rest.match(/^`([^`]+)`/))) { flush(); push(m[1], { code: true }); k += m[0].length; continue; }
+      if (rest.slice(0, 2) === "**" || rest.slice(0, 2) === "__") { flush(); b = !b; k += 2; continue; }
+      if (ch === "*" || ch === "_") {
+        var prev = k > 0 ? s[k - 1] : " ", next = k + 1 < s.length ? s[k + 1] : " ";
+        var opens = !it && /\S/.test(next) && (ch === "*" || !/[A-Za-z0-9]/.test(prev)) && s.indexOf(ch, k + 1) !== -1;
+        var closes = it && /\S/.test(prev) && (ch === "*" || !/[A-Za-z0-9]/.test(next));
+        if (opens || closes) { flush(); it = !it; k += 1; continue; }
+      }
+      buf += ch; k += 1;
+    }
+    flush();
+    return runs;
+  }
+
+  /* ---- measuring and wrapping ---- */
+  function setFont(doc, r, size){
+    if (r.code) doc.setFont("courier", r.b ? "bold" : "normal");
+    else doc.setFont("helvetica", r.b && (r.i || r.tag) ? "bolditalic" : r.b ? "bold" : (r.i || r.tag) ? "italic" : "normal");
+    doc.setFontSize(r.code ? size * 0.9 : r.tag ? size * 0.88 : size);
+  }
+  /* Unkerned: jsPDF measures with kerning pairs by default but writes the text
+     unkerned, which would swallow the space after pairs like "Yo" or "P,". */
+  function measure(doc, r, size, t){
+    setFont(doc, r, size);
+    return doc.getStringUnitWidth(t, { kerning: {} }) * doc.getFontSize() / doc.internal.scaleFactor;
+  }
+  function spaceW(doc, size){ return measure(doc, {}, size, " "); }
+
+  function words(doc, runs, size){
+    var out = [], cur = null, gap = false;
+    runs.forEach(function(r){
+      r.t.split(/(\s+)/).forEach(function(p){
+        if (!p) return;
+        if (/^\s+$/.test(p)) { if (cur) { out.push(cur); cur = null; } gap = true; return; }
+        if (!cur) { cur = { pieces: [], gap: gap && out.length > 0, w: 0 }; gap = false; }
+        var w = measure(doc, r, size, p);
+        cur.pieces.push({ t: p, r: r, w: w }); cur.w += w;
+      });
+    });
+    if (cur) out.push(cur);
+    return out;
+  }
+  /* A word wider than the line (a long URL): break after "/" where possible, else by character. */
+  function split(doc, word, size, maxW){
+    var parts = [], cur = { pieces: [], gap: word.gap, w: 0 };
+    function add(t, r){
+      var w = measure(doc, r, size, t);
+      if (cur.w + w > maxW && cur.w > 0) { parts.push(cur); cur = { pieces: [], gap: false, w: 0 }; }
+      var last = cur.pieces[cur.pieces.length - 1];
+      if (last && last.r === r) { last.t += t; last.w += w; } else cur.pieces.push({ t: t, r: r, w: w });
+      cur.w += w;
+    }
+    word.pieces.forEach(function(p){
+      var chunks = p.t.match(/[^\/]*\/+|[^\/]+$/g) || [p.t];
+      chunks.forEach(function(chunk){
+        if (measure(doc, p.r, size, chunk) <= maxW) add(chunk, p.r);
+        else for (var ch of chunk) add(ch, p.r);
+      });
+    });
+    if (cur.pieces.length) parts.push(cur);
+    return parts;
+  }
+  function wrap(doc, runs, size, maxW){
+    var sw = spaceW(doc, size), lines = [], line = [], lw = 0;
+    words(doc, runs, size).forEach(function(w0){
+      (w0.w > maxW ? split(doc, w0, size, maxW) : [w0]).forEach(function(w){
+        var add = (line.length && w.gap ? sw : 0) + w.w;
+        if (line.length && lw + add > maxW) { lines.push(line); line = []; lw = 0; add = w.w; }
+        line.push(w); lw += add;
+      });
+    });
+    if (line.length) lines.push(line);
+    return lines;
+  }
+  function drawLine(doc, line, x, base, size){
+    var cx = x, sw = spaceW(doc, size);
+    line.forEach(function(w, idx){
+      if (idx > 0 && w.gap) cx += sw;
+      w.pieces.forEach(function(p){
+        setFont(doc, p.r, size);
+        var col = p.r.url ? C.accent : p.r.tag ? C.muted : (p.r.color || C.ink);
+        doc.setTextColor(col[0], col[1], col[2]);
+        doc.text(p.t, cx, base);
+        if (p.r.url) {
+          doc.link(cx, base - size * 0.8, p.w, size * 1.05, { url: p.r.url });
+          doc.setDrawColor(C.accent[0], C.accent[1], C.accent[2]); doc.setLineWidth(0.4);
+          doc.line(cx, base + 1.6, cx + p.w, base + 1.6);
+        }
+        cx += p.w;
+      });
+    });
+  }
+
+  /* ---- block Markdown ---- */
+  function blocks(md){
+    var L = String(md || "").replace(/\r\n?/g, "\n").split("\n"), out = [], para = [], i = 0, m;
+    function flush(){ if (para.length) { out.push({ k: "p", text: para.join(" ") }); para = []; } }
+    function more(item){
+      while (i < L.length && L[i].trim() && /^\s{2,}\S/.test(L[i]) && !/^\s*([-*+]|\d+[.)])\s+/.test(L[i])) { item.text += " " + L[i].trim(); i++; }
+    }
+    while (i < L.length) {
+      var line = L[i], t = line.trim();
+      if (!t) { flush(); i++; continue; }
+      if ((m = t.match(/^(#{1,4})\s+(.*?)\s*#*$/))) { flush(); out.push({ k: "h" + m[1].length, text: m[2] }); i++; continue; }
+      if (/^(-{3,}|\*{3,}|_{3,})$/.test(t)) { flush(); out.push({ k: "hr" }); i++; continue; }
+      if (t[0] === "|") {
+        flush(); var rows = [];
+        while (i < L.length && L[i].trim()[0] === "|") { rows.push(L[i].trim()); i++; }
+        out.push(table(rows)); continue;
+      }
+      if ((m = line.match(/^(\s*)([-*+])\s+(.*)$/))) { flush(); var li = { k: "li", ord: null, depth: m[1].length >= 2 ? 1 : 0, text: m[3] }; out.push(li); i++; more(li); continue; }
+      if ((m = line.match(/^(\s*)(\d+)[.)]\s+(.*)$/))) { flush(); var ol = { k: "li", ord: m[2], depth: m[1].length >= 2 ? 1 : 0, text: m[3] }; out.push(ol); i++; more(ol); continue; }
+      if ((m = t.match(/^>\s?(.*)$/))) { flush(); out.push({ k: "quote", text: m[1] }); i++; continue; }
+      if (/^```/.test(t)) {
+        flush(); var code = []; i++;
+        while (i < L.length && !/^```/.test(L[i].trim())) { code.push(L[i]); i++; }
+        i++; out.push({ k: "code", lines: code }); continue;
+      }
+      para.push(t); i++;
+    }
+    flush();
+    return out;
+  }
+  function table(rows){
+    var SEP = /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/;
+    var cells = rows.filter(function(r){ return !SEP.test(r); }).map(function(r){
+      return r.replace(/\\\|/g, "\u0000").replace(/^\|/, "").replace(/\|\s*$/, "").split("|")
+              .map(function(c){ return c.replace(/\u0000/g, "|").trim(); });
+    });
+    var n = Math.max.apply(null, cells.map(function(r){ return r.length; }).concat([1]));
+    cells.forEach(function(r){ while (r.length < n) r.push(""); });
+    return { k: "table", rows: cells };
+  }
+
+  function longDate(iso){
+    var d = iso ? new Date(iso) : new Date();
+    if (isNaN(d.getTime())) d = new Date();
+    return d.getUTCDate() + " " + MONTHS[d.getUTCMonth()] + " " + d.getUTCFullYear();
+  }
+
+  /* ---- render ---- */
+  function render(JsPDF, markdown, meta){
+    meta = meta || {};
+    var doc = new JsPDF({ unit: "pt", format: "letter", compress: true });
+    var list = blocks(markdown), y = TOP, brand = "Strategic Marketing Insights", title = meta.account || "Proposal";
+    var first = list.findIndex(function(b){ return b.k === "h2"; });
+    var head = first === -1 ? list : list.slice(0, first);
+    head.forEach(function(b){
+      if (b.k === "h1") title = b.text.replace(/\s+(?:--|—|–|-)\s+prequalification proposal\s*$/i, "").trim() || title;
+      var m = b.k === "p" && b.text.match(/^prepared by\s+(.+)$/i);
+      if (m) brand = m[1].trim();
+    });
+    list = list.filter(function(b, idx){
+      if (first !== -1 && idx >= first) return true;
+      return !(b.k === "h1" || (b.k === "p" && /^prepared by\s+/i.test(b.text)));
+    });
+
+    function color(c){ doc.setTextColor(c[0], c[1], c[2]); }
+    function page(){ doc.addPage(); y = TOP; }
+    function ensure(h){ if (y + h > LIMIT) page(); }
+    function hair(yy, c, lw){ c = c || C.line; doc.setDrawColor(c[0], c[1], c[2]); doc.setLineWidth(lw || 0.5); doc.line(MX, yy, W - MX, yy); }
+    function textBlock(runs, size, lead, x, maxW, after){
+      wrap(doc, runs, size, maxW).forEach(function(l){
+        ensure(lead);
+        drawLine(doc, l, x, y + (lead - size) / 2 + size * 0.8, size);
+        y += lead;
+      });
+      y += after;
+    }
+
+    /* header */
+    doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); color(C.accent);
+    doc.text(clean(brand).toUpperCase(), MX, y + 7, { charSpace: 1.1 });
+    y += 24;
+    textBlock(inline(title, { b: true }), 22, 26, MX, CW, 2);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(12); color(C.ink2);
+    doc.text("Prequalification proposal", MX, y + 12);
+    y += 22;
+    var who = [meta.founder, meta.account].filter(Boolean).join(", ");
+    var line = [who ? "Prepared for " + who : null, longDate(meta.date), meta.pid ? "Ref. " + meta.pid : null].filter(Boolean).join("   ·   ");
+    textBlock(inline(line, { color: C.muted }), 8.5, 12, MX, CW, 10);
+    hair(y, C.accent, 1.1);
+    y += 20;
+
+    var prev = null;
+    list.forEach(function(b){
+      if (prev === "li" && b.k !== "li") y += 4;
+      if (b.k === "h2" || b.k === "h1") {
+        ensure(18 + 9 + LEAD * 3);
+        if (y > TOP + 1) y += 12;
+        textBlock(inline(b.text, { b: true }), 12, 16, MX, CW, 2);
+        hair(y); y += 9;
+      } else if (b.k === "h3" || b.k === "h4") {
+        ensure(16 + LEAD * 2);
+        y += 4;
+        textBlock(inline(b.text, { b: true }), BODY, LEAD, MX, CW, 2);
+      } else if (b.k === "p") {
+        var text = b.text.replace(/(^|\.\s+)Gate:(?=\s)/g, "$1**Gate:**");
+        textBlock(inline(text), BODY, LEAD, MX, CW, 7);
+      } else if (b.k === "li") {
+        var ind = b.depth * 16, hang = b.ord ? 20 : 15, lines = wrap(doc, inline(b.text), BODY, CW - ind - hang);
+        lines.forEach(function(l, idx){
+          ensure(LEAD);
+          var base = y + (LEAD - BODY) / 2 + BODY * 0.8;
+          if (idx === 0) {
+            if (b.ord) {
+              doc.setFont("helvetica", "bold"); doc.setFontSize(BODY); color(C.ink2);
+              doc.text(b.ord + ".", MX + ind, base);
+            } else {
+              doc.setFillColor(C.ink2[0], C.ink2[1], C.ink2[2]);
+              doc.circle(MX + ind + 4, base - BODY * 0.3, 1.5, "F");
+            }
+          }
+          drawLine(doc, l, MX + ind + hang, base, BODY);
+          y += LEAD;
+        });
+        y += 3;
+      } else if (b.k === "table") {
+        y += 2;
+        drawTable(b.rows);
+        y += 12;
+      } else if (b.k === "hr") {
+        ensure(20); y += 6; hair(y); y += 12;
+      } else if (b.k === "quote") {
+        var top = y;
+        textBlock(inline(b.text, { i: true, color: C.ink2 }), BODY, LEAD, MX + 14, CW - 14, 0);
+        doc.setFillColor(C.accent[0], C.accent[1], C.accent[2]);
+        if (y > top) doc.rect(MX, top + 2, 2, y - top - 4, "F");
+        y += 7;
+      } else if (b.k === "code") {
+        b.lines.forEach(function(l){
+          ensure(12);
+          doc.setFont("courier", "normal"); doc.setFontSize(8.5); color(C.ink2);
+          doc.text(clean(l), MX + 8, y + 9);
+          y += 12;
+        });
+        y += 7;
+      }
+      prev = b.k;
+    });
+
+    function drawTable(rows){
+      var n = rows[0].length, size = 9, lead = 12.5, pad = 5, sw = spaceW(doc, size);
+      var cells = rows.map(function(r, ri){ return r.map(function(c){ return inline(c, ri === 0 ? { b: true, color: C.ink2 } : null); }); });
+      var nat = [], min = [];
+      for (var c = 0; c < n; c++) { nat.push(2 * pad + 20); min.push(2 * pad + 20); }
+      cells.forEach(function(r, ri){
+        r.forEach(function(runs, ci){
+          var ws = words(doc, runs, ri === 0 ? 8.5 : size), total = 0;
+          ws.forEach(function(w, wi){
+            total += w.w + (wi && w.gap ? sw : 0);
+            min[ci] = Math.max(min[ci], Math.min(w.w, CW / n) + 2 * pad);
+          });
+          nat[ci] = Math.max(nat[ci], total + 2 * pad);
+        });
+      });
+      var sum = function(a){ return a.reduce(function(x, v){ return x + v; }, 0); }, widths;
+      if (sum(nat) <= CW) widths = nat.map(function(v){ return v * CW / sum(nat); });
+      else if (sum(min) >= CW) widths = min.map(function(v){ return v * CW / sum(min); });
+      else {
+        var extra = CW - sum(min), want = nat.map(function(v, ci){ return v - min[ci]; }), tw = sum(want) || 1;
+        widths = min.map(function(v, ci){ return v + extra * want[ci] / tw; });
+      }
+      function row(ri){
+        var sz = ri === 0 ? 8.5 : size;
+        var wrapped = cells[ri].map(function(runs, ci){ return wrap(doc, runs, sz, widths[ci] - 2 * pad); });
+        var h = Math.max.apply(null, wrapped.map(function(ls){ return Math.max(ls.length, 1); })) * lead + 2 * pad;
+        if (y + h > LIMIT) { page(); if (ri !== 0) row(0); }
+        if (ri === 0) { doc.setFillColor(C.fill[0], C.fill[1], C.fill[2]); doc.rect(MX, y, CW, h, "F"); }
+        var cx = MX;
+        wrapped.forEach(function(ls, ci){
+          var cy = y + pad;
+          ls.forEach(function(l){ drawLine(doc, l, cx + pad, cy + (lead - sz) / 2 + sz * 0.8, sz); cy += lead; });
+          cx += widths[ci];
+        });
+        y += h;
+        hair(y, ri === 0 ? C.ink2 : C.line, ri === 0 ? 0.6 : 0.5);
+      }
+      ensure(60);
+      for (var ri = 0; ri < cells.length; ri++) row(ri);
+    }
+
+    var pages = doc.getNumberOfPages();
+    for (var p = 1; p <= pages; p++) {
+      doc.setPage(p);
+      hair(H - 52);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); color(C.muted);
+      doc.text(clean(brand + "   ·   Prequalification proposal" + (meta.account ? " for " + meta.account : "")), MX, H - 38);
+      doc.text("Page " + p + " of " + pages, W - MX, H - 38, { align: "right" });
+    }
+    doc.setProperties({ title: clean(title + " - Prequalification Proposal"), subject: "Prequalification proposal",
+                        author: clean(brand), creator: "Account Composition Intake" });
+    return doc;
+  }
+
+  var api = { render: render, blocks: blocks, inline: inline, clean: clean };
+  root.ProposalPDF = api;
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
 
 <script>
 (function(){
@@ -571,11 +935,11 @@
     ["summarize_page", "website_summary"],
     ["warehouse_findings", "warehouse_findings"],
     ["compose_proposal", "SMI proposal · data/proposals/<slug>-<date>.{json,md}"],
-    ["crm_write", "merged pre-qual note: proposal · founder note · coverage · sync schedule"]
+    ["crm_write", "merged pre-qual note: proposal · note to the founder · review · coverage · sync schedule"]
   ];
 
-  var db = null, mcp = null;
-  var currentRun = null, unsubRun = null, unsubRuns = null;
+  var db = null, mcp = null, downloads = null;
+  var currentRun = null, currentData = null, unsubRun = null, unsubRuns = null;
 
   function $(id){ return document.getElementById(id); }
   function val(id){ var e=$(id); return e ? e.value.trim() : ""; }
@@ -620,8 +984,9 @@
     m.request = {
       text: val("reqText") || null,
       source_url: val("reqUrl") || null,
-      requester: { name: val("reqName") || null, linkedin_url: val("reqLinkedin") || null }
+      founder: { name: val("reqName") || null, linkedin_url: val("reqLinkedin") || null }
     };
+    m.request.requester = m.request.founder; // same person: at a small startup the requester is the founder
     m.state.account = { required:true, resolved_by:"find_account", name: val("accName") || null,
                         domain: val("accDomain") || null, crm_account_id: val("accId") || null,
                         source: linkedin() ? "linkedin" : null };
@@ -718,7 +1083,8 @@
 
   /* ---- run record rendering ---- */
   function statusChip(s){
-    var cls = { queued:"hold", running:"hold", not_fired:"stop", failed:"stop", halted:"stop", done:"go", needs_founder:"hold" }[s] || "skip";
+    if(s === "needs_founder") s = "needs_review"; // runs filed before the rename
+    var cls = { queued:"hold", running:"hold", not_fired:"stop", failed:"stop", halted:"stop", done:"go", needs_review:"hold" }[s] || "skip";
     return { text: (s || "—").replace(/_/g," "), cls: cls };
   }
   function renderSeq(steps){
@@ -741,11 +1107,11 @@
       list.appendChild(li);
     });
   }
-  function renderFounder(text, status){
+  function renderReview(text, status){
     var box = $("fnote"); box.innerHTML = "";
     var lines = (text || "").split("\n").filter(function(l){ return l.trim(); });
     if(!lines.length){
-      var d = document.createElement("div"); d.className="ln n"; d.textContent = status ? "No note yet — the run has not reached the founder step." : "—";
+      var d = document.createElement("div"); d.className="ln n"; d.textContent = status ? "No review yet: the run has not reached that step." : "—";
       box.appendChild(d); return;
     }
     lines.forEach(function(l){
@@ -785,11 +1151,21 @@
     $("runStatus").textContent = sc.text; $("runStatus").className = "chip " + sc.cls;
     renderSeq(data && data.steps);
 
-    var fs = data && (data.founder_status || (data.status==="done"||data.status==="needs_founder" ? data.status : null));
+    currentData = data || null;
+    var fs = data && (data.review_status || data.founder_status || (["done","needs_review","needs_founder"].indexOf(data.status) !== -1 ? data.status : null));
+    if(fs === "needs_founder") fs = "needs_review";
     var fsc = statusChip(fs || "");
     $("fnStatus").textContent = fs ? fsc.text : "pending"; $("fnStatus").className = "chip " + (fs ? fsc.cls : "skip");
-    $("fnMeta").textContent = fs === "needs_founder" ? "filed as drafted; nothing goes out until you decide" : (fs === "done" ? "nothing needs a decision" : "computed after the ledger legs");
-    renderFounder(data && data.founder_note, data && data.status);
+    $("fnMeta").textContent = "for you, not the founder · " + (fs === "needs_review" ? "filed as drafted; nothing goes out until you decide" : (fs === "done" ? "nothing needs a decision" : "computed after the ledger legs"));
+    renderReview(data && (data.review != null ? data.review : data.founder_note), data && data.status);
+
+    var who = founderOf(data).name;
+    $("ntfMeta").textContent = (who ? "to " + who : "to the founder (the requester)") + " · goes with the proposal";
+    var note = data && data.note_to_founder;
+    $("ntfText").textContent = note || (data && data.proposal_markdown
+      ? "Not drafted for this run: it was filed before notes to the founder existed. A new run drafts one."
+      : "Drafted with the proposal.");
+    $("btnCopyNote").disabled = !note;
 
     var dl = $("resultKv"); dl.innerHTML = "";
     if(data && data.proposal_id) kv(dl, "proposal", data.proposal_id);
@@ -801,6 +1177,79 @@
     if(data && data.manifest && data.manifest.crm) kv(dl, "disposition", data.manifest.crm.disposition || "—");
     if(data && data.fire_error) kv(dl, "fire", data.fire_error);
     $("propText").textContent = (data && data.proposal_markdown) || "(not yet drafted)";
+    $("pdfNote").textContent = isVoid(data) ? "Voided proposal: not for sending, so no PDF."
+      : (fs === "needs_review" && data && data.proposal_markdown ? "The review above has HOLD lines. Decide on them before sending." : "");
+    renderPdfButton();
+  }
+
+  /* ---- Download PDF ---- */
+  function isVoid(data){ return !!(data && (data.void || data.status === "void")); }
+  function founderOf(data){
+    var r = data && data.manifest && data.manifest.request || {};
+    return (data && data.founder) || r.founder || r.requester || {};
+  }
+  var PDF_LIB = ["https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+                 "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"];
+  var pdfLib = null, pdfBusy = false, pdfOff = false;
+  function loadScript(src){
+    return new Promise(function(resolve){
+      var el = document.createElement("script"); el.src = src; el.async = true;
+      el.onload = function(){ resolve(!!(window.jspdf && window.jspdf.jsPDF)); };
+      el.onerror = function(){ el.remove(); resolve(false); };
+      document.head.appendChild(el);
+    });
+  }
+  function pdfLibrary(){
+    if(!pdfLib){
+      pdfLib = PDF_LIB.reduce(function(p, src){ return p.then(function(ok){ return ok || loadScript(src); }); },
+                              Promise.resolve(!!(window.jspdf && window.jspdf.jsPDF)))
+        .then(function(ok){ if(!ok){ pdfLib = null; throw new Error("jsPDF did not load"); } return window.jspdf.jsPDF; });
+    }
+    return pdfLib;
+  }
+  function renderPdfButton(){
+    var b = $("btnPdf"), has = !!(currentData && currentData.proposal_markdown);
+    b.hidden = !downloads || pdfOff;
+    b.disabled = !has || pdfBusy || isVoid(currentData);
+    if(has && downloads && !pdfOff && !isVoid(currentData)) pdfLibrary().catch(function(){});
+  }
+  function pdfName(){
+    var acc = currentData.account || {};
+    var base = String(acc.name || acc.domain || "proposal").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "proposal";
+    var day = String(currentData.finished_at || currentData.requested_at || new Date().toISOString()).slice(0, 10);
+    return base + "-prequalification-proposal-" + day + ".pdf";
+  }
+  async function downloadPdf(){
+    if(pdfBusy || !downloads || !currentData || !currentData.proposal_markdown || isVoid(currentData)) return;
+    var b = $("btnPdf"), note = $("pdfNote");
+    pdfBusy = true; b.textContent = "Preparing PDF…"; note.textContent = ""; renderPdfButton();
+    try{
+      var JsPDF;
+      try{ JsPDF = await pdfLibrary(); }
+      catch(e){ note.textContent = "The PDF library did not load. Check your connection and try again."; return; }
+      var blob, acc = currentData.account || {}, filename = pdfName();
+      try{
+        blob = window.ProposalPDF.render(JsPDF, currentData.proposal_markdown, {
+          account: acc.name || acc.domain || "", founder: founderOf(currentData).name || "",
+          date: currentData.finished_at || currentData.prepared_at || currentData.requested_at || "",
+          pid: currentData.proposal_id || ""
+        }).output("blob");
+      }catch(e){ note.textContent = "Could not lay out the PDF (" + ((e && e.message) || "error") + "). Copy the proposal instead."; return; }
+      try{
+        var res = await downloads.save({ filename: filename, data: blob });
+        if(res && res.status === "saved") note.textContent = "Saved " + filename + ".";
+      }catch(err){
+        var code = err && err.code;
+        if(code === "declined") note.textContent = "Download cancelled.";
+        else if(code === "rate_limited") note.textContent = "A save prompt is already open. Finish it, then try again.";
+        else if(code === "too_large") note.textContent = "The PDF is too large to save here.";
+        else if(code === "bad_request" || code === "transform_error") note.textContent = "The PDF could not be saved (" + code + "). Copy the proposal instead.";
+        else if(code === "rejected_extension" || code === "extension_not_enabled"){ pdfOff = true; note.textContent = "PDF downloads are not available in this view. Copy the proposal instead."; }
+        else { pdfOff = true; note.textContent = "Downloads are not available in this view. Copy the proposal instead."; }
+      }
+    }finally{
+      pdfBusy = false; b.textContent = "Download PDF"; renderPdfButton();
+    }
   }
 
   function watchRun(id){
@@ -922,6 +1371,8 @@
   $("btnCopyInv").addEventListener("click", function(){ copyTo(this, invocationText(), "Copied"); });
   $("btnCopyFile").addEventListener("click", function(){ copyTo(this, JSON.stringify(manifest(null), null, 2), "Copied — save as " + fileName()); });
   $("btnCopyProp").addEventListener("click", function(){ copyTo(this, $("propText").textContent, "Copied"); });
+  $("btnCopyNote").addEventListener("click", function(){ copyTo(this, $("ntfText").textContent, "Copied"); });
+  $("btnPdf").addEventListener("click", downloadPdf);
 
   var lastRun = loadDraft();
   render();
@@ -939,8 +1390,11 @@
       $("cap-mcp").setAttribute("data-on", mcp ? "yes" : "no");
       render();
     });
+    window.claude.use("downloads").then(function(ns){
+      downloads = ns;
+      $("cap-dl").setAttribute("data-on", downloads ? "yes" : "no");
+      renderPdfButton();
+    });
   }
 })();
 </script>
-</body>
-</html>

@@ -52,8 +52,8 @@ LINKEDIN_STAGING = STAGING_DIR / "linkedin.json"
 #: they are the durable record of what was sent, and push_proposals_to_crm.py
 #: reads them.
 PROPOSALS_DIR = DATA_DIR / "proposals"
-#: One directory per button-driven composition run (manifest, state, founder
-#: note, prompts). Committed: it is the audit trail of what the run saw.
+#: One directory per button-driven composition run (manifest, state, review,
+#: prompts). Committed: it is the audit trail of what the run saw.
 RUNS_DIR = DATA_DIR / "runs"
 #: The account-research agent package; its ledger/fetch/write_proposal tools
 #: are pure Python and scripts/compose_account.py imports them from here.

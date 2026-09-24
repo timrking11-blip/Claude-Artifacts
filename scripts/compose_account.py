@@ -13,8 +13,8 @@ draft. No ADK runtime, no API key, no GCP.
       Re-gates the manifest, runs find_account / list_account_contacts /
       assess_ledger_quality from the agent's pure-Python ledger tools, fetches
       the page (honouring on_fetch_error), writes the warehouse sentinel,
-      computes the founder note, and writes data/runs/<id>/{manifest,state,
-      founder,run_update}.json plus prompts.md -- the web research brief and
+      computes the review (crm/review.py), and writes data/runs/<id>/{manifest,
+      state,review,run_update}.json plus prompts.md -- the web research brief and
       the page-summary prompt, filled in. Exit 2 when the manifest fails its
       gate or the run is halted for operator review.
 
@@ -26,11 +26,13 @@ draft. No ADK runtime, no API key, no GCP.
       slot filled.
 
   finalize <run-id> --proposal <draft.md> [--website-summary <file>]
-           [--composer-flag <text>]... --crm-dump <dump>
+           [--composer-flag <text>]... [--founder-line <text>]... --crm-dump <dump>
       Validates the draft exactly as the agent's write_proposal tool does
       (SMI sections, no money, under 1,000 words, cites the research when it
-      found sources), writes data/proposals/<slug>-<date>.{json,md}
-      with the founder note inside, plans the CRM writes (contact notes via
+      found sources), drafts the note to the founder (crm/note_to_founder.py;
+      at a small startup the founder is the requester on the intake form),
+      writes data/proposals/<slug>-<date>-<run-id>.{json,md} with that note
+      and the review inside, plans the CRM writes (contact notes via
       push_proposals_to_crm.plan; the account record per the disposition) and
       emits them as ArtifactData batch entries under data/artifact/crm/
       compose_<run-id>/, plus data/runs/<id>/run_final.json for the page.
@@ -58,9 +60,11 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from crm import config  # noqa: E402
 from crm.crm_sync import load_crm_dump, pinned, system_activity, utcnow_iso  # noqa: E402
-from crm.founder_note import assess  # noqa: E402
-from crm.guardrails import check_run, credit_spend_allowed  # noqa: E402
+from crm.guardrails import check_run, credit_spend_allowed, found_on_intake_domain, urls_in  # noqa: E402
 from crm.master import load_master  # noqa: E402
+from crm.note_to_founder import draft as draft_note_to_founder  # noqa: E402
+from crm.note_to_founder import founder_of  # noqa: E402
+from crm.review import STATUS_DONE, STATUS_NEEDS_REVIEW, assess  # noqa: E402
 from crm.schema import normalize_domain  # noqa: E402
 
 sys.path.insert(0, str(config.AGENT_DIR))
@@ -80,7 +84,7 @@ STEP_ORDER = ("find_account", "list_account_contacts", "assess_ledger_quality", 
 
 #: The data sources a run pulls, in order, and what each one is for. The
 #: session reports each one's outcome in coverage.json; `brief` turns that into
-#: step lamps on the page, founder-note lines, and the merged CRM note.
+#: step lamps on the page, review lines, and the merged CRM note.
 DATA_SOURCES = (
     ("ledger", "enriched data layer (data/master/contacts.json)"),
     ("apollo", "Apollo organization enrich + people at the domain"),
@@ -217,11 +221,14 @@ def resolve_account(manifest: dict[str, Any], state: dict[str, Any]) -> str:
 
 def prepare(manifest: dict[str, Any], run_id: str, docs: dict[str, dict[str, Any]], now: datetime,
             *, fetch: bool = True, account_lists_empty: bool = True) -> dict[str, Any]:
-    """Run the deterministic legs. Returns {state, steps, founder, halted}."""
+    """Run the deterministic legs. Returns {state, steps, review, halted}."""
     gate(manifest)
     m_state = manifest["state"]
     state: dict[str, Any] = {"request_text": (manifest.get("request") or {}).get("text") or "",
                              "lead_source": lead_source_of(manifest) or "", "request_id": run_id}
+    founder = founder_of(manifest)
+    if founder["name"] or founder["linkedin_url"]:
+        state["founder"] = founder  # the requester: at a small startup, the founder
     steps: dict[str, str] = {}
     ctx = SimpleNamespace(state=state)
 
@@ -294,8 +301,8 @@ def prepare(manifest: dict[str, Any], run_id: str, docs: dict[str, dict[str, Any
     steps["compose_proposal"] = "halted" if halted else "pending"
     steps["crm_write"] = "pending"
 
-    founder = assess(manifest, state, docs, now, account_lists_empty=account_lists_empty)
-    return {"state": state, "steps": steps, "founder": founder, "halted": halted}
+    review = assess(manifest, state, docs, now, account_lists_empty=account_lists_empty)
+    return {"state": state, "steps": steps, "review": review, "halted": halted}
 
 
 def research_prompt(state: dict[str, Any]) -> str:
@@ -313,6 +320,7 @@ def proposal_prompt(state: dict[str, Any]) -> str:
     """The SMI prequalification prompt with every research slot filled from state."""
     prequal = _fill(PREQUAL_PROMPT, {
         "request_text": state.get("request_text") or "",
+        "founder": state.get("founder") or "",
         "account": {k: v for k, v in (state.get("account") or {}).items() if k not in ("key",)},
         "firmographics": state.get("firmographics") or "",
         "web_research": state.get("web_research") or "",
@@ -336,6 +344,13 @@ def prompts_for(state: dict[str, Any]) -> tuple[str, str]:
     return summary_prompt(state), proposal_prompt(state)
 
 
+def _founder_label(founder: dict[str, Any] | None) -> str:
+    f = founder or {}
+    if not (f.get("name") or f.get("linkedin_url")):
+        return "not named on the intake form"
+    return " ".join(x for x in (f.get("name"), f"({f['linkedin_url']})" if f.get("linkedin_url") else None) if x)
+
+
 def write_prepare(run_dir: Path, manifest: dict[str, Any], result: dict[str, Any], run_id: str, now: datetime) -> None:
     state = dict(result["state"])
     page = state.pop("page_contents", None)
@@ -343,8 +358,8 @@ def write_prepare(run_dir: Path, manifest: dict[str, Any], result: dict[str, Any
     _write_json(run_dir / "state.json", state)
     if page:
         (run_dir / "page.txt").write_text(page)
-    founder = result["founder"].as_dict()
-    _write_json(run_dir / "founder.json", founder)
+    review = result["review"].as_dict()
+    _write_json(run_dir / "review.json", review)
     acct = result["state"]["account"]
     spend = credit_spend_allowed(manifest)
     (run_dir / "prompts.md").write_text(
@@ -386,13 +401,18 @@ def write_prepare(run_dir: Path, manifest: dict[str, Any], result: dict[str, Any
         + "\n## 3 · Draft the proposal\n\nRun `scripts/compose_account.py brief " + run_id
         + " --web-research ... --web-sources ... --data-sources ... --coverage ... [--website-summary ...]`; "
         "it writes proposal_prompt.md with the research filled in. Answer that prompt and save the Markdown "
-        "to proposal.md.\n")
+        "to proposal.md.\n\n"
+        "## 4 · File it\n\n"
+        f"The founder is the requester: {_founder_label(result['state'].get('founder'))}. finalize drafts the note to "
+        "the founder from the run; add a sentence for them with --founder-line (a scope limit, what to send us), "
+        "and a judgement call for the sender with --composer-flag.\n")
     _write_json(run_dir / "run_update.json", {
         "status": "halted" if result["halted"] else "running",
         "steps": result["steps"],
-        "founder_note": founder["text"],
-        "founder_status": founder["status"],
-        "matched_contact_ids": founder["matched_doc_ids"],
+        "review": review["text"],
+        "review_status": review["status"],
+        "matched_contact_ids": review["matched_doc_ids"],
+        "founder": result["state"].get("founder"),
         "account": {k: result["state"]["account"].get(k) for k in ("name", "domain", "in_ledger", "contact_count")},
         "prepared_at": _iso(now),
     })
@@ -457,8 +477,10 @@ def brief(run_dir: Path, web_research: str | None, web_sources: list[str], websi
 # --------------------------------------------------------------- finalize ----
 
 def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str, proposal_md: str,
-                    founder: dict[str, Any], composer_flags: list[str], now: datetime) -> dict[str, Any]:
-    """Same shape as the agent's write_proposal tool, plus founder_note and run.
+                    review: dict[str, Any], composer_flags: list[str], now: datetime,
+                    *, founder_lines: list[str] | tuple[str, ...] = ()) -> dict[str, Any]:
+    """Same shape as the agent's write_proposal tool, plus the note to the
+    founder (the requester), the internal review, and the run.
 
     One proposal per run, one run per intake-form submission. A changed
     proposal is a new run started on the intake page, never an edit here.
@@ -481,11 +503,12 @@ def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str
     # One id per run: a re-run of the same account on the same day with better
     # research is a new proposal, not a silent no-op against yesterday's draft.
     pid = "prq_" + hashlib.sha256(f"{slug}|{request_text}|{now.date()}|{run_id}".encode()).hexdigest()[:12]
-    holds = list(founder.get("holds") or []) + [f"Composer: {f}" for f in composer_flags if f.strip()]
-    notes = list(founder.get("notes") or [])
-    from crm.guardrails import found_on_intake_domain, urls_in  # local: keeps the module's import list honest
+    holds = list(review.get("holds") or []) + [f"Composer: {f}" for f in composer_flags if f.strip()]
+    notes = list(review.get("notes") or [])
     intake = normalize_domain(((manifest.get("state") or {}).get("account") or {}).get("domain"))
-    if intake and not found_on_intake_domain(state.get("coverage"), urls_in(state.get("web_research")) + cited, intake):
+    nothing_found = bool(intake) and not found_on_intake_domain(
+        state.get("coverage"), urls_in(state.get("web_research")) + cited, intake)
+    if nothing_found:
         holds.append(f"Nothing was found on {intake} by any source; this is a not-found note. Confirm the domain "
                      "with the prospect before anything goes out.")
     if state.get("web_research_error") or not state.get("web_sources"):
@@ -493,10 +516,15 @@ def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str
     labels = dict(DATA_SOURCES)
     for key, value in (state.get("coverage") or {}).items():
         if key in ("web", "ledger", "site"):
-            continue  # already covered by the lines above and by founder_note.assess
+            continue  # already covered by the lines above and by review.assess
         if coverage_status(value) in ("empty", "failed"):
             notes.append(f"{labels.get(key, key).split(':')[0].split(' (')[0]}: {str(value).split(':', 1)[-1].strip()}.")
     text = "\n".join([f"HOLD — {h}" for h in holds] + [f"Note — {n}" for n in notes]) or "Nothing extenuating; proceed as drafted."
+    try:
+        note = draft_note_to_founder(manifest, account.get("name") or account.get("domain"), nothing_found,
+                                     list(founder_lines), proposal_md)
+    except ValueError as exc:
+        raise GateError(f"note to the founder: {exc}") from None
     contacts = state.get("account_contacts") or []
     cov = state.get("coverage") or {}
     appendix = ["Research coverage:"]
@@ -519,7 +547,9 @@ def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str
         "apollo_contact_ids": [c.get("apollo_contact_id") for c in contacts if c.get("apollo_contact_id")],
         "request_text": request_text,
         "request": manifest.get("request") or {},
-        "founder_note": {"status": "needs_founder" if holds else "done", "holds": holds, "notes": notes, "text": text},
+        "founder": founder_of(manifest),
+        "note_to_founder": note,
+        "review": {"status": STATUS_NEEDS_REVIEW if holds else STATUS_DONE, "holds": holds, "notes": notes, "text": text},
         "coverage": cov,
         "notes_appendix": "\n".join(appendix),
         "proposal_markdown": proposal_md.strip() + "\n",
@@ -538,7 +568,8 @@ def write_proposal_files(record: dict[str, Any], proposals_dir: Path, now: datet
         f"# Prequalification proposal — {record['account'].get('name')}\n\n"
         f"_{record['generated_at']} · {record['proposal_id']} · run {record['run_id']} · request: {first}_\n\n"
         + record["proposal_markdown"]
-        + "\n---\n\n**Founder note**\n\n" + record["founder_note"]["text"] + "\n")
+        + "\n---\n\n**Note to the founder** (sent with the proposal)\n\n" + record["note_to_founder"] + "\n"
+        + "\n---\n\n**Review before sending** (internal)\n\n" + record["review"]["text"] + "\n")
     return json_path, md_path
 
 
@@ -565,9 +596,7 @@ def plan_account_write(record: dict[str, Any], manifest: dict[str, Any], account
     else:
         # A prospect with no CRM contacts: the account carries the proposal itself,
         # in the same block shape push_proposals_to_crm uses.
-        line = push_proposals_to_crm.NOTES_HEADER.format(date=stamp[:10], pid=pid) + "\n" + record["proposal_markdown"].strip()
-        line += "\n\nFounder note:\n" + record["founder_note"]["text"]
-        line += "\n\n" + record["notes_appendix"]
+        line = push_proposals_to_crm.note_block(record, stamp[:10])
     wanted = (manifest["state"]["account"] or {}).get("crm_account_id")
     existing_id = wanted if wanted in accounts else next(
         (i for i, d in accounts.items() if domain and normalize_domain(d.get("domain") or d.get("website")) == domain), None)
@@ -598,7 +627,7 @@ def plan_account_write(record: dict[str, Any], manifest: dict[str, Any], account
 
 def finalize(run_dir: Path, proposal_md: str, website_summary: str | None, composer_flags: list[str],
              master, docs: dict[str, dict[str, Any]], accounts: dict[str, dict[str, Any]],
-             now: datetime) -> dict[str, Any]:
+             now: datetime, *, founder_lines: list[str] | tuple[str, ...] = ()) -> dict[str, Any]:
     """Validate, build the record, plan every CRM write. Pure apart from reading run_dir.
 
     Refuses when a proposal is already filed for this run (run_final.json):
@@ -607,7 +636,9 @@ def finalize(run_dir: Path, proposal_md: str, website_summary: str | None, compo
     """
     manifest = json.loads((run_dir / "manifest.json").read_text())
     state = json.loads((run_dir / "state.json").read_text())
-    founder = json.loads((run_dir / "founder.json").read_text())
+    # founder.json: runs prepared before the internal list was renamed "review".
+    review_path = run_dir / "review.json" if (run_dir / "review.json").exists() else run_dir / "founder.json"
+    review = json.loads(review_path.read_text())
     run_id = run_dir.name
     if website_summary:
         state["website_summary"] = website_summary.strip()
@@ -620,7 +651,8 @@ def finalize(run_dir: Path, proposal_md: str, website_summary: str | None, compo
     problems = check_run(manifest, state.get("coverage"), research, sources_md, proposal_md, cited_links(proposal_md))
     if problems:
         raise GateError("guardrail: " + " | ".join(problems))
-    record = proposal_record(state, manifest, run_id, proposal_md, founder, composer_flags, now)
+    record = proposal_record(state, manifest, run_id, proposal_md, review, composer_flags, now,
+                             founder_lines=founder_lines)
     writes, log = push_proposals_to_crm.plan([record], master, docs, now=_iso(now))
     contact_ids = [w["doc_id"] for w in writes]
     account_write = plan_account_write(record, manifest, accounts, contact_ids, now)
@@ -649,7 +681,7 @@ def write_finalize(run_dir: Path, result: dict[str, Any], batch_dir: Path, json_
     record = result["record"]
     _write_json(run_dir / "state.json", result["state"])
     _write_json(run_dir / "run_final.json", {
-        "status": record["founder_note"]["status"],
+        "status": record["review"]["status"],
         "steps": {**json.loads((run_dir / "run_update.json").read_text()).get("steps", {}),
                   "apollo": coverage_status((result["state"].get("coverage") or {}).get("apollo")),
                   "prospecting": coverage_status((result["state"].get("coverage") or {}).get("prospecting")),
@@ -657,8 +689,10 @@ def write_finalize(run_dir: Path, result: dict[str, Any], batch_dir: Path, json_
                                    else "done" if result["state"].get("web_research") else "skipped"),
                   "summarize_page": "done" if result["state"].get("website_summary") else "skipped",
                   "compose_proposal": "done", "crm_write": "pending" if entries else "nothing"},
-        "founder_note": record["founder_note"]["text"],
-        "founder_status": record["founder_note"]["status"],
+        "review": record["review"]["text"],
+        "review_status": record["review"]["status"],
+        "founder": record["founder"],
+        "note_to_founder": record["note_to_founder"],
         "proposal_id": record["proposal_id"],
         "sources": record["sources"],
         "coverage": record["coverage"],
@@ -705,6 +739,8 @@ def main(argv: list[str] | None = None) -> int:
     f.add_argument("--proposal", type=Path, required=True, help="the drafted Markdown")
     f.add_argument("--website-summary", type=Path, default=None)
     f.add_argument("--composer-flag", action="append", default=[], help="a judgement-call HOLD line; repeatable")
+    f.add_argument("--founder-line", action="append", default=[],
+                   help="a sentence for the note to the founder (scope limit, what to send us); repeatable")
     f.add_argument("--crm-dump", type=Path, required=True)
     f.add_argument("--runs-dir", type=Path, default=config.RUNS_DIR)
     f.add_argument("--proposals-dir", type=Path, default=config.PROPOSALS_DIR)
@@ -725,10 +761,11 @@ def main(argv: list[str] | None = None) -> int:
                          account_lists_empty=not args.account_lists_present)
         run_dir = args.runs_dir / run_id
         write_prepare(run_dir, manifest, result, run_id, now)
-        founder = result["founder"]
+        review = result["review"]
         print(json.dumps({"run_id": run_id, "run_dir": str(run_dir), "steps": result["steps"],
-                          "founder_status": founder.status, "holds": len(founder.holds), "notes": len(founder.notes),
-                          "matched_contacts": founder.matched_doc_ids, "halted": result["halted"]}, indent=2))
+                          "founder": result["state"].get("founder"),
+                          "review_status": review.status, "holds": len(review.holds), "notes": len(review.notes),
+                          "matched_contacts": review.matched_doc_ids, "halted": result["halted"]}, indent=2))
         return 2 if result["halted"] else 0
 
     run_dir = args.runs_dir / args.run_id
@@ -752,11 +789,12 @@ def main(argv: list[str] | None = None) -> int:
     accounts = load_crm_dump(args.crm_dump, "accounts")
     master = load_master(args.master)
     summary = args.website_summary.read_text() if args.website_summary else None
-    result = finalize(run_dir, args.proposal.read_text(), summary, args.composer_flag, master, docs, accounts, now)
+    result = finalize(run_dir, args.proposal.read_text(), summary, args.composer_flag, master, docs, accounts, now,
+                      founder_lines=args.founder_line)
     json_path, md_path = write_proposal_files(result["record"], args.proposals_dir, now)
     writes_path = write_finalize(run_dir, result, args.out_dir / f"compose_{args.run_id}", json_path, md_path, now)
     print(json.dumps({"run_id": args.run_id, "proposal_id": result["record"]["proposal_id"],
-                      "status": result["record"]["founder_note"]["status"], "proposal": str(json_path),
+                      "status": result["record"]["review"]["status"], "proposal": str(json_path),
                       "contacts": result["contact_ids"], "account": result["account_id"],
                       "writes": writes_path.as_posix(), "writes_planned": len(result["writes"]), "log": result["log"]},
                      indent=2))

@@ -1,6 +1,6 @@
-"""Each extenuating criterion in crm/founder_note.py, one at a time.
+"""Each review criterion in crm/review.py, one at a time.
 
-The note is what the founder reads before a button-drafted proposal goes
+The review is what the sender reads before a button-drafted proposal goes
 anywhere, so every line it can produce is pinned here against a small,
 explicit fixture. No network, no files.
 """
@@ -13,9 +13,9 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from crm.founder_note import (  # noqa: E402
+from crm.review import (  # noqa: E402
     STATUS_DONE,
-    STATUS_NEEDS_FOUNDER,
+    STATUS_NEEDS_REVIEW,
     assess,
     in_sync_window,
     match_crm_contacts,
@@ -28,7 +28,7 @@ NOW = datetime(2026, 9, 24, 20, 0, tzinfo=timezone.utc)  # a Thursday
 def manifest(**over):
     m = {
         "run": {"run_id": "run_t"},
-        "request": {"text": "Can you help us plan a second location?"},
+        "request": {"text": "Can you help us plan a second location?", "requester": {"name": "Ada Lovelace"}},
         "state": {
             "account": {"name": "Example Co", "domain": "example.com", "crm_account_id": None},
             "account_contacts": {"include": True, "limit": "25"},
@@ -76,7 +76,7 @@ def test_clean_run_is_done_with_no_lines():
 @pytest.mark.parametrize("text", ["what's your rate?", "we have a $5,000 budget", "billed per hour", "send a quote"])
 def test_money_in_request_holds(text):
     fn = assess(manifest(request_text=text), state(), {"ap_ada": doc()}, NOW)
-    assert fn.status == STATUS_NEEDS_FOUNDER
+    assert fn.status == STATUS_NEEDS_REVIEW
     assert any("money" in h for h in fn.holds)
 
 
@@ -160,4 +160,15 @@ def test_text_orders_holds_before_notes():
     fn = assess(manifest(request_text="rate?"), state(), {"ap_ada": doc(qualified=False)}, NOW)
     lines = fn.text.splitlines()
     assert lines[0].startswith("HOLD — ") and lines[-1].startswith("Note — ")
-    assert fn.as_dict()["status"] == STATUS_NEEDS_FOUNDER
+    assert fn.as_dict()["status"] == STATUS_NEEDS_REVIEW
+
+
+def test_no_founder_named_is_a_note():
+    m = manifest()
+    del m["request"]["requester"]
+    review = assess(m, state(), {"ap_ada": doc()}, NOW)
+    assert review.status == STATUS_DONE and review.holds == []
+    assert any("No founder named" in n for n in review.notes)
+    m["request"]["founder"] = {"name": "Ada Lovelace"}
+    assert not any("No founder named" in n for n in assess(m, state(), {"ap_ada": doc()}, NOW).notes)
+
