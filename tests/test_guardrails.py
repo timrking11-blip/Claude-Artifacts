@@ -56,8 +56,12 @@ def test_check_run_rules():
     p = check_run(m, {"apollo": "none"}, "", "", "## What we know\nnot found", ["https://www.fdic.gov/a"])
     assert p == []
     p = check_run(m, {"apollo": "none"}, "", "", "## What we know\nGreat company", ["https://kadince.com/a"])
-    assert any("empty means empty" in x and "kadince.com" in x for x in p)
-    assert any("must say so" in x for x in p)
+    assert p == [
+        "empty means empty: nothing was found on claridi.ai, so the proposal may cite only that domain "
+        "and primary macro sources; it cites kadince.com",
+        "empty means empty: nothing was found on claridi.ai; the proposal must say so (\"not found\") "
+        "instead of describing the company",
+    ]
     # found on the domain: other citations are fine
     p = check_run(m, {}, "", "", "x", ["https://claridi.ai/about", "https://kadince.com/a"])
     assert p == []
