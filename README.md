@@ -34,7 +34,14 @@ mirrored in this repo.
 
 The canonical CRM is the **CRM System** artifact; the three CRM-facing
 scripts above target its schema and are applied by the Monday 11:30 UTC
-routine (validate → enrichment → proposals). The last two rows fed the
+routine (validate → enrichment → proposals). The routine takes a dump with
+`ArtifactData list … out_dir=<dump>` and writes `<dump>/versions.json` from
+the listing's per-document versions, because the batch tool refuses an
+unpinned update and the dump files carry no version; the push scripts pin
+every write with it. The routine is bound to the session that built the
+pipeline -- a fresh-session routine cannot load `ArtifactData`, which is how
+the earlier ledger-sync routine reported success for a month while writing
+nothing. The last two rows fed the
 original ledger artifact, which has been superseded; they stay for history.
 Prequalification proposals are composed by the account-research agent
 (`prequal <account>: <request>`, see `python/agents/account-research/`) on the
