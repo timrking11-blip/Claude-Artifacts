@@ -1,7 +1,3 @@
-# Prequalification proposal — Claridi.ai
-
-_2026-09-24T21:25:00Z · prq_0d2a2c33bdcc · run run_20260924_claridi · request: (none)_
-
 # Claridi.ai -- Prequalification Proposal
 Prepared by Strategic Marketing Insights
 
@@ -60,16 +56,3 @@ We suggest a 30-minute scoping call with the person we connected with on LinkedI
 - https://www.ncontracts.com/products/fair-lending-compliance-software
 - https://riskexec.com/
 - https://kadince.com/solutions/institution/community-banks
-
----
-
-**Founder note**
-
-HOLD — Composer: Identity unconfirmed: the CRM record is claridi.ai, the research is on Clarid at clarid.ai. Both sites are blocked here. Confirm they are the same company before this goes anywhere.
-HOLD — Composer: No written request is on file; the engagement decision in the summary is SMI's reading, not the prospect's ask.
-Note — No CRM contact matched this account; the proposal is filed on the account record only, with nobody to attach it to.
-Note — Account is not in the enriched data layer; the proposal leans on the website and the request alone.
-Note — Website fetch failed (Failed to fetch page https://claridi.ai: <urlopen error Tunnel connection failed: 403 Forbidden>); no website summary.
-Note — Warehouse findings are the 'not available' sentinel; no BigQuery in this run.
-Note — Apollo organization enrich + people at the domain: people search is not on the Apollo plan; organization enrich costs 1 credit and waits for your approval.
-Note — Vibe Prospecting: Vibe Prospecting found no business match for claridi.ai or clarid.ai.

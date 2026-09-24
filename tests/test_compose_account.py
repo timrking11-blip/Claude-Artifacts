@@ -296,6 +296,13 @@ def test_cli_prepare_then_finalize(ledger, dump, tmp_path):
     rc = compose.main(["prepare", str(mpath), "--crm-dump", str(dump), "--runs-dir", str(tmp_path / "runs"),
                        "--no-fetch", "--now", "2026-09-24T20:00:00Z"])
     assert rc == 0
+    memo = tmp_path / "memo.md"
+    memo.write_text("## Company\nExamples ([site](https://example.com/about)) [supported]")
+    cov = tmp_path / "coverage.json"
+    cov.write_text(json.dumps({"apollo": "none: plan", "prospecting": "ok: matched"}))
+    rc = compose.main(["brief", "run_t", "--web-research", str(memo), "--coverage", str(cov),
+                       "--runs-dir", str(tmp_path / "runs")])
+    assert rc == 0 and (tmp_path / "runs" / "run_t" / "proposal_prompt.md").exists()
     draft = tmp_path / "draft.md"
     draft.write_text(PROPOSAL)
     rc = compose.main(["finalize", "run_t", "--proposal", str(draft), "--crm-dump", str(dump),
@@ -303,7 +310,11 @@ def test_cli_prepare_then_finalize(ledger, dump, tmp_path):
                        "--out-dir", str(tmp_path / "batch"), "--master", str(ledger), "--now", "2026-09-24T20:05:00Z"])
     assert rc == 0
     assert (tmp_path / "batch" / "compose_run_t" / "writes.json").exists()
-    assert (tmp_path / "runs" / "run_t" / "run_final.json").exists()
+    final = json.loads((tmp_path / "runs" / "run_t" / "run_final.json").read_text())
+    assert final["steps"]["apollo"] == "empty" and final["steps"]["prospecting"] == "done"
+    assert final["coverage"]["apollo"] == "none: plan" and len(final["sync_schedule"]) == 4
+    rec = json.loads(next((tmp_path / "proposals").glob("*.json")).read_text())
+    assert "Sync schedule" in rec["notes_appendix"] and "Mon 28 Sep 2026 11:00 UTC" in rec["notes_appendix"]
 
 
 def test_linkedin_prospect_gets_the_proposal_on_its_account(ledger, dump, tmp_path):

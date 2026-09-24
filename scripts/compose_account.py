@@ -658,6 +658,7 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--data-sources", type=Path, default=None, help="Apollo / prospecting findings (Markdown)")
     b.add_argument("--coverage", type=Path, default=None, help="per-source outcome (JSON)")
     b.add_argument("--runs-dir", type=Path, default=config.RUNS_DIR)
+    b.add_argument("--now", default=None)
 
     f = sub.add_parser("finalize")
     f.add_argument("run_id")
@@ -673,7 +674,7 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     now = _now(args.now)
-    if args.master:
+    if getattr(args, "master", None):
         os.environ["ACCOUNT_RESEARCH_LEDGER"] = str(args.master)
 
     if args.cmd == "prepare":
