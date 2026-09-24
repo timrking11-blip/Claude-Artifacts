@@ -121,7 +121,7 @@ was and was not built on.
 ## The proposal
 
 The SMI short form, from `prequal_agent_prompt.py`: a title line, "Prepared by
-Strategic Marketing Insights", then **Engagement summary** (the one decision it
+Strategic Market Insights", then **Engagement summary** (the one decision it
 closes), **What we heard** (signals table), **Why now: the market and the
 economy** (the ValueFirst lens: demand and cost drivers, rates and credit,
 policy calendar, cycle position, every figure dated), **The problem in front of

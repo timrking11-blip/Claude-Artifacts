@@ -34,7 +34,7 @@ WEB_FETCH = {
 #: A server-tool turn pauses after its own iteration limit; resume at most this often.
 MAX_CONTINUATIONS = 5
 
-SYSTEM = """You are the research desk for Strategic Marketing Insights (SMI), an
+SYSTEM = """You are the research desk for Strategic Market Insights (SMI), an
 independent strategy advisor. You gather the outside-in evidence a short,
 persuasive prequalification proposal is argued from. You never write the
 proposal itself.

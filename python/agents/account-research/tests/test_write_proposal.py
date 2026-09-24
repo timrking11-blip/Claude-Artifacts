@@ -16,7 +16,7 @@ class FakeToolContext:
 
 GOOD = """
 # Acme -- Prequalification Proposal
-Prepared by Strategic Marketing Insights
+Prepared by Strategic Market Insights
 
 ## Engagement summary
 By a date we set together, Acme decides whether to enter the northeast market.

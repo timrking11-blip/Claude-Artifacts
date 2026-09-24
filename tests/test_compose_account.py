@@ -31,7 +31,7 @@ compose = _load_script("compose_account")
 NOW = datetime(2026, 9, 24, 20, 0, tzinfo=timezone.utc)
 
 PROPOSAL = """# Example Co -- Prequalification Proposal
-Prepared by Strategic Marketing Insights
+Prepared by Strategic Market Insights
 
 ## Engagement summary
 By a date we set together, Example Co decides whether to open a second location.

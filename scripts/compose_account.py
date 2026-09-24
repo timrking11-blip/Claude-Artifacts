@@ -522,7 +522,7 @@ def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str
     text = "\n".join([f"HOLD — {h}" for h in holds] + [f"Note — {n}" for n in notes]) or "Nothing extenuating; proceed as drafted."
     try:
         note = draft_note_to_founder(manifest, account.get("name") or account.get("domain"), nothing_found,
-                                     list(founder_lines), proposal_md)
+                                     list(founder_lines))
     except ValueError as exc:
         raise GateError(f"note to the founder: {exc}") from None
     contacts = state.get("account_contacts") or []

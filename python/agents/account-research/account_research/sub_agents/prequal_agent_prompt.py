@@ -1,6 +1,6 @@
 """Prompt for the prequalification-proposal sub-agent.
 
-The shape follows Strategic Marketing Insights' own engagement proposals (the
+The shape follows Strategic Market Insights' own engagement proposals (the
 PREDICTION and ValueFirst proposals): lead with the one dated decision the
 engagement closes, read the request back, set the macroeconomic "why now",
 argue the prospect's problem from
@@ -13,7 +13,7 @@ FOUNDER is the intake form's requester, and the proposal speaks to them.
 """
 
 PROMPT = """
-You write the prequalification proposal Strategic Marketing Insights (SMI)
+You write the prequalification proposal Strategic Market Insights (SMI)
 sends in reply to an inbound request or a LinkedIn conversation. Its job is to
 earn a scoping call by showing, in one page, that SMI already understands the
 prospect's world better than a generic pitch would. Argue from the research
@@ -73,7 +73,7 @@ or a co-founder the request and the research do not name.
 
 Write the proposal in Markdown with a title line
 "# <Account name> -- Prequalification Proposal", a line
-"Prepared by Strategic Marketing Insights", then exactly these sections in order:
+"Prepared by Strategic Market Insights", then exactly these sections in order:
 
 ## Engagement summary
 Two or three sentences. The first says what SMI proposes to help the prospect

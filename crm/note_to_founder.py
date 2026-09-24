@@ -19,9 +19,10 @@ from typing import Any
 
 from .review import REQUEST_MONEY
 
+#: The firm the note is signed for (SMI).
+BRAND = "Strategic Market Insights"
 MAX_WORDS = 170
 _MONEY = re.compile(r"(\$\s?\d|\b\d[\d,]*\s?(?:USD|dollars)\b|\bper\s+(?:hour|day|month)\b)", re.I)
-_PREPARED_BY = re.compile(r"^\s*Prepared by\s+(.+?)\s*$", re.I | re.M)
 
 
 def founder_of(manifest: dict[str, Any]) -> dict[str, Any]:
@@ -37,13 +38,8 @@ def first_name(name: str | None) -> str | None:
     return parts[0] if parts else None
 
 
-def brand_from(proposal_md: str, default: str = "Strategic Marketing Insights") -> str:
-    m = _PREPARED_BY.search(proposal_md or "")
-    return m.group(1).strip() if m else default
-
-
 def draft(manifest: dict[str, Any], company: str | None, nothing_found: bool,
-          founder_lines: list[str], proposal_md: str, sender: str = "Tim") -> str:
+          founder_lines: list[str], sender: str = "Tim") -> str:
     """The cover note, as plain text. Raises ValueError if a founder line mentions money."""
     founder = founder_of(manifest)
     who = first_name(founder["name"])
@@ -71,7 +67,7 @@ def draft(manifest: dict[str, Any], company: str | None, nothing_found: bool,
             raise ValueError(f"founder line mentions money: {extra!r}")
         lines.append(extra if extra.endswith((".", "?", "!")) else extra + ".")
     lines.append("If the framing looks right, a 30-minute call is the next step.")
-    lines += ["", sender, brand_from(proposal_md)]
+    lines += ["", sender, BRAND]
     text = "\n".join(lines[:2]) + "\n" + " ".join(lines[2:-3]) + "\n" + "\n".join(lines[-3:])
     words = len(text.split())
     if words > MAX_WORDS:

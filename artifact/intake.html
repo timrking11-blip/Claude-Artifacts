@@ -758,13 +758,11 @@
   function render(JsPDF, markdown, meta){
     meta = meta || {};
     var doc = new JsPDF({ unit: "pt", format: "letter", compress: true });
-    var list = blocks(markdown), y = TOP, brand = "Strategic Marketing Insights", title = meta.account || "Proposal";
+    var list = blocks(markdown), y = TOP, brand = meta.brand || "Strategic Market Insights", title = meta.account || "Proposal";
     var first = list.findIndex(function(b){ return b.k === "h2"; });
     var head = first === -1 ? list : list.slice(0, first);
     head.forEach(function(b){
       if (b.k === "h1") title = b.text.replace(/\s+(?:--|—|–|-)\s+prequalification proposal\s*$/i, "").trim() || title;
-      var m = b.k === "p" && b.text.match(/^prepared by\s+(.+)$/i);
-      if (m) brand = m[1].trim();
     });
     list = list.filter(function(b, idx){
       if (first !== -1 && idx >= first) return true;
@@ -1162,7 +1160,7 @@
     var who = founderOf(data).name;
     $("ntfMeta").textContent = (who ? "to " + who : "to the founder (the requester)") + " · goes with the proposal";
     var note = data && data.note_to_founder;
-    $("ntfText").textContent = note || (data && data.proposal_markdown
+    $("ntfText").textContent = (note && brandFix(note)) || (data && data.proposal_markdown
       ? "Not drafted for this run: it was filed before notes to the founder existed. A new run drafts one."
       : "Drafted with the proposal.");
     $("btnCopyNote").disabled = !note;
@@ -1176,13 +1174,18 @@
     if(data && data.apollo_account_id) kv(dl, "apollo account", data.apollo_account_id);
     if(data && data.manifest && data.manifest.crm) kv(dl, "disposition", data.manifest.crm.disposition || "—");
     if(data && data.fire_error) kv(dl, "fire", data.fire_error);
-    $("propText").textContent = (data && data.proposal_markdown) || "(not yet drafted)";
+    $("propText").textContent = (data && data.proposal_markdown) ? brandFix(data.proposal_markdown) : "(not yet drafted)";
     $("pdfNote").textContent = isVoid(data) ? "Voided proposal: not for sending, so no PDF."
       : (fs === "needs_review" && data && data.proposal_markdown ? "The review above has HOLD lines. Decide on them before sending." : "");
     renderPdfButton();
   }
 
   /* ---- Download PDF ---- */
+  /* The firm is Strategic Market Insights. Proposals filed on 24 Sep 2026 say
+     "Marketing"; their stored record keeps that wording, but everything this
+     page shows, copies or exports uses the firm's name. */
+  var BRAND = "Strategic Market Insights";
+  function brandFix(text){ return String(text == null ? "" : text).replace(/Strategic Marketing Insights/g, BRAND); }
   function isVoid(data){ return !!(data && (data.void || data.status === "void")); }
   function founderOf(data){
     var r = data && data.manifest && data.manifest.request || {};
@@ -1229,7 +1232,8 @@
       catch(e){ note.textContent = "The PDF library did not load. Check your connection and try again."; return; }
       var blob, acc = currentData.account || {}, filename = pdfName();
       try{
-        blob = window.ProposalPDF.render(JsPDF, currentData.proposal_markdown, {
+        blob = window.ProposalPDF.render(JsPDF, brandFix(currentData.proposal_markdown), {
+          brand: BRAND,
           account: acc.name || acc.domain || "", founder: founderOf(currentData).name || "",
           date: currentData.finished_at || currentData.prepared_at || currentData.requested_at || "",
           pid: currentData.proposal_id || ""
