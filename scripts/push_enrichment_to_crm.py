@@ -36,6 +36,7 @@ from crm.crm_sync import (
     assert_not_owned,
     index_crm_by_email,
     load_crm_dump,
+    pinned,
     proposal_ready,
     system_activity,
     utcnow_iso,
@@ -128,7 +129,7 @@ def plan(master: list[Contact], docs: dict[str, dict], now: str | None = None) -
         assert_not_owned({k: v for k, v in data.items() if k != "flags"})
         data["activity"] = system_activity(doc.get("activity"), "; ".join(notes), ts=now)
         data["updated_at"] = now
-        writes.append({"op": "update", "collection": "contacts", "doc_id": doc_id, "data": data})
+        writes.append(pinned(doc, {"op": "update", "collection": "contacts", "doc_id": doc_id, "data": data}))
     return writes
 
 

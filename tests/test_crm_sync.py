@@ -266,3 +266,12 @@ def test_write_batches_splits_at_fifty_and_clears_stale(tmp_path):
     assert [f.name for f in files] == ["enrich_000.json", "enrich_001.json", "enrich_002.json"]
     assert not (tmp_path / "enrich_099.json").exists()
     assert len(json.loads(files[2].read_text())) == 20
+
+
+def test_writes_are_pinned_when_the_dump_knows_versions(master, dump):
+    (dump / "versions.json").write_text(json.dumps({"ap_ada": 7}))
+    from crm.master import load_master
+    writes = push_enrichment.plan(load_master(master), load_crm_dump(dump))
+    by_id = {w["doc_id"]: w for w in writes}
+    assert by_id["ap_ada"]["if_version"] == 7
+    assert "_version" not in by_id["ap_ada"]["data"]          # never written to the document

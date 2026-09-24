@@ -31,7 +31,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from crm import config
-from crm.crm_sync import load_crm_dump, system_activity, utcnow_iso, write_batches
+from crm.crm_sync import load_crm_dump, pinned, system_activity, utcnow_iso, write_batches
 from crm.master import load_master
 from crm.schema import Contact, normalize_domain, normalize_email
 
@@ -121,7 +121,7 @@ def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str,
                 scope = first_line(p.get("request_text")) or first_line(p["proposal_markdown"].replace("#", ""))
                 if scope:
                     data["proposal_scope"] = scope
-            writes.append({"op": "update", "collection": "contacts", "doc_id": doc_id, "data": data})
+            writes.append(pinned(doc, {"op": "update", "collection": "contacts", "doc_id": doc_id, "data": data}))
             applied += 1
         log.append(f"{pid}: {applied} contact(s) updated, {skipped} already carried it")
     return writes, log

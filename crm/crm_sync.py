@@ -48,19 +48,35 @@ def load_crm_dump(dump_dir: Path) -> dict[str, dict[str, Any]]:
     """Read a dump made with `ArtifactData list ... out_dir=<dump_dir>`.
 
     The layout is <dump_dir>/contacts/<doc_id>.json with the document's fields
-    at the top level of each file. The dump does NOT carry the document
-    version, so batch writes built from it cannot be pinned with if_version;
-    that is why every write here is an `update` (a field merge) and never a
-    `set` -- the blast radius is the fields written, nothing else.
+    at the top level of each file. The files do NOT carry the document
+    version, but the listing that produced them does, and the batch tool
+    refuses an unpinned update to an existing document. So the session that
+    takes the dump writes <dump_dir>/versions.json ({doc_id: version}) from
+    the listing; when it exists, each doc gets a private `_version` and the
+    push scripts pin their writes with it. Every write is still an `update`
+    (a field merge), never a `set` -- the blast radius is the fields written.
     """
     contacts_dir = dump_dir / CONTACTS_COLLECTION
     if not contacts_dir.is_dir():
         contacts_dir = dump_dir
+    versions: dict[str, Any] = {}
+    vpath = dump_dir / "versions.json"
+    if vpath.exists():
+        versions = json.loads(vpath.read_text() or "{}")
     docs: dict[str, dict[str, Any]] = {}
     for path in sorted(contacts_dir.glob("*.json")):
         doc = json.loads(path.read_text() or "{}")
+        if isinstance(versions.get(path.stem), int):
+            doc["_version"] = versions[path.stem]
         docs[path.stem] = doc
     return docs
+
+
+def pinned(doc: dict[str, Any], write: dict[str, Any]) -> dict[str, Any]:
+    """Attach if_version to a write when the dump knew the document's version."""
+    if isinstance(doc.get("_version"), int):
+        write["if_version"] = doc["_version"]
+    return write
 
 
 def index_crm_by_email(docs: dict[str, dict[str, Any]]) -> dict[str, str]:
