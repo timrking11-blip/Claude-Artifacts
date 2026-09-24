@@ -9,65 +9,66 @@
       "email": "gfarinha@usi-hvac.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "1be1a5bcddfbef83878f74da88f09f50f8355443",
       "first_name": "Geoff",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Farinha",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/gfarinha",
       "location": "Billerica, Massachusetts, United States",
       "phone": "+19788089838",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "President & Chief Executive Officer"
@@ -93,42 +94,42 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -160,27 +161,27 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -200,65 +201,66 @@
       "email": "szugel@esgplaybook.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "096c7c3ccb6f4644ef7e2821bd4691889ce04d25",
       "first_name": "Sonia",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Zugel",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/soniazugel",
       "location": "Holmdel, New Jersey, United States",
       "phone": "+17328583207",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Chief Executive Officer and Founder"
@@ -272,60 +274,61 @@
       "email": "dporteous@integralsolutionists.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "7af09db101c4ace19525307792c90a519204c913",
       "first_name": "David",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Porteous",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/dporteous",
       "location": "Boston, Massachusetts, United States",
       "phone": null,
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder and CEO"
@@ -339,65 +342,66 @@
       "email": "conner@koxa.io",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "13a0957759fcc27e944f0d3c3c03edba690a47e5",
       "first_name": "Conner",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Mulvee",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/connermulvee",
       "location": "New York, New York, United States",
       "phone": "+19084560761",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Co-Founder and CEO"
@@ -423,17 +427,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -453,65 +457,66 @@
       "email": "jonathan.a@takara-capital.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "7ce597f092b43e6cab0dba08c362723559a9484f",
       "first_name": "Jonathan",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Arad",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/jonathan-arad",
       "location": "United States",
       "phone": "+74663686237",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Co-Founder / CEO"
@@ -525,50 +530,51 @@
       "email": "dfarinha@usi-hvac.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "b71f7f8f28ed2c3a5c866617d3a5f4867e79f4e8",
       "first_name": "Darryll",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Farinha",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": null,
       "location": "Billerica, Massachusetts, United States",
       "phone": "+19783758144",
       "provenance": {
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Owner / Founder / President"
@@ -582,65 +588,66 @@
       "email": "elizabeth@appmap.io",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "84e1eff6b50a26705e01d7b3d1ac0a124016d46b",
       "first_name": "Elizabeth",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Lawler",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/elizabethlawler",
       "location": "Weston, Massachusetts, United States",
       "phone": "+16172370527",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder and CEO"
@@ -666,17 +673,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -696,60 +703,61 @@
       "email": "mdylan@theresumereview.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "4f27d907fe6163275d606402c1468f0b8b7c81da",
       "first_name": "Mickelle",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "D",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": null,
       "location": "Chicago, Illinois, United States",
       "phone": "+18002541833",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder & CEO, TheResumeReview.com"
@@ -763,65 +771,66 @@
       "email": "serena.puerta@cultureoffit.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "1db0d2cbf06fed0a7234965736ffd7918d4cb0a9",
       "first_name": "Serena",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Puerta",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/serena-puerta",
       "location": "New York, New York, United States",
       "phone": "+16464606787",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder | CEO"
@@ -835,65 +844,66 @@
       "email": "libbe@pharm3r.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "0eb4e39b25f7214988adac63d35938cf50ffdfd7",
       "first_name": "Libbe",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Englander",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/libbeenglander",
       "location": "New York, New York, United States",
       "phone": "+18009159213",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO and Founder"
@@ -907,65 +917,66 @@
       "email": "jfbetts@predictiveiq.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "888c65ef721721d75e046dc831b70e2e22d477c6",
       "first_name": "Juan",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Betts",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/juanfernandobetts",
       "location": "Fort Lauderdale, Florida, United States",
       "phone": "+16175179743",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO"
@@ -979,65 +990,66 @@
       "email": "gsilvano@buyist.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "d94156ff46f072dad2cec6501311f463ea43d6c7",
       "first_name": "Gregory",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Silvano",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/buyist",
       "location": "Boston, Massachusetts, United States",
       "phone": "+16172297699",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO"
@@ -1051,65 +1063,66 @@
       "email": "yujiew@vocadian.ai",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "45347d2746528e723fe6a2fa0c4211de002b2b4e",
       "first_name": "Yujie",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Wang",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/yujie-wang-mit",
       "location": "Cambridge, Massachusetts, United States",
       "phone": "+16172014414",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder & CEO"
@@ -1123,65 +1136,66 @@
       "email": "jbspear@jbsales.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "527529057477735f89a27c2001eeb447899574a6",
       "first_name": "James",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Spear",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/james-spear-879b851a",
       "location": "Easton, Maryland, United States",
       "phone": "+16175295252",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "President, Chief Executive Officer"
@@ -1195,65 +1209,66 @@
       "email": "ameet@glammatic.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "e30c326624a542d9057f4db8371fc44744880272",
       "first_name": "Ameet",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Kallarackal",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/ameetkal",
       "location": "Boston, Massachusetts, United States",
       "phone": "+18578567707",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO & Cofounder"
@@ -1267,60 +1282,61 @@
       "email": "cfulp@fulpdiversity.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "d3f12af300754101c248ff7b4caa5820303a3493",
       "first_name": "Carol",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Fulp",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/carol-fulp-926ba8393",
       "location": "Boston, Massachusetts, United States",
       "phone": null,
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Chief Executive Officer"
@@ -1334,65 +1350,66 @@
       "email": "qhasan@maidencentury.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "da3b5980b30a5d8ebc2c608510ad2d7c1610b236",
       "first_name": "Qaisar",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Hasan",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/qaisar-hasan-2b434950",
       "location": "New York, New York, United States",
       "phone": "+19173622564",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder & CEO"
@@ -1406,60 +1423,61 @@
       "email": "josh@jobleap.ai",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "2308baaac4c399cb6dd3f34bc14153d849a16e59",
       "first_name": "Josh",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Gampel",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/joshgampel",
       "location": "New York, New York, United States",
       "phone": null,
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO & Co-Founder"
@@ -1473,65 +1491,66 @@
       "email": "kson@phast.ai",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "4583448dd8d3a473803c745f1b0af8562ce6fed7",
       "first_name": "Kwangmin",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Son",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/kwangmin-son-734154134",
       "location": "Cambridge, Massachusetts, United States",
       "phone": "+16179557376",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO"
@@ -1557,22 +1576,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -1592,65 +1611,66 @@
       "email": "nish@monaire.ai",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "c1141be0842b5cf796ce6de27f4b33309930050c",
       "first_name": "Nishant",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Kanapilly",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/nkanapilly",
       "location": "Waunakee, Wisconsin, United States",
       "phone": "+12016931604",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Chief Executive Officer & Co-Founder"
@@ -1676,22 +1696,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -1711,65 +1731,66 @@
       "email": "matt@mjkexecdev.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "c932ab85472cad4641eae3f1ac00e181c9172bda",
       "first_name": "Matthew",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Kaplowitz",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/mjkaplowitz",
       "location": "New York, New York, United States",
       "phone": "+12128797312",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder and CEO"
@@ -1783,60 +1804,61 @@
       "email": "arnabdey@doclens.ai",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "d5b9d3f466921bd03219cbd43adc60c8b0fb6711",
       "first_name": "Arnab",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Dey",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/arnabdeynyc",
       "location": "New York, New York, United States",
       "phone": "+19174766662",
       "provenance": {
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Co-Founder & CEO"
@@ -1850,65 +1872,66 @@
       "email": "jon@openrounds.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "7b3615cb311f5a5ac5d349be4c47954d926c22b7",
       "first_name": "Jonathan",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Wyeth",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/jonwyeth",
       "location": "Cambridge, Massachusetts, United States",
       "phone": "+18887657707",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder & CEO"
@@ -1922,65 +1945,66 @@
       "email": "clehman@clairity.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "8299d0c0e46c29fb38b34f807f2b8196cd919773",
       "first_name": "Connie",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Lehman",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/connie-lehman",
       "location": "Boston, Massachusetts, United States",
       "phone": "+16173073600",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder / CEO / President"
@@ -1994,65 +2018,66 @@
       "email": "nikki@areteeducation.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "6d8fcbe8a49fc74ac3d900da47784932ccd90654",
       "first_name": "Nikki",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Geula",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/nikki-geula-42690b10",
       "location": "United States",
       "phone": "+19178264460",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder & CEO"
@@ -2066,60 +2091,61 @@
       "email": "kerry.rodriguez@contrasearch.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "a3d23ee875aa7cd133b6a95005e7ebb439627727",
       "first_name": "Kerry",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Rodriguez",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/kerry-rodr%c3%adguez-59a359227",
       "location": "United States",
       "phone": null,
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder & CEO"
@@ -2133,60 +2159,61 @@
       "email": "gopi@sparenook.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "7dbd3acdfeb1e33956f6ae33f47dcfdacb9a7fa3",
       "first_name": "Gopi",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Kunasekaran",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/gopi-kunasekaran-45507443",
       "location": "Boston, Massachusetts, United States",
       "phone": null,
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO & Founder"
@@ -2200,65 +2227,66 @@
       "email": "mike@urbanstrategiesllc.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "7ae26b032176689b5ac96a208df42b5cdb2152f6",
       "first_name": "Mike",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Klein",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/mikekleinnyc",
       "location": "New York, New York, United States",
       "phone": "+19178170833",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "President and CEO"
@@ -2284,17 +2312,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -2326,17 +2354,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -2356,65 +2384,66 @@
       "email": "nitzan@wevo.ai",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "8baed167d72e877ea9cd30247f3f1e7571036a57",
       "first_name": "Nitzan",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Shaer",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/nshaer",
       "location": "Boston, Massachusetts, United States",
       "phone": "+18888356828",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO and Co-Founder"
@@ -2440,17 +2469,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -2482,17 +2511,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -2512,65 +2541,66 @@
       "email": "kelly@mykidzday.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "3833a730707c16ac0c95c2cfb219c7e0935ffaa9",
       "first_name": "Kelly",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Mittal",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/kellymittal",
       "location": "Boston, Massachusetts, United States",
       "phone": "+18605932955",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder & CEO"
@@ -2596,17 +2626,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -2626,65 +2656,66 @@
       "email": "crawford@vendella.co.nz",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "33673152c740d9a25777eb8dbd13a432771832c9",
       "first_name": "Crawford",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "How",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/crawford-how",
       "location": "Rangiora, Canterbury, New Zealand",
       "phone": "+64800836335",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Sales Representative"
@@ -2698,65 +2729,66 @@
       "email": "kaisar.khan@geimusa.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "7062f8ebb3765d98da81d58d0395d3dd475a3702",
       "first_name": "Kaisar",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Khan",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/kaisar-khan-3225a4b5",
       "location": "Millbury, Massachusetts, United States",
       "phone": "+13479326364",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder"
@@ -2770,65 +2802,66 @@
       "email": "marianna@riemerassociates.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "2b8428a34f3a90c51985690e74a6d8e58963ed0e",
       "first_name": "Marianna",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Riemer",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/marianna-riemer-0922673b",
       "location": "Boston, Massachusetts, United States",
       "phone": "+15087293988",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "President & CEO"
@@ -2842,65 +2875,66 @@
       "email": "maria@yapp.us",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "a7dde7a949b53a1795f12227a275edc9bd8567a3",
       "first_name": "Maria",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Seidman",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/mariaseidman",
       "location": "New York, New York, United States",
       "phone": "+12127992598",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO & Co-Founder"
@@ -2914,65 +2948,66 @@
       "email": "alexander@trutharts.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "688945e8dbdf6029bc5edec5295e8e558422259a",
       "first_name": "Alexander",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Taub",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/alexandertaub",
       "location": "Miami, Florida, United States",
       "phone": "+18182670931",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Co-founder and CEO"
@@ -2986,55 +3021,56 @@
       "email": "rao@digitran.ai",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "39623e2440d7bbf79c7e35c937d91438d8045a20",
       "first_name": "Rao",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "T",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": null,
       "location": "Los Angeles, California, United States",
       "phone": null,
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder and CEO"
@@ -3060,22 +3096,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -3107,22 +3143,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -3142,55 +3178,56 @@
       "email": "eric@headcount365.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "b5f9ed57ca8ebd8d857308fa9764c333bbea5cce",
       "first_name": "Eric",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "G",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": null,
       "location": "Los Angeles, California, United States",
       "phone": null,
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Co-Founder & CEO"
@@ -3204,65 +3241,66 @@
       "email": "diana.cobos@dcobys.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "38b1a4565a0efa62360153c00cc9e1de9ce3cb4a",
       "first_name": "Diana",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Cobos",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/diana-jeanns-cobos-9b217033",
       "location": "Boston, Massachusetts, United States",
       "phone": "+555548095006",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "President & CEO"
@@ -3276,65 +3314,66 @@
       "email": "john@fundingfixed.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "5c1b2bc1530ca831880fc94c5341e8b64a4604c9",
       "first_name": "John",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Malone",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/johnnymalone",
       "location": "Boston, Massachusetts, United States",
       "phone": "+18579729333",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO & CO Founder"
@@ -3348,60 +3387,61 @@
       "email": "akerman@rezonate.io",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "0b0addeec12afc461789b1f0856c19492d7f73d5",
       "first_name": "Roy",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Akerman",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/roy-akerman",
       "location": "Cambridge, Massachusetts, United States",
       "phone": null,
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Ex. Co-Founder, CEO"
@@ -3415,55 +3455,56 @@
       "email": "rae@ranadev.io",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "d39695cae13b47c75d55fe373daa3a0695d92006",
       "first_name": "Rae",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "H",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": null,
       "location": "Seattle, Washington, United States",
       "phone": null,
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO"
@@ -3477,60 +3518,61 @@
       "email": "neha@thepowerpause.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "da57113c81a2699a392e1509c7fe992ed0fa22b4",
       "first_name": "Neha",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Ruch",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/nehaleelaruch",
       "location": "New York, New York, United States",
       "phone": null,
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder & CEO"
@@ -3544,65 +3586,66 @@
       "email": "david.guercia@thecentrinel.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "3befb2ece881fa312a6cd7e9dff764e08d9c7b20",
       "first_name": "David",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Guercia",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/david-guercia-ab02b81",
       "location": "Ridgewood, New Jersey, United States",
       "phone": "+19293574296",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founder/CEO"
@@ -3628,17 +3671,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -3658,65 +3701,66 @@
       "email": "jeff@nextplayventures.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "995ac66ac8786f2af1d3fe1dc5ae305a624dde20",
       "first_name": "Jeff",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Weiner",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/jeffweiner08",
       "location": "United States",
       "phone": "+18449923282",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Founding Partner"
@@ -3742,17 +3786,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -3784,47 +3828,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -3844,65 +3888,66 @@
       "email": "jason@trophy.so",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "e04affc6225bd9c9c61c1ecc45e10d301e2ce11f",
       "first_name": "Jason",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Louro",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/jasontlouro",
       "location": "Poznan, Greater Poland Voivodeship, Poland",
       "phone": "+18772277872",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Co-Founder"
@@ -3916,65 +3961,66 @@
       "email": "rafael@genialis.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "d6d2f22989d0dcbe56dffbcc0831e78ee0425d6c",
       "first_name": "Rafael",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Rosengarten",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/rrosengarten",
       "location": "Houston, Texas, United States",
       "phone": "+16172370085",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Chief Executive Officer"
@@ -3988,65 +4034,66 @@
       "email": "allessandria@verdantconsulting.net",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "82ccfd6649f5a069ba9c2bf2b592600eabe10194",
       "first_name": "Allessandria",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Polizzi",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/allessandriapolizzi",
       "location": "Eastbourne, England, United Kingdom",
       "phone": "+14694015891",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO/Founder"
@@ -4060,60 +4107,61 @@
       "email": "jill@modella.ai",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "170589a1045b310e94c36ba86021d744dc5b6b3d",
       "first_name": "Jill",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Stefanelli",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/jill-stefanelli-97164220",
       "location": "Saint Augustine, Florida, United States",
       "phone": null,
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "President & Chief Executive Officer"
@@ -4139,22 +4187,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -4174,60 +4222,61 @@
       "email": "mike.braham@intempohealth.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "16f6ef30a12c19df9db229579a3f4fc484f3b218",
       "first_name": "Mike",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Braham",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/mikebraham",
       "location": "Spotsylvania Courthouse, Virginia, United States",
       "phone": null,
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Chief Growth Officer and Board of Directors"
@@ -4241,71 +4290,72 @@
       "email": "tomer.azenkot@vee24.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "b156c1fea56c79daab69396d7b69c68c60fbb0b4",
       "first_name": "Tomer",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "Azenkot",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-21T06:05:31+00:00",
       "linkedin_url": "http://www.linkedin.com/in/tomerazenkot",
       "location": "Boston, Massachusetts, United States",
       "phone": "+16173568280",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:31+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "Chief Executive Officer"
     }
   ],
   "count": 67,
-  "generated_at": "2026-09-17T14:06:10+00:00",
+  "generated_at": "2026-09-24T18:43:06+00:00",
   "schema_version": 1
 }

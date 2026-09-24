@@ -79,12 +79,18 @@ jobs:
         with:
           python-version: "3.11"
       - name: Pull
+        # The dispatch input goes through the environment, never spliced into
+        # the script. Interpolating ${{ inputs.* }} into a run block lets
+        # anyone who can dispatch this workflow execute shell in a job that
+        # holds APOLLO_API_KEY. Quoted at use, so it stays one argument.
+        env:
+          APOLLO_LIST_ID: ${{ inputs.apollo_list_id }}
         run: |
-          ARGS=""
-          if [ -n "${{ inputs.apollo_list_id }}" ]; then
-            ARGS="--list-id ${{ inputs.apollo_list_id }}"
+          if [ -n "$APOLLO_LIST_ID" ]; then
+            python scripts/pull_apollo.py --list-id "$APOLLO_LIST_ID"
+          else
+            python scripts/pull_apollo.py
           fi
-          python scripts/pull_apollo.py $ARGS
       - uses: actions/upload-artifact@v4
         with:
           name: staging-apollo
@@ -160,6 +166,11 @@ jobs:
         run: pip install -q pytest && python -m pytest tests -q
       - name: Merge
         run: python scripts/merge_master.py
+      # Refuse to commit a master that names an unknown source or carries a
+      # duplicate identity. Master-only here (no CRM dump in CI); the Monday
+      # routine runs the same gate with --crm-dump before it pushes anything.
+      - name: Validate data layer
+        run: python scripts/validate_sync.py
       - name: Commit master
         run: |
           git config user.name "crm-sync[bot]"

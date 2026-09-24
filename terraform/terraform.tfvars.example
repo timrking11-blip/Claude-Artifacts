@@ -1,0 +1,8 @@
+# Copy to terraform.tfvars and fill in. terraform.tfvars is gitignored.
+# In HCP Terraform you may instead set these as workspace *Terraform* variables.
+
+project_id = "your-project-id"   # the ID, not the number
+
+# dataset_id       = "crm"
+# dataset_location = "US"
+# retention_days   = 0            # 0 = keep forever; e.g. 90 to expire after 90 days

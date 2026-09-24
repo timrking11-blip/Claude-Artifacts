@@ -1,0 +1,306 @@
+<title>Account Research Composition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #F6F7F5; --surface: #FFFFFF; --surface-2: #EEF1EF;
+    --ink: #1A222B; --muted: #66707A; --line: #DCE1E5;
+    --agent: #0E6B57; --agent-soft: #DDEFE8;
+    --tool: #3B4FA6; --tool-soft: #E3E7F6;
+    --state: #A8681B; --state-soft: #F7EBDA;
+    --ext: #8A4E9C; --ext-soft: #EFE3F3;
+    --font-ui: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --font-data: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #101418; --surface: #171C22; --surface-2: #1F262D;
+      --ink: #E7EBEF; --muted: #97A1AB; --line: #29323B;
+      --agent: #43B597; --agent-soft: #16352D;
+      --tool: #97A6E8; --tool-soft: #232B4A;
+      --state: #E0A64C; --state-soft: #3A2C14;
+      --ext: #CDA3DB; --ext-soft: #35243C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #101418; --surface: #171C22; --surface-2: #1F262D;
+    --ink: #E7EBEF; --muted: #97A1AB; --line: #29323B;
+    --agent: #43B597; --agent-soft: #16352D;
+    --tool: #97A6E8; --tool-soft: #232B4A;
+    --state: #E0A64C; --state-soft: #3A2C14;
+    --ext: #CDA3DB; --ext-soft: #35243C;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: var(--font-ui); font-size: 15px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin-inline: auto; padding-block: 28px 56px; padding-inline: 20px; display: grid; gap: 36px; }
+  .wrap > *, figure, .tablewrap, .scroll { min-width: 0; }
+  .mono { font-family: var(--font-data); font-size: 0.86em; }
+  :focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; }
+
+  header { display: grid; gap: 8px; max-width: 70ch; }
+  .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; }
+  h1 { margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; text-wrap: balance; }
+  header p { margin: 0; color: var(--muted); font-size: 16px; }
+  header p b { color: var(--ink); font-weight: 600; }
+
+  h2 { margin: 0 0 12px; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+  section > p { max-width: 68ch; margin: 0 0 12px; }
+
+  figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding-block: 18px; padding-inline: 18px; }
+  .scroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; max-width: 100%; height: auto; min-width: 760px; color: var(--ink); font-family: var(--font-ui); }
+  figcaption { margin-top: 12px; color: var(--muted); font-size: 13.5px; max-width: 80ch; }
+  figcaption b { color: var(--ink); font-weight: 600; }
+
+  /* diagram roles, styled from page tokens so both themes resolve */
+  .ag rect { fill: var(--agent-soft); stroke: var(--agent); stroke-width: 1.5; }
+  .tl rect { fill: var(--tool-soft); stroke: var(--tool); stroke-width: 1.25; }
+  .tl.opt rect { stroke-dasharray: 5 4; }
+  .st rect { fill: var(--state-soft); stroke: var(--state); stroke-width: 1.25; }
+  .io rect { fill: var(--surface); stroke: currentColor; stroke-width: 1.25; }
+  .lbl { font-size: 13px; font-weight: 700; fill: currentColor; }
+  .sub { font-size: 11px; fill: var(--muted); }
+  .key { font-family: var(--font-data); font-size: 11px; fill: var(--state); font-weight: 500; }
+  .src { font-family: var(--font-data); font-size: 10.5px; fill: var(--muted); }
+  .edge { stroke: currentColor; stroke-width: 1.25; fill: none; }
+  .edge-lbl { font-size: 11px; fill: var(--muted); }
+  .head { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; fill: var(--muted); font-weight: 600; }
+
+  ol.run { margin: 0; padding-left: 0; list-style: none; counter-reset: turn; display: grid; gap: 10px; max-width: 76ch; }
+  ol.run li { counter-increment: turn; display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start; }
+  ol.run li::before { content: counter(turn); font-family: var(--font-data); font-size: 12px; color: var(--agent); font-weight: 500; padding-top: 3px; }
+  ol.run .who { font-weight: 700; }
+  ol.run .who.r { color: var(--agent); }
+  ol.run code { font-family: var(--font-data); font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+  .tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; }
+  th, td { text-align: left; padding-block: 9px; padding-inline: 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+  td code, td .mono { font-family: var(--font-data); font-size: 12.5px; }
+  .chip { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; }
+  .chip.agent { background: var(--agent-soft); color: var(--agent); }
+  .chip.tool { background: var(--tool-soft); color: var(--tool); }
+  .chip.state { background: var(--state-soft); color: var(--state); }
+  .chip.ext { background: var(--ext-soft); color: var(--ext); }
+  .req { color: var(--muted); }
+
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .note { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding-block: 14px; padding-inline: 16px; }
+  .note h3 { margin: 0 0 6px; font-size: 14px; font-weight: 700; }
+  .note p { margin: 0; color: var(--muted); font-size: 13.5px; }
+  .note p code { font-family: var(--font-data); font-size: 12px; color: var(--ink); }
+
+  footer { color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 14px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">python/agents/account-research · Google ADK 2.9</div>
+    <h1>Account Research Composition</h1>
+    <p>Three agents in a chain, one shared session state, and six tools that only <b>research_agent</b> may call. The user supplies a company; the chain ends in a five-section account brief drawn from the CRM master ledger, the company's website, and — when enabled — Google Cloud's BigQuery and Agent Registry MCP servers.</p>
+  </header>
+
+  <section>
+    <figure>
+      <div class="scroll">
+      <svg viewBox="0 0 1100 470" role="img" aria-label="root_agent resolves the account and transfers to research_agent, which calls six tools that each write one key into session state; analysis_agent's prompt is templated from that state and produces the account brief.">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- column heads -->
+        <text x="40" y="18" class="head">agents</text>
+        <text x="300" y="18" class="head">tools each agent may call</text>
+
+        <!-- input -->
+        <text x="150" y="44" text-anchor="middle" class="sub">you: a company name or domain</text>
+        <line x1="150" y1="48" x2="150" y2="60" class="edge" marker-end="url(#arrow)"/>
+
+        <!-- root_agent -->
+        <g class="ag">
+          <rect x="40" y="60" width="220" height="60" rx="8"/>
+          <text x="150" y="86" text-anchor="middle" class="lbl">root_agent</text>
+          <text x="150" y="104" text-anchor="middle" class="sub">resolves the account, delegates</text>
+        </g>
+        <line x1="260" y1="90" x2="300" y2="90" class="edge" marker-end="url(#arrow)"/>
+        <text x="280" y="82" text-anchor="middle" class="edge-lbl">calls</text>
+        <g class="tl">
+          <rect x="300" y="60" width="120" height="60" rx="6"/>
+          <text x="360" y="86" text-anchor="middle" class="lbl">find_account</text>
+          <text x="360" y="103" text-anchor="middle" class="src">contacts.json</text>
+        </g>
+        <text x="360" y="138" text-anchor="middle" class="key">→ account</text>
+        <g class="tl">
+          <rect x="432" y="60" width="120" height="60" rx="6"/>
+          <text x="492" y="86" text-anchor="middle" class="lbl">store_state</text>
+          <text x="492" y="103" text-anchor="middle" class="src">any key</text>
+        </g>
+        <text x="600" y="90" class="sub">OK · AMBIGUOUS → asks · NOT_FOUND → never invents</text>
+
+        <!-- transfer -->
+        <line x1="150" y1="120" x2="150" y2="170" class="edge" marker-end="url(#arrow)"/>
+        <text x="160" y="150" class="edge-lbl">transfer</text>
+
+        <!-- research_agent -->
+        <g class="ag">
+          <rect x="40" y="170" width="220" height="60" rx="8"/>
+          <text x="150" y="196" text-anchor="middle" class="lbl">research_agent</text>
+          <text x="150" y="214" text-anchor="middle" class="sub">gathers the material, in order</text>
+        </g>
+        <line x1="260" y1="200" x2="300" y2="200" class="edge" marker-end="url(#arrow)"/>
+        <text x="280" y="192" text-anchor="middle" class="edge-lbl">calls</text>
+
+        <!-- research tools, one row -->
+        <g class="tl">
+          <rect x="300" y="170" width="120" height="60" rx="6"/>
+          <text x="360" y="192" text-anchor="middle" class="lbl">list_account_</text>
+          <text x="360" y="206" text-anchor="middle" class="lbl">contacts</text>
+          <text x="360" y="222" text-anchor="middle" class="src">contacts.json</text>
+        </g>
+        <g class="tl">
+          <rect x="432" y="170" width="120" height="60" rx="6"/>
+          <text x="492" y="192" text-anchor="middle" class="lbl">assess_ledger_</text>
+          <text x="492" y="206" text-anchor="middle" class="lbl">quality</text>
+          <text x="492" y="222" text-anchor="middle" class="src">contacts.json</text>
+        </g>
+        <g class="tl">
+          <rect x="564" y="170" width="120" height="60" rx="6"/>
+          <text x="624" y="196" text-anchor="middle" class="lbl">fetch_page</text>
+          <text x="624" y="214" text-anchor="middle" class="src">company website</text>
+        </g>
+        <g class="tl">
+          <rect x="696" y="170" width="120" height="60" rx="6"/>
+          <text x="756" y="192" text-anchor="middle" class="lbl">summarize_</text>
+          <text x="756" y="206" text-anchor="middle" class="lbl">page_agent</text>
+          <text x="756" y="222" text-anchor="middle" class="src">AgentTool · Gemini</text>
+        </g>
+        <g class="tl opt">
+          <rect x="828" y="170" width="120" height="60" rx="6"/>
+          <text x="888" y="196" text-anchor="middle" class="lbl">BigQuery MCP</text>
+          <text x="888" y="214" text-anchor="middle" class="src">googleapis.com</text>
+        </g>
+        <g class="tl opt">
+          <rect x="960" y="170" width="120" height="60" rx="6"/>
+          <text x="1020" y="192" text-anchor="middle" class="lbl">Agent Registry</text>
+          <text x="1020" y="206" text-anchor="middle" class="lbl">MCP</text>
+          <text x="1020" y="222" text-anchor="middle" class="src">googleapis.com</text>
+        </g>
+
+        <!-- keys each tool writes, then arrows into state -->
+        <text x="360" y="248" text-anchor="middle" class="key">→ account_contacts</text>
+        <text x="492" y="248" text-anchor="middle" class="key">→ ledger_quality</text>
+        <text x="624" y="248" text-anchor="middle" class="key">→ page_contents</text>
+        <text x="756" y="248" text-anchor="middle" class="key">→ website_summary</text>
+        <text x="888" y="248" text-anchor="middle" class="key">→ warehouse_findings</text>
+        <text x="1020" y="248" text-anchor="middle" class="src">discovery only</text>
+        <line x1="360" y1="254" x2="360" y2="290" class="edge" marker-end="url(#arrow)"/>
+        <line x1="492" y1="254" x2="492" y2="290" class="edge" marker-end="url(#arrow)"/>
+        <line x1="624" y1="254" x2="624" y2="290" class="edge" marker-end="url(#arrow)"/>
+        <line x1="756" y1="254" x2="756" y2="290" class="edge" marker-end="url(#arrow)"/>
+        <line x1="888" y1="254" x2="888" y2="290" class="edge" marker-end="url(#arrow)"/>
+
+        <!-- transfer -->
+        <line x1="150" y1="230" x2="150" y2="290" class="edge" marker-end="url(#arrow)"/>
+        <text x="160" y="266" class="edge-lbl">transfer</text>
+
+        <!-- analysis_agent -->
+        <g class="ag">
+          <rect x="40" y="290" width="220" height="60" rx="8"/>
+          <text x="150" y="316" text-anchor="middle" class="lbl">analysis_agent</text>
+          <text x="150" y="334" text-anchor="middle" class="sub">no tools · prompt templated from state</text>
+        </g>
+
+        <!-- session state band -->
+        <g class="st">
+          <rect x="300" y="290" width="780" height="60" rx="8"/>
+          <text x="314" y="308" class="head">session state</text>
+          <text x="314" y="334" class="key">account · account_contacts? · ledger_quality? · page_contents? · website_summary? · warehouse_findings?</text>
+        </g>
+        <line x1="300" y1="320" x2="260" y2="320" class="edge" marker-end="url(#arrow)"/>
+        <text x="280" y="312" text-anchor="middle" class="edge-lbl">reads</text>
+
+        <!-- output -->
+        <line x1="150" y1="350" x2="150" y2="400" class="edge" marker-end="url(#arrow)"/>
+        <g class="io">
+          <rect x="40" y="400" width="220" height="52" rx="26"/>
+          <text x="150" y="422" text-anchor="middle" class="lbl">account brief</text>
+          <text x="150" y="438" text-anchor="middle" class="sub">five sections, one to two pages</text>
+        </g>
+        <text x="300" y="420" class="sub">every agent runs rate_limit_callback before each model call (1000 req / 60 s)</text>
+        <text x="300" y="440" class="sub">dashed tools are optional: attached only with ACCOUNT_RESEARCH_ENABLE_MCP=1 and Application Default Credentials</text>
+      </svg>
+      </div>
+      <figcaption><b>Who talks to whom, and what each call leaves behind.</b> Agents hand off with ADK transfers, never by calling each other; tools belong to exactly one agent. Every tool's side effect is one key in session state (amber), and <code class="mono">analysis_agent</code> has no tools at all — its prompt is rendered from that state. A <code class="mono">?</code> marks a key the prompt treats as optional, so a skipped step degrades the brief instead of crashing it.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>The run, turn by turn</h2>
+    <p>This is a real sequence: <code class="mono">research_agent</code>'s prompt orders its steps, and each one depends on the last.</p>
+    <ol class="run">
+      <li><div><span class="who r">root_agent</span> asks for the account if you haven't named one, then calls <code>find_account</code>. <b>OK</b> stores <code>account</code> and transfers. <b>AMBIGUOUS</b> shows the candidates and asks. <b>NOT_FOUND</b> says the ledger has no contacts there and asks for another — it never invents.</div></li>
+      <li><div><span class="who r">research_agent</span> calls <code>list_account_contacts</code> — every ledger contact at the account, ordered by seniority, with which channels we hold (email / phone / LinkedIn).</div></li>
+      <li><div>…then <code>assess_ledger_quality</code> — missing email, phone or title; single-source records; anything not updated in 90 days; manual edits; contacts Explorium hasn't enriched yet.</div></li>
+      <li><div>…then, if the account has a domain, <code>fetch_page</code> on its website (HTML stripped to text, capped at 20k characters) and <code>summarize_page_agent</code> to reduce it to what the company does, who it serves, and any news. A fetch error is stored as the summary, not swallowed.</div></li>
+      <li><div>…then, if a BigQuery tool is attached, a look for the account in the warehouse; otherwise <code>warehouse_findings</code> is stored as "Not available in this session".</div></li>
+      <li><div><span class="who r">analysis_agent</span> receives the state and writes the brief: <b>at a glance · who we know · coverage gaps · data-quality actions · suggested next step</b>. Specific names, titles and counts; unknowns stated as unknown.</div></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>The state contract</h2>
+    <p>Session state is the only channel between agents. Each key has exactly one writer.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Key</th><th>Written by</th><th>Read by</th><th>In the analysis prompt</th></tr></thead>
+        <tbody>
+          <tr><td><code>account</code></td><td><span class="chip tool">find_account</span></td><td>research_agent prompt · both ledger tools · analysis</td><td>required — <span class="req">the one real precondition</span></td></tr>
+          <tr><td><code>account_contacts</code></td><td><span class="chip tool">list_account_contacts</span></td><td>analysis</td><td>optional <code>?</code></td></tr>
+          <tr><td><code>ledger_quality</code></td><td><span class="chip tool">assess_ledger_quality</span></td><td>analysis</td><td>optional <code>?</code></td></tr>
+          <tr><td><code>page_contents</code>, <code>page_url</code></td><td><span class="chip tool">fetch_page</span></td><td>summarize_page_agent prompt</td><td>not read — <span class="req">summarised first</span></td></tr>
+          <tr><td><code>website_summary</code></td><td><span class="chip agent">summarize_page_agent</span> via <code>output_key</code>, or <span class="chip tool">store_state</span> on a fetch error</td><td>analysis</td><td>optional <code>?</code></td></tr>
+          <tr><td><code>warehouse_findings</code></td><td><span class="chip tool">store_state</span> after the <span class="chip ext">BigQuery MCP</span> step, or the "not available" sentinel</td><td>analysis</td><td>optional <code>?</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Tools</h2>
+    <p>Plain functions over <code class="mono">ToolContext</code>, the template's pattern. The ledger tools import no ADK at run time, which is why they test without credentials and run unchanged inside Agent Runtime.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Arguments</th><th>Returns</th><th>Reads</th></tr></thead>
+        <tbody>
+          <tr><td><code>find_account</code></td><td><code>query: str</code></td><td><code>OK</code> + account · <code>AMBIGUOUS</code> + up to 5 candidates · <code>NOT_FOUND</code></td><td>ledger; domain match first, exact name, then substring on names and the registrable label only</td></tr>
+          <tr><td><code>list_account_contacts</code></td><td>—</td><td><code>OK</code> + count</td><td>ledger, grouped by domain (or name when no domain)</td></tr>
+          <tr><td><code>assess_ledger_quality</code></td><td>—</td><td><code>OK</code> + flag counts</td><td>ledger; provenance and <code>last_updated</code></td></tr>
+          <tr><td><code>fetch_page</code></td><td><code>url: str</code></td><td><code>OK</code> + chars stored · <code>ERROR</code> + message</td><td>the web, 20 s timeout</td></tr>
+          <tr><td><code>store_state</code></td><td><code>state: dict</code></td><td><code>OK</code></td><td>—</td></tr>
+          <tr><td><code>summarize_page_agent</code></td><td>instruction text</td><td>the summary (also stored)</td><td><code>page_contents</code></td></tr>
+          <tr><td><code>bigquery_*</code>, <code>agentregistry_*</code></td><td>per server</td><td>per server</td><td><span class="chip ext">MCP</span> project 922106495655; bearer token refreshed per request via <code>header_provider</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Guardrails and where it runs</h2>
+    <div class="grid2">
+      <div class="note"><h3>Rate limit</h3><p><code>rate_limit_callback</code> on every agent: 1000 model calls per 60 s, then sleep. Unchanged from the template.</p></div>
+      <div class="note"><h3>Degrades, doesn't crash</h3><p>MCP tools attach only with <code>ACCOUNT_RESEARCH_ENABLE_MCP=1</code> and Application Default Credentials; otherwise the agent runs without them. Optional prompt keys render empty rather than raising.</p></div>
+      <div class="note"><h3>Model</h3><p>Claude on Vertex AI by default — <code>claude-fable-5-1</code> through ADK's <code>Claude</code> wrapper (<code>AnthropicVertex</code>, ADC auth, region <code>global</code>); <code>ACCOUNT_RESEARCH_MODEL_PROVIDER=gemini</code> switches to Gemini.</p></div>
+      <div class="note"><h3>Three ways to run</h3><p><code>adk web .</code> for development · <code>python main.py</code> as a FastAPI service on <code>$PORT</code> for Cloud Run · <code>deployment/deploy.py</code> to Agent Runtime.</p></div>
+    </div>
+  </section>
+
+  <footer>Modelled on google/adk-samples <span class="mono">python/agents/fomc-research</span>: same agent → sub-agent → tool structure, prompts templated on state, and deployment scripts; the FOMC sources are replaced by the CRM ledger, the company website, and Google Cloud MCP. Source: <span class="mono">python/agents/account-research/</span> in timrking11-blip/Claude-Artifacts.</footer>
+</div>

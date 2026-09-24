@@ -1,0 +1,1404 @@
+<title>Linkedin RFP Request and Proposal Generation with Agentic AI</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#f4f6f8; --surface:#ffffff; --surface-2:#eef1f5;
+    --ink:#141a21; --ink-2:#3f4a57; --muted:#6a7684;
+    --line:#dbe1e8; --line-2:#c6cfd9;
+    --go:#1c6b66; --go-soft:#e2f0ee;
+    --hold:#96530d; --hold-soft:#faeedd;
+    --skip:#5d6874; --skip-soft:#e8ecf1;
+    --stop:#93372c; --stop-soft:#f7e3df;
+    --shadow:0 1px 2px rgba(20,26,33,.06), 0 8px 24px -16px rgba(20,26,33,.28);
+    --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --paper:#0e1218; --surface:#161c24; --surface-2:#1d242e;
+      --ink:#e7ecf2; --ink-2:#b9c3cf; --muted:#8593a2;
+      --line:#27313d; --line-2:#35414f;
+      --go:#57b6ad; --go-soft:#12302e;
+      --hold:#d8a052; --hold-soft:#33260f;
+      --skip:#8593a2; --skip-soft:#212a34;
+      --stop:#d98275; --stop-soft:#3a1c17;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#0e1218; --surface:#161c24; --surface-2:#1d242e;
+    --ink:#e7ecf2; --ink-2:#b9c3cf; --muted:#8593a2;
+    --line:#27313d; --line-2:#35414f;
+    --go:#57b6ad; --go-soft:#12302e;
+    --hold:#d8a052; --hold-soft:#33260f;
+    --skip:#8593a2; --skip-soft:#212a34;
+    --stop:#d98275; --stop-soft:#3a1c17;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:0 64px}
+  .wrap{max-width:1080px;margin:0 auto}
+
+  header.mast{padding-block:36px 24px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .eyebrow span.dot{width:4px;height:4px;border-radius:50%;background:var(--line-2)}
+  h1{font-size:clamp(28px,4.4vw,40px);line-height:1.1;margin:0 0 10px;font-weight:600;letter-spacing:-.022em;text-wrap:balance}
+  .lead{margin:0;max-width:62ch;color:var(--ink-2);font-size:16px}
+  .lead code,.step-desc code,.kmeta code,.hint code,.opt .d code{font-family:var(--mono);font-size:.88em;background:var(--surface-2);padding:1px 5px;border-radius:4px}
+
+  .gate{margin-top:22px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface);box-shadow:var(--shadow)}
+  .gate[data-ok="no"]{border-color:var(--hold);background:var(--hold-soft)}
+  .gate[data-ok="yes"]{border-color:var(--go);background:var(--go-soft)}
+  .gate-msg{display:flex;gap:11px;align-items:center;min-width:0}
+  .gate-lamp{width:9px;height:9px;border-radius:50%;flex:none;background:var(--hold)}
+  .gate[data-ok="yes"] .gate-lamp{background:var(--go)}
+  .gate-title{font-weight:600;font-size:14px}
+  .gate-sub{font-size:12.5px;color:var(--ink-2);font-family:var(--mono)}
+
+  .cols{display:grid;grid-template-columns:230px 1fr;gap:36px;margin-top:30px;align-items:start}
+  @media (max-width:820px){.cols{grid-template-columns:1fr;gap:26px}}
+  .cols > *{min-width:0}
+  .rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+  @media (max-width:820px){.rail{position:static}}
+  .rail h2{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+  .rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+  .rail li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border-radius:7px}
+  .rail li:hover{background:var(--surface-2)}
+  .rail .key{font-family:var(--mono);font-size:12px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rail-note{margin-top:16px;padding:11px 12px;border-radius:8px;background:var(--surface-2);font-size:12px;color:var(--muted);line-height:1.5;border:1px solid var(--line)}
+  .rail-note b{color:var(--ink-2);font-weight:600}
+  .rail-note code{font-family:var(--mono);font-size:.9em}
+  .cap{display:flex;gap:8px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:8px}
+  .cap i{width:7px;height:7px;border-radius:50%;background:var(--skip);flex:none}
+  .cap[data-on="yes"] i{background:var(--go)}
+
+  .chip{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:3px 7px;border-radius:5px;flex:none;white-space:nowrap}
+  .chip.go{background:var(--go-soft);color:var(--go)}
+  .chip.hold{background:var(--hold-soft);color:var(--hold)}
+  .chip.skip{background:var(--skip-soft);color:var(--skip)}
+  .chip.stop{background:var(--stop-soft);color:var(--stop)}
+
+  section.step{margin-bottom:34px;scroll-margin-top:20px}
+  .step-head{display:flex;gap:12px;align-items:baseline;margin-bottom:6px;flex-wrap:wrap}
+  .step-num{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;flex:none}
+  .step-head h3{margin:0;font-size:19px;font-weight:600;letter-spacing:-.012em}
+  .step-desc{margin:0 0 16px;color:var(--ink-2);font-size:14px;max-width:64ch}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .card.required{border-left:3px solid var(--hold)}
+  .card.required[data-filled="yes"]{border-left-color:var(--go)}
+  .card[data-on="no"]{opacity:.62}
+  .card-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}
+  .card-id{min-width:0}
+  .card-id .kname{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink);word-break:break-word}
+  .card-id .kmeta{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}
+  .card-id .kmeta em{font-style:normal;font-family:var(--mono);color:var(--ink-2)}
+
+  .toggle{display:inline-flex;border:1px solid var(--line-2);border-radius:7px;overflow:hidden;flex:none}
+  .toggle button{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:6px 11px;border:0;background:var(--surface);color:var(--muted);cursor:pointer}
+  .toggle button + button{border-left:1px solid var(--line-2)}
+  .toggle button:hover{background:var(--surface-2);color:var(--ink-2)}
+  .toggle button[aria-pressed="true"]{background:var(--go);color:#fff}
+  .toggle button.off[aria-pressed="true"]{background:var(--skip);color:#fff}
+
+  .field{margin-top:14px}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:5px}
+  .field .hint{font-size:11.5px;color:var(--muted);font-weight:400;margin-left:6px}
+  input[type="text"],input[type="url"],textarea,select{width:100%;font-family:var(--mono);font-size:13px;color:var(--ink);background:var(--paper);border:1px solid var(--line-2);border-radius:7px;padding:9px 11px;line-height:1.5}
+  textarea{resize:vertical;min-height:64px}
+  textarea.req{min-height:120px;font-family:var(--sans);font-size:14px}
+  input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:560px){.row2{grid-template-columns:1fr}}
+  .check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:11px 12px;border-radius:8px;border:1px solid var(--line-2);background:var(--paper);cursor:pointer}
+  .check[data-on="yes"]{border-color:var(--go);background:var(--go-soft)}
+  .check input{width:16px;height:16px;flex:none;margin-top:3px;accent-color:var(--go)}
+  .check .t{display:block;font-size:13.5px;font-weight:600;color:var(--ink)}
+  .check .d{display:block;font-size:12px;color:var(--ink-2);margin-top:2px}
+  .check .d code{font-family:var(--mono);font-size:.9em}
+
+  .launch-bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:4px}
+  .btn{font-family:var(--sans);font-size:14px;font-weight:600;padding:11px 20px;border-radius:8px;border:1px solid transparent;cursor:pointer}
+  .btn-primary{background:var(--go);color:#fff}
+  .btn-primary:hover:not(:disabled){filter:brightness(1.08)}
+  .btn-primary:disabled{background:var(--surface-2);color:var(--muted);cursor:not-allowed;border-color:var(--line)}
+  .btn-ghost{background:var(--surface);color:var(--ink-2);border-color:var(--line-2)}
+  .btn-ghost:hover{background:var(--surface-2)}
+  .btn-sm{font-size:12px;padding:6px 10px}
+  .launch-note{font-size:12.5px;color:var(--muted);font-family:var(--mono)}
+
+  .seq{list-style:none;margin:14px 0 0;padding:0}
+  .seq li{display:flex;gap:13px;padding:10px 0;border-top:1px solid var(--line);align-items:flex-start}
+  .seq li:first-child{border-top:0}
+  .seq .ord{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);flex:none;width:22px;padding-top:3px}
+  .seq .lamp{width:10px;height:10px;border-radius:50%;flex:none;margin-top:6px;background:var(--line-2)}
+  .seq li[data-s="done"] .lamp,.seq li[data-s="sentinel"] .lamp{background:var(--go)}
+  .seq li[data-s="pending"] .lamp{background:var(--hold);animation:pulse 1.4s infinite}
+  .seq li[data-s="skipped"] .lamp,.seq li[data-s="empty"] .lamp,.seq li[data-s="nothing"] .lamp{background:var(--skip)}
+  .seq li[data-s="failed"] .lamp,.seq li[data-s="halted"] .lamp,.seq li[data-s="not_found"] .lamp{background:var(--stop)}
+  .seq li[data-s="skipped"]{opacity:.5}
+  .seq li[data-s="skipped"] .agent{text-decoration:line-through}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .seq .body{min-width:0;flex:1}
+  .seq .agent{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink)}
+  .seq .writes{font-size:12px;color:var(--muted);margin-top:2px}
+  .seq .writes em{font-style:normal;font-family:var(--mono);color:var(--ink-2)}
+
+  pre.payload,pre.prop{font-family:var(--mono);font-size:12px;line-height:1.6;margin:0;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:14px;overflow-x:auto;color:var(--ink-2);white-space:pre-wrap;word-break:break-word}
+  pre.prop{font-family:var(--sans);font-size:13.5px;color:var(--ink);max-height:520px;overflow:auto}
+  details.fold{margin-top:12px}
+  details.fold summary{cursor:pointer;font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 0}
+  details.fold summary:hover{color:var(--ink-2)}
+
+  .opt{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:9px;border:1px solid var(--line-2);background:var(--surface);margin-bottom:10px;cursor:pointer}
+  .opt:hover{background:var(--surface-2)}
+  .opt[data-sel="yes"]{border-color:var(--go);background:var(--go-soft)}
+  .opt input{margin-top:4px;accent-color:var(--go);flex:none;width:16px;height:16px}
+  .opt .t{font-weight:600;font-size:14.5px}
+  .opt .d{font-size:13px;color:var(--ink-2);margin-top:3px}
+  .opt[data-sel="yes"] .d code{background:var(--surface)}
+
+  .warn{margin-top:12px;padding:12px 14px;border-radius:8px;border:1px solid var(--hold);background:var(--hold-soft);font-size:13px;color:var(--ink-2)}
+  .warn b{color:var(--hold)}
+  .warn code{font-family:var(--mono);font-size:.88em}
+  .fail{margin-top:12px;padding:12px 14px;border-radius:8px;border:1px solid var(--stop);background:var(--stop-soft);font-size:13px;color:var(--ink-2)}
+  .fail b{color:var(--stop)}
+
+  .fnote{margin-top:12px;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .fnote .ln{padding:9px 13px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.5}
+  .fnote .ln:first-child{border-top:0}
+  .fnote .ln.h{background:var(--hold-soft);color:var(--ink);border-left:3px solid var(--hold)}
+  .fnote .ln.h b{color:var(--hold);font-family:var(--mono);font-size:11px;letter-spacing:.08em;margin-right:8px}
+  .fnote .ln.n{color:var(--ink-2)}
+  .fnote .ln.n b{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.08em;margin-right:8px}
+  .fnote .ln.ok{color:var(--go)}
+  .ntf{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+  pre.prop.note{max-height:none;background:var(--surface);white-space:pre-wrap}
+  .kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;font-size:13px;margin-top:12px}
+  .kv dt{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding-top:2px}
+  .kv dd{margin:0;word-break:break-word}
+  .kv dd code{font-family:var(--mono);font-size:.9em}
+  .kv a{color:var(--go)}
+
+  .runs{list-style:none;margin:10px 0 0;padding:0}
+  .runs li{display:flex;gap:10px;align-items:center;padding:8px 4px;border-top:1px solid var(--line);font-size:13px;cursor:pointer;flex-wrap:wrap}
+  .runs li:first-child{border-top:0}
+  .runs li:hover{background:var(--surface-2)}
+  .runs li[data-cur="yes"]{background:var(--go-soft)}
+  .runs .rid{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+  .runs .rname{font-weight:600;flex:1;min-width:120px}
+  .runs .rwhen{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);font-family:var(--mono)}
+  .stamp{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:5px;background:var(--go-soft);color:var(--go);border:1px solid var(--go)}
+  .inv{font-family:var(--mono);font-size:13px;line-height:1.65;margin:0;background:var(--ink);color:var(--paper);border-radius:9px;padding:14px 16px;overflow-x:auto;white-space:pre}
+  :root[data-theme="dark"] .inv,:root:not([data-theme="light"]) .inv{background:#080b0f;color:#d7e2e0}
+  .inv .sk{color:var(--go);font-weight:600}
+  .inv .cm{color:#7f8b98}
+  .blocked{padding:13px 15px;border-radius:8px;border:1px dashed var(--line-2);background:var(--surface-2);font-size:13px;color:var(--muted);font-family:var(--mono)}
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);box-shadow:var(--shadow)}
+  table.cont{border-collapse:collapse;width:100%;min-width:560px;font-size:13px}
+  table.cont th,table.cont td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.cont thead th{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--surface-2)}
+  table.cont tbody tr:last-child td{border-bottom:0}
+  table.cont td:first-child{font-family:var(--mono);font-size:12px;color:var(--ink);width:30%}
+  table.cont td code{font-family:var(--mono);font-size:.9em;background:var(--surface-2);padding:1px 4px;border-radius:4px}
+  table.cont .sev{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+  table.cont .sev.stop{color:var(--stop)}
+  table.cont .sev.hold{color:var(--hold)}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="eyebrow">
+      <span>Agents go-live</span><span class="dot"></span>
+      <span>Account Research Composition</span><span class="dot"></span>
+      <span>24 Sep 2026</span><span class="dot"></span>
+      <span class="stamp">v2 · one button</span>
+    </div>
+    <h1>Account Composition Intake</h1>
+    <p class="lead">Paste the LinkedIn request, name the account, press <b>Run composition</b>. The research agents read the ledger, crawl the company's site and the open web, draft the SMI prequalification proposal and file it into the CRM (the contact's notes, or the account's for a new prospect); the review, the note to the founder and the proposal show up below, with a PDF to download. This is the only way proposals are made. Nothing to copy into a terminal.</p>
+
+    <div class="gate" id="gate" data-ok="no">
+      <div class="gate-msg">
+        <span class="gate-lamp" aria-hidden="true"></span>
+        <div>
+          <div class="gate-title" id="gateTitle">Precondition not met</div>
+          <div class="gate-sub" id="gateSub">account — required, not resolved</div>
+        </div>
+      </div>
+      <div class="gate-sub" id="gateCount">0 of 4 optional keys included</div>
+    </div>
+  </header>
+
+  <div class="cols">
+
+    <aside class="rail">
+      <h2>Run state</h2>
+      <ol id="rail">
+        <li><span class="key">request</span><span class="chip hold" id="c-request">required</span></li>
+        <li><span class="key">account</span><span class="chip hold" id="c-account">required</span></li>
+        <li><span class="key">account_contacts</span><span class="chip go" id="c-contacts">included</span></li>
+        <li><span class="key">ledger_quality</span><span class="chip go" id="c-ledger">included</span></li>
+        <li><span class="key">website_summary</span><span class="chip go" id="c-web">included</span></li>
+        <li><span class="key">warehouse_findings</span><span class="chip go" id="c-wh">included</span></li>
+      </ol>
+      <div class="rail-note">
+        <b>Not in run state:</b> <code>page_contents</code> and <code>page_url</code> are written by <code>fetch_page</code> and read only by the summarizer. The analysis reads <code>website_summary</code>.
+      </div>
+      <div class="rail-note">
+        <b>This page can</b>
+        <div class="cap" id="cap-db" data-on="no"><i></i>keep run records (db)</div>
+        <div class="cap" id="cap-mcp" data-on="no"><i></i>fire the run (Claude Code Remote)</div>
+        <div class="cap" id="cap-dl" data-on="no"><i></i>save the proposal as a PDF</div>
+      </div>
+    </aside>
+
+    <main>
+
+      <!-- 00 -->
+      <section class="step" id="s0">
+        <div class="step-head"><span class="step-num">00</span><h3>LinkedIn request</h3></div>
+        <p class="step-desc">The live request you are answering. This becomes <code>request_text</code>: the prequal composer restates it and addresses its next step to the founder, and the review reads it for pricing asks. Small startups are the ICP, so the person who asked is the founder.</p>
+        <div class="card required" id="cardRequest" data-filled="no">
+          <div class="card-top">
+            <div class="card-id">
+              <div class="kname">request</div>
+              <div class="kmeta">read by <em>prequal composer</em>, <em>note to the founder</em>, <em>review</em> · stored with the proposal</div>
+            </div>
+            <span class="chip hold" id="c-request-2">required</span>
+          </div>
+          <div class="field">
+            <label for="reqText">Request text <span class="hint">paste the message or post as written</span></label>
+            <textarea id="reqText" class="req" placeholder="We're a 60-person mechanical contractor weighing a second location…"></textarea>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="reqUrl">Post or message URL</label>
+              <input type="text" id="reqUrl" placeholder="https://www.linkedin.com/…" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="reqName">Founder (requester) <span class="hint">name as shown</span></label>
+              <input type="text" id="reqName" placeholder="Jane Doe" autocomplete="off">
+            </div>
+          </div>
+          <div class="field">
+            <label for="reqLinkedin">Founder's LinkedIn profile</label>
+            <input type="text" id="reqLinkedin" placeholder="https://linkedin.com/in/…" autocomplete="off">
+          </div>
+        </div>
+      </section>
+
+      <!-- 01 -->
+      <section class="step" id="s1">
+        <div class="step-head"><span class="step-num">01</span><h3>Precondition</h3></div>
+        <p class="step-desc">Resolved by <code>find_account</code> against the enriched data layer. An account that is not there still runs (the review says so), but nothing runs without a name or domain. <b>The domain is the specification:</b> the run researches the company at this domain only; a similarly named company at another domain is never used, and when nothing is found here the proposal is a not-found note.</p>
+        <div class="card required" id="cardAccount" data-filled="no">
+          <div class="card-top">
+            <div class="card-id">
+              <div class="kname">account</div>
+              <div class="kmeta">written by <em>find_account</em> · read by <em>research_agent</em>, <em>ledger tools</em>, <em>analysis</em></div>
+            </div>
+            <span class="chip hold" id="c-account-2">required</span>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="accName">Account name</label>
+              <input type="text" id="accName" placeholder="Acme Mechanical Inc" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="accDomain">Primary domain</label>
+              <input type="text" id="accDomain" placeholder="acmemechanical.com" autocomplete="off">
+            </div>
+          </div>
+          <div class="field">
+            <label for="accId">Existing CRM account id <span class="hint">leave blank if new — the run will mint <code>crm_&lt;date&gt;_&lt;rand&gt;</code></span></label>
+            <input type="text" id="accId" placeholder="(blank for new)" autocomplete="off">
+          </div>
+          <label class="check" id="liRow" data-on="no" for="accLinkedin">
+            <input type="checkbox" id="accLinkedin">
+            <span>
+              <span class="t">LinkedIn proposal request or source</span>
+              <span class="d">Tick when the account came from LinkedIn. The record is tagged <code>source: linkedin</code> and its pre-qual box in the CRM's proposal phase starts ticked. Ticked for you when the request above is filled in.</span>
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <!-- 02 -->
+      <section class="step" id="s2">
+        <div class="step-head"><span class="step-num">02</span><h3>Optional state</h3></div>
+        <p class="step-desc">Each key below is read by the analysis but not required by it. Opt out and the run proceeds without that input; the opt-out is recorded in the manifest and in the review.</p>
+
+        <div class="card" id="cardContacts" data-on="yes">
+          <div class="card-top">
+            <div class="card-id"><div class="kname">account_contacts</div><div class="kmeta">written by <em>list_account_contacts</em> · read by <em>analysis</em></div></div>
+            <div class="toggle" role="group" aria-label="Include account_contacts">
+              <button type="button" data-k="contacts" data-v="on" aria-pressed="true">Include</button>
+              <button type="button" class="off" data-k="contacts" data-v="off" aria-pressed="false">Skip</button>
+            </div>
+          </div>
+          <div class="field" data-body="contacts">
+            <label for="contactLimit">Contact ceiling <span class="hint">caps what the lister returns into state</span></label>
+            <select id="contactLimit">
+              <option value="10">10 contacts</option>
+              <option value="25" selected>25 contacts</option>
+              <option value="50">50 contacts</option>
+              <option value="all">No ceiling</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card" id="cardLedger" data-on="yes">
+          <div class="card-top">
+            <div class="card-id"><div class="kname">ledger_quality</div><div class="kmeta">written by <em>assess_ledger_quality</em> · read by <em>analysis</em>, <em>review</em></div></div>
+            <div class="toggle" role="group" aria-label="Include ledger_quality">
+              <button type="button" data-k="ledger" data-v="on" aria-pressed="true">Include</button>
+              <button type="button" class="off" data-k="ledger" data-v="off" aria-pressed="false">Skip</button>
+            </div>
+          </div>
+          <div class="field" data-body="ledger">
+            <label for="ledgerFloor">Quality floor <span class="hint">below this, ledger claims are unsupported</span></label>
+            <select id="ledgerFloor">
+              <option value="none">No floor — pass the score through</option>
+              <option value="fair" selected>Fair or better</option>
+              <option value="good">Good or better</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card" id="cardWeb" data-on="yes">
+          <div class="card-top">
+            <div class="card-id"><div class="kname">website_summary</div><div class="kmeta">written by the <em>summarise</em> leg, or a failure note on a fetch error · read by <em>analysis</em></div></div>
+            <div class="toggle" role="group" aria-label="Include website_summary">
+              <button type="button" data-k="web" data-v="on" aria-pressed="true">Include</button>
+              <button type="button" class="off" data-k="web" data-v="off" aria-pressed="false">Skip</button>
+            </div>
+          </div>
+          <div data-body="web">
+            <div class="field">
+              <label for="pageUrl">Page to fetch <span class="hint">blank = <code>https://</code> + domain</span></label>
+              <input type="text" id="pageUrl" placeholder="https://acmemechanical.com/about" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="fetchFallback">On fetch error</label>
+              <select id="fetchFallback">
+                <option value="store_state" selected>store_state a failure note into website_summary</option>
+                <option value="omit">Leave website_summary unset</option>
+                <option value="halt">Halt the run for operator review</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="cardSpend" data-on="yes">
+          <div class="card-top">
+            <div class="card-id"><div class="kname">data_sources</div><div class="kmeta">Apollo organization enrich and Vibe Prospecting enrichment cost credits · the run spends none unless this is ticked, and then only on the domain above</div></div>
+          </div>
+          <label class="check" id="spendRow" data-on="no" for="allowSpend">
+            <input type="checkbox" id="allowSpend">
+            <span>
+              <span class="t">Allow credit spend on this account</span>
+              <span class="d">Unticked: free lookups only (Apollo people search, Vibe match). Ticked: enrich the intake domain in Apollo (1 credit if found) and Vibe Prospecting (cost shown first).</span>
+            </span>
+          </label>
+        </div>
+
+        <div class="card" id="cardWh" data-on="yes">
+          <div class="card-top">
+            <div class="card-id"><div class="kname">warehouse_findings</div><div class="kmeta">the sentinel while BigQuery is parked · read by <em>analysis</em></div></div>
+            <div class="toggle" role="group" aria-label="Include warehouse_findings">
+              <button type="button" data-k="wh" data-v="on" aria-pressed="true">Include</button>
+              <button type="button" class="off" data-k="wh" data-v="off" aria-pressed="false">Skip</button>
+            </div>
+          </div>
+          <div data-body="wh">
+            <div class="field">
+              <label for="whQuery">BigQuery scope <span class="hint">recorded for when the warehouse is back</span></label>
+              <textarea id="whQuery" placeholder="Prior orders, invoice history and support tickets for this domain over the last 8 quarters."></textarea>
+            </div>
+            <div class="field">
+              <label for="whSentinel">Sentinel when the warehouse returns nothing</label>
+              <input type="text" id="whSentinel" value="not available" autocomplete="off">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 -->
+      <section class="step" id="s3">
+        <div class="step-head"><span class="step-num">03</span><h3>CRM disposition</h3></div>
+        <p class="step-desc">Composed accounts have to land somewhere. Choose before running, because the two paths mint different record ids.</p>
+        <label class="opt" data-sel="no" id="optApollo">
+          <input type="radio" name="disp" value="apollo" id="rApollo">
+          <span><span class="t">Push through Apollo</span>
+            <span class="d">Flags the record <code>pending_apollo</code> for the weekly two-way sync, which runs <code>apollo_accounts_search</code> before <code>apollo_accounts_bulk_create</code> and re-keys the record to the Apollo id.</span></span>
+        </label>
+        <label class="opt" data-sel="no" id="optManual">
+          <input type="radio" name="disp" value="manual" id="rManual">
+          <span><span class="t">Write straight into the CRM</span>
+            <span class="d">Creates <code>accounts/crm_&lt;date&gt;_&lt;rand&gt;</code> with <code>origin:"crm"</code>. CRM-owned fields — stage, notes, next_step, activity — stay untouched by any later sync.</span></span>
+        </label>
+        <div class="warn" id="apolloWarn" hidden>
+          <b>Check before choosing Apollo.</b> Account ingest reads the lists in <code>meta/config.account_lists</code>. The Strategic Market Insights list was re-added on 24 Sep 2026. The run reads that setting first; if it is ever empty again the review HOLDs until the list id is back or you switch to manual.
+        </div>
+      </section>
+
+      <!-- 04 -->
+      <section class="step" id="s4">
+        <div class="step-head"><span class="step-num">04</span><h3>Run</h3></div>
+        <p class="step-desc">One press writes the run record and wakes the session that owns the repo. In order: re-gate the manifest → ledger tools → the company's site → Apollo and Vibe Prospecting → open-web research (company, market, competitors, adjacent, macroeconomics) → the SMI proposal with a ValueFirst "why now" → the review and the note to the founder → one merged note into the CRM record's pre-qual phase, with the Apollo and CRM sync schedule that follows. Each step reports back here as it returns.</p>
+        <div class="card">
+          <div class="launch-bar">
+            <button type="button" class="btn btn-primary" id="btnRun" disabled>Run composition</button>
+            <button type="button" class="btn btn-ghost" id="btnCopy">Copy run manifest</button>
+            <span class="launch-note" id="launchNote">request and account required</span>
+          </div>
+          <div class="fail" id="runFail" hidden></div>
+          <details class="fold" id="foldPayload">
+            <summary>Run manifest</summary>
+            <pre class="payload" id="payload">{}</pre>
+          </details>
+        </div>
+
+        <div id="runPanel" hidden>
+          <div class="card">
+            <div class="card-top">
+              <div class="card-id">
+                <div class="kname" id="runTitle">Composition sequence</div>
+                <div class="kmeta" id="runMeta">live from the run record</div>
+              </div>
+              <span class="chip hold" id="runStatus">queued</span>
+            </div>
+            <ol class="seq" id="seq"></ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- 05 -->
+      <section class="step" id="s5">
+        <div class="step-head"><span class="step-num">05</span><h3>Result</h3></div>
+        <p class="step-desc">The review first: it is for you, never the founder. <b>HOLD</b> lines mean the draft is filed but needs your decision before it goes anywhere; <b>Note</b> lines are context. Then the note to the founder that goes with the proposal, and the proposal as drafted, ready to download as a PDF.</p>
+        <div class="card" id="resultCard">
+          <div id="resultEmpty" class="blocked">No run selected. Press Run composition, or pick a run from the list below.</div>
+          <div id="resultBody" hidden>
+            <div class="card-top">
+              <div class="card-id"><div class="kname">Review before sending</div><div class="kmeta" id="fnMeta"></div></div>
+              <span class="chip skip" id="fnStatus">—</span>
+            </div>
+            <div class="fnote" id="fnote"></div>
+            <dl class="kv" id="resultKv"></dl>
+            <div class="ntf">
+              <div class="card-top">
+                <div class="card-id"><div class="kname">Note to the founder</div><div class="kmeta" id="ntfMeta">goes with the proposal</div></div>
+              </div>
+              <pre class="prop note" id="ntfText">Drafted with the proposal.</pre>
+              <div class="launch-bar" style="margin-top:10px"><button type="button" class="btn btn-ghost btn-sm" id="btnCopyNote" disabled>Copy note</button></div>
+            </div>
+            <details class="fold" id="foldProp" open>
+              <summary>Proposal as drafted</summary>
+              <pre class="prop" id="propText">(not yet drafted)</pre>
+              <div class="launch-bar" style="margin-top:10px">
+                <button type="button" class="btn btn-primary btn-sm" id="btnPdf" hidden disabled>Download PDF</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="btnCopyProp">Copy proposal</button>
+                <span class="launch-note" id="pdfNote" role="status" aria-live="polite"></span>
+              </div>
+            </details>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-top">
+            <div class="card-id"><div class="kname">Runs</div><div class="kmeta">last ten, newest first · click to view</div></div>
+            <span class="chip skip" id="runsCount">0</span>
+          </div>
+          <ul class="runs" id="runs"><li class="blocked" style="cursor:default;border:0">No runs yet.</li></ul>
+        </div>
+      </section>
+
+      <!-- 06 -->
+      <section class="step" id="s6">
+        <div class="step-head"><span class="step-num">06</span><h3>If you run it by hand</h3></div>
+        <p class="step-desc">Only when the button cannot fire (connector not added, viewing from a client without connectors). The skill <code>account-composition-run</code> takes the same manifest from a file; what it needs from a terminal is below.</p>
+        <div class="card">
+          <div id="invBlocked" class="blocked">Fill in the request, the account and a disposition, then this shows the invocation.</div>
+          <div id="invReady" hidden>
+            <pre class="inv" id="invocation"></pre>
+            <div class="launch-bar" style="margin-top:12px">
+              <button type="button" class="btn btn-ghost" id="btnCopyInv">Copy invocation</button>
+              <button type="button" class="btn btn-ghost" id="btnCopyFile">Copy manifest as file body</button>
+              <span class="launch-note">write the manifest to disk before invoking; never retype it</span>
+            </div>
+          </div>
+        </div>
+        <div class="tablewrap">
+          <table class="cont">
+            <thead><tr><th>Contingency</th><th>Risk</th><th>What to do</th></tr></thead>
+            <tbody>
+              <tr><td>Artifact database reach</td><td><span class="sev stop">Blocking</span></td><td>The CRM db is read and written with <code>ArtifactData</code>. A bare terminal session may not have it; the button path uses the session that does.</td></tr>
+              <tr><td>Apollo connector auth</td><td><span class="sev stop">Blocking</span></td><td>OAuth does not carry into a terminal. No auth → manual disposition; the Monday sync picks the record up.</td></tr>
+              <tr><td>BigQuery absent</td><td><span class="sev hold">Degrades</span></td><td>The sentinel goes into <code>warehouse_findings</code>; an unset key reads differently downstream.</td></tr>
+              <tr><td>Sync window</td><td><span class="sev hold">Degrades</span></td><td>Apollo ⇄ CRM sync Mon 07:00 ET, enrichment push 07:30, Command Center 08:00. A run inside 06:45–08:15 ET gets a HOLD in the review.</td></tr>
+              <tr><td><code>account_lists</code> empty</td><td><span class="sev stop">Blocking on Apollo</span></td><td>Re-added 24 Sep (Strategic Market Insights). The run reads <code>meta/config.account_lists</code> first; empty → HOLD. By hand, confirm it is not empty or choose manual.</td></tr>
+              <tr><td>Empty-value overwrite</td><td><span class="sev stop">Blocking</span></td><td>Never let an empty field overwrite a populated one. The run's writes are field merges of only what changed.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer>
+        Account Research Composition · intake v2 · runs through <b>Composition run (Intake page button)</b> · CRM refresh stays on the Monday sync
+      </footer>
+    </main>
+  </div>
+</div>
+
+<script id="proposal-pdf">
+/* Proposal PDF. Lays out the SMI prequalification proposal (Markdown) on US
+   Letter pages with jsPDF's built-in Helvetica: a brand header, section rules,
+   wrapped paragraphs with bold, italic and live links, lists, the "What we
+   heard" table (header row repeats across pages), muted evidence tags, and a
+   footer with page numbers. Pure: a jsPDF constructor and the Markdown in, a
+   jsPDF document out. */
+(function(root){
+  "use strict";
+  var W = 612, H = 792, MX = 72, TOP = 64, LIMIT = H - 78;
+  var CW = W - 2 * MX;
+  var C = { ink:[20,26,33], ink2:[63,74,87], muted:[106,118,132], line:[214,220,227], fill:[238,241,245], accent:[28,107,102] };
+  var BODY = 10.5, LEAD = 15;
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  /* Helvetica here is WinAnsi: Latin-1 plus the characters in WIN. Anything
+     else is mapped to a plain equivalent or dropped, never printed as junk. */
+  var WIN = "€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ";
+  var MAP = { "→":"->", "←":"<-", "↔":"<->", "⇄":"<->", "⇒":"=>", "≤":"<=", "≥":">=",
+              "≈":"~", "≠":"!=", "−":"-", "‐":"-", "‑":"-", "‒":"-", "―":"-",
+              "′":"'", "″":"\"", " ":" ", " ":" ", " ":" ", " ":" ", " ":" ", " ":" ",
+              "✓":"v", "✔":"v", "✗":"x", "✘":"x", "↑":"up", "↓":"down" };
+  function clean(s){
+    var out = "";
+    for (var ch of String(s == null ? "" : s)) {
+      var c = ch.codePointAt(0);
+      if (c === 9) { out += " "; continue; }
+      if ((c >= 0x20 && c <= 0x7e) || (c >= 0xa0 && c <= 0xff) || WIN.indexOf(ch) !== -1) { out += ch; continue; }
+      if (MAP[ch] !== undefined) { out += MAP[ch]; continue; }
+      var base = ch.normalize ? ch.normalize("NFD").replace(/[̀-ͯ]/g, "") : "";
+      if (base && base.length === 1 && base.charCodeAt(0) <= 0xff && base.charCodeAt(0) >= 0x20) out += base;
+    }
+    return out;
+  }
+
+  /* ---- inline Markdown -> runs {t, b, i, code, url, tag} ---- */
+  var TAG = /^\[(supported|needs stipulation|unsupported)\]/i;
+  function inline(src, base){
+    var runs = [], b = !!(base && base.b), it = !!(base && base.i), buf = "", s = String(src || ""), k = 0;
+    function push(t, extra){
+      if (!t) return;
+      var r = { t: clean(t), b: b, i: it };
+      if (base && base.color) r.color = base.color;
+      for (var key in extra) r[key] = extra[key];
+      if (r.t) runs.push(r);
+    }
+    function flush(){ push(buf); buf = ""; }
+    while (k < s.length) {
+      var rest = s.slice(k), ch = s[k], m;
+      if (ch === "\\" && k + 1 < s.length && /[\\`*_\[\]()#|>-]/.test(s[k + 1])) { buf += s[k + 1]; k += 2; continue; }
+      if ((m = rest.match(TAG))) { flush(); push(m[0], { tag: true }); k += m[0].length; continue; }
+      if ((m = rest.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/))) { flush(); push(m[1], { url: m[2] }); k += m[0].length; continue; }
+      if ((m = rest.match(/^https?:\/\/[^\s)\]>]+/))) {
+        var u = m[0].replace(/[.,;:]+$/, "");
+        flush(); push(u, { url: u }); k += u.length; continue;
+      }
+      if ((m = rest.match(/^`([^`]+)`/))) { flush(); push(m[1], { code: true }); k += m[0].length; continue; }
+      if (rest.slice(0, 2) === "**" || rest.slice(0, 2) === "__") { flush(); b = !b; k += 2; continue; }
+      if (ch === "*" || ch === "_") {
+        var prev = k > 0 ? s[k - 1] : " ", next = k + 1 < s.length ? s[k + 1] : " ";
+        var opens = !it && /\S/.test(next) && (ch === "*" || !/[A-Za-z0-9]/.test(prev)) && s.indexOf(ch, k + 1) !== -1;
+        var closes = it && /\S/.test(prev) && (ch === "*" || !/[A-Za-z0-9]/.test(next));
+        if (opens || closes) { flush(); it = !it; k += 1; continue; }
+      }
+      buf += ch; k += 1;
+    }
+    flush();
+    return runs;
+  }
+
+  /* ---- measuring and wrapping ---- */
+  function setFont(doc, r, size){
+    if (r.code) doc.setFont("courier", r.b ? "bold" : "normal");
+    else doc.setFont("helvetica", r.b && (r.i || r.tag) ? "bolditalic" : r.b ? "bold" : (r.i || r.tag) ? "italic" : "normal");
+    doc.setFontSize(r.code ? size * 0.9 : r.tag ? size * 0.88 : size);
+  }
+  /* Unkerned: jsPDF measures with kerning pairs by default but writes the text
+     unkerned, which would swallow the space after pairs like "Yo" or "P,". */
+  function measure(doc, r, size, t){
+    setFont(doc, r, size);
+    return doc.getStringUnitWidth(t, { kerning: {} }) * doc.getFontSize() / doc.internal.scaleFactor;
+  }
+  function spaceW(doc, size){ return measure(doc, {}, size, " "); }
+
+  function words(doc, runs, size){
+    var out = [], cur = null, gap = false;
+    runs.forEach(function(r){
+      r.t.split(/(\s+)/).forEach(function(p){
+        if (!p) return;
+        if (/^\s+$/.test(p)) { if (cur) { out.push(cur); cur = null; } gap = true; return; }
+        if (!cur) { cur = { pieces: [], gap: gap && out.length > 0, w: 0 }; gap = false; }
+        var w = measure(doc, r, size, p);
+        cur.pieces.push({ t: p, r: r, w: w }); cur.w += w;
+      });
+    });
+    if (cur) out.push(cur);
+    return out;
+  }
+  /* A word wider than the line (a long URL): break after "/" where possible, else by character. */
+  function split(doc, word, size, maxW){
+    var parts = [], cur = { pieces: [], gap: word.gap, w: 0 };
+    function add(t, r){
+      var w = measure(doc, r, size, t);
+      if (cur.w + w > maxW && cur.w > 0) { parts.push(cur); cur = { pieces: [], gap: false, w: 0 }; }
+      var last = cur.pieces[cur.pieces.length - 1];
+      if (last && last.r === r) { last.t += t; last.w += w; } else cur.pieces.push({ t: t, r: r, w: w });
+      cur.w += w;
+    }
+    word.pieces.forEach(function(p){
+      var chunks = p.t.match(/[^\/]*\/+|[^\/]+$/g) || [p.t];
+      chunks.forEach(function(chunk){
+        if (measure(doc, p.r, size, chunk) <= maxW) add(chunk, p.r);
+        else for (var ch of chunk) add(ch, p.r);
+      });
+    });
+    if (cur.pieces.length) parts.push(cur);
+    return parts;
+  }
+  function wrap(doc, runs, size, maxW){
+    var sw = spaceW(doc, size), lines = [], line = [], lw = 0;
+    words(doc, runs, size).forEach(function(w0){
+      (w0.w > maxW ? split(doc, w0, size, maxW) : [w0]).forEach(function(w){
+        var add = (line.length && w.gap ? sw : 0) + w.w;
+        if (line.length && lw + add > maxW) { lines.push(line); line = []; lw = 0; add = w.w; }
+        line.push(w); lw += add;
+      });
+    });
+    if (line.length) lines.push(line);
+    return lines;
+  }
+  function drawLine(doc, line, x, base, size){
+    var cx = x, sw = spaceW(doc, size);
+    line.forEach(function(w, idx){
+      if (idx > 0 && w.gap) cx += sw;
+      w.pieces.forEach(function(p){
+        setFont(doc, p.r, size);
+        var col = p.r.url ? C.accent : p.r.tag ? C.muted : (p.r.color || C.ink);
+        doc.setTextColor(col[0], col[1], col[2]);
+        doc.text(p.t, cx, base);
+        if (p.r.url) {
+          doc.link(cx, base - size * 0.8, p.w, size * 1.05, { url: p.r.url });
+          doc.setDrawColor(C.accent[0], C.accent[1], C.accent[2]); doc.setLineWidth(0.4);
+          doc.line(cx, base + 1.6, cx + p.w, base + 1.6);
+        }
+        cx += p.w;
+      });
+    });
+  }
+
+  /* ---- block Markdown ---- */
+  function blocks(md){
+    var L = String(md || "").replace(/\r\n?/g, "\n").split("\n"), out = [], para = [], i = 0, m;
+    function flush(){ if (para.length) { out.push({ k: "p", text: para.join(" ") }); para = []; } }
+    function more(item){
+      while (i < L.length && L[i].trim() && /^\s{2,}\S/.test(L[i]) && !/^\s*([-*+]|\d+[.)])\s+/.test(L[i])) { item.text += " " + L[i].trim(); i++; }
+    }
+    while (i < L.length) {
+      var line = L[i], t = line.trim();
+      if (!t) { flush(); i++; continue; }
+      if ((m = t.match(/^(#{1,4})\s+(.*?)\s*#*$/))) { flush(); out.push({ k: "h" + m[1].length, text: m[2] }); i++; continue; }
+      if (/^(-{3,}|\*{3,}|_{3,})$/.test(t)) { flush(); out.push({ k: "hr" }); i++; continue; }
+      if (t[0] === "|") {
+        flush(); var rows = [];
+        while (i < L.length && L[i].trim()[0] === "|") { rows.push(L[i].trim()); i++; }
+        out.push(table(rows)); continue;
+      }
+      if ((m = line.match(/^(\s*)([-*+])\s+(.*)$/))) { flush(); var li = { k: "li", ord: null, depth: m[1].length >= 2 ? 1 : 0, text: m[3] }; out.push(li); i++; more(li); continue; }
+      if ((m = line.match(/^(\s*)(\d+)[.)]\s+(.*)$/))) { flush(); var ol = { k: "li", ord: m[2], depth: m[1].length >= 2 ? 1 : 0, text: m[3] }; out.push(ol); i++; more(ol); continue; }
+      if ((m = t.match(/^>\s?(.*)$/))) { flush(); out.push({ k: "quote", text: m[1] }); i++; continue; }
+      if (/^```/.test(t)) {
+        flush(); var code = []; i++;
+        while (i < L.length && !/^```/.test(L[i].trim())) { code.push(L[i]); i++; }
+        i++; out.push({ k: "code", lines: code }); continue;
+      }
+      para.push(t); i++;
+    }
+    flush();
+    return out;
+  }
+  function table(rows){
+    var SEP = /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/;
+    var cells = rows.filter(function(r){ return !SEP.test(r); }).map(function(r){
+      return r.replace(/\\\|/g, "\u0000").replace(/^\|/, "").replace(/\|\s*$/, "").split("|")
+              .map(function(c){ return c.replace(/\u0000/g, "|").trim(); });
+    });
+    var n = Math.max.apply(null, cells.map(function(r){ return r.length; }).concat([1]));
+    cells.forEach(function(r){ while (r.length < n) r.push(""); });
+    return { k: "table", rows: cells };
+  }
+
+  function longDate(iso){
+    var d = iso ? new Date(iso) : new Date();
+    if (isNaN(d.getTime())) d = new Date();
+    return d.getUTCDate() + " " + MONTHS[d.getUTCMonth()] + " " + d.getUTCFullYear();
+  }
+
+  /* ---- render ---- */
+  function render(JsPDF, markdown, meta){
+    meta = meta || {};
+    var doc = new JsPDF({ unit: "pt", format: "letter", compress: true });
+    var list = blocks(markdown), y = TOP, brand = meta.brand || "Strategic Market Insights", title = meta.account || "Proposal";
+    var first = list.findIndex(function(b){ return b.k === "h2"; });
+    var head = first === -1 ? list : list.slice(0, first);
+    head.forEach(function(b){
+      if (b.k === "h1") title = b.text.replace(/\s+(?:--|—|–|-)\s+prequalification proposal\s*$/i, "").trim() || title;
+    });
+    list = list.filter(function(b, idx){
+      if (first !== -1 && idx >= first) return true;
+      return !(b.k === "h1" || (b.k === "p" && /^prepared by\s+/i.test(b.text)));
+    });
+
+    function color(c){ doc.setTextColor(c[0], c[1], c[2]); }
+    function page(){ doc.addPage(); y = TOP; }
+    function ensure(h){ if (y + h > LIMIT) page(); }
+    function hair(yy, c, lw){ c = c || C.line; doc.setDrawColor(c[0], c[1], c[2]); doc.setLineWidth(lw || 0.5); doc.line(MX, yy, W - MX, yy); }
+    function textBlock(runs, size, lead, x, maxW, after){
+      wrap(doc, runs, size, maxW).forEach(function(l){
+        ensure(lead);
+        drawLine(doc, l, x, y + (lead - size) / 2 + size * 0.8, size);
+        y += lead;
+      });
+      y += after;
+    }
+
+    /* header */
+    doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); color(C.accent);
+    doc.text(clean(brand).toUpperCase(), MX, y + 7, { charSpace: 1.1 });
+    y += 24;
+    textBlock(inline(title, { b: true }), 22, 26, MX, CW, 2);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(12); color(C.ink2);
+    doc.text("Prequalification proposal", MX, y + 12);
+    y += 22;
+    var who = [meta.founder, meta.account].filter(Boolean).join(", ");
+    var line = [who ? "Prepared for " + who : null, longDate(meta.date), meta.pid ? "Ref. " + meta.pid : null].filter(Boolean).join("   ·   ");
+    textBlock(inline(line, { color: C.muted }), 8.5, 12, MX, CW, 10);
+    hair(y, C.accent, 1.1);
+    y += 20;
+
+    var prev = null;
+    list.forEach(function(b){
+      if (prev === "li" && b.k !== "li") y += 4;
+      if (b.k === "h2" || b.k === "h1") {
+        ensure(18 + 9 + LEAD * 3);
+        if (y > TOP + 1) y += 12;
+        textBlock(inline(b.text, { b: true }), 12, 16, MX, CW, 2);
+        hair(y); y += 9;
+      } else if (b.k === "h3" || b.k === "h4") {
+        ensure(16 + LEAD * 2);
+        y += 4;
+        textBlock(inline(b.text, { b: true }), BODY, LEAD, MX, CW, 2);
+      } else if (b.k === "p") {
+        var text = b.text.replace(/(^|\.\s+)Gate:(?=\s)/g, "$1**Gate:**");
+        textBlock(inline(text), BODY, LEAD, MX, CW, 7);
+      } else if (b.k === "li") {
+        var ind = b.depth * 16, hang = b.ord ? 20 : 15, lines = wrap(doc, inline(b.text), BODY, CW - ind - hang);
+        lines.forEach(function(l, idx){
+          ensure(LEAD);
+          var base = y + (LEAD - BODY) / 2 + BODY * 0.8;
+          if (idx === 0) {
+            if (b.ord) {
+              doc.setFont("helvetica", "bold"); doc.setFontSize(BODY); color(C.ink2);
+              doc.text(b.ord + ".", MX + ind, base);
+            } else {
+              doc.setFillColor(C.ink2[0], C.ink2[1], C.ink2[2]);
+              doc.circle(MX + ind + 4, base - BODY * 0.3, 1.5, "F");
+            }
+          }
+          drawLine(doc, l, MX + ind + hang, base, BODY);
+          y += LEAD;
+        });
+        y += 3;
+      } else if (b.k === "table") {
+        y += 2;
+        drawTable(b.rows);
+        y += 12;
+      } else if (b.k === "hr") {
+        ensure(20); y += 6; hair(y); y += 12;
+      } else if (b.k === "quote") {
+        var top = y;
+        textBlock(inline(b.text, { i: true, color: C.ink2 }), BODY, LEAD, MX + 14, CW - 14, 0);
+        doc.setFillColor(C.accent[0], C.accent[1], C.accent[2]);
+        if (y > top) doc.rect(MX, top + 2, 2, y - top - 4, "F");
+        y += 7;
+      } else if (b.k === "code") {
+        b.lines.forEach(function(l){
+          ensure(12);
+          doc.setFont("courier", "normal"); doc.setFontSize(8.5); color(C.ink2);
+          doc.text(clean(l), MX + 8, y + 9);
+          y += 12;
+        });
+        y += 7;
+      }
+      prev = b.k;
+    });
+
+    function drawTable(rows){
+      var n = rows[0].length, size = 9, lead = 12.5, pad = 5, sw = spaceW(doc, size);
+      var cells = rows.map(function(r, ri){ return r.map(function(c){ return inline(c, ri === 0 ? { b: true, color: C.ink2 } : null); }); });
+      var nat = [], min = [];
+      for (var c = 0; c < n; c++) { nat.push(2 * pad + 20); min.push(2 * pad + 20); }
+      cells.forEach(function(r, ri){
+        r.forEach(function(runs, ci){
+          var ws = words(doc, runs, ri === 0 ? 8.5 : size), total = 0;
+          ws.forEach(function(w, wi){
+            total += w.w + (wi && w.gap ? sw : 0);
+            min[ci] = Math.max(min[ci], Math.min(w.w, CW / n) + 2 * pad);
+          });
+          nat[ci] = Math.max(nat[ci], total + 2 * pad);
+        });
+      });
+      var sum = function(a){ return a.reduce(function(x, v){ return x + v; }, 0); }, widths;
+      if (sum(nat) <= CW) widths = nat.map(function(v){ return v * CW / sum(nat); });
+      else if (sum(min) >= CW) widths = min.map(function(v){ return v * CW / sum(min); });
+      else {
+        var extra = CW - sum(min), want = nat.map(function(v, ci){ return v - min[ci]; }), tw = sum(want) || 1;
+        widths = min.map(function(v, ci){ return v + extra * want[ci] / tw; });
+      }
+      function row(ri){
+        var sz = ri === 0 ? 8.5 : size;
+        var wrapped = cells[ri].map(function(runs, ci){ return wrap(doc, runs, sz, widths[ci] - 2 * pad); });
+        var h = Math.max.apply(null, wrapped.map(function(ls){ return Math.max(ls.length, 1); })) * lead + 2 * pad;
+        if (y + h > LIMIT) { page(); if (ri !== 0) row(0); }
+        if (ri === 0) { doc.setFillColor(C.fill[0], C.fill[1], C.fill[2]); doc.rect(MX, y, CW, h, "F"); }
+        var cx = MX;
+        wrapped.forEach(function(ls, ci){
+          var cy = y + pad;
+          ls.forEach(function(l){ drawLine(doc, l, cx + pad, cy + (lead - sz) / 2 + sz * 0.8, sz); cy += lead; });
+          cx += widths[ci];
+        });
+        y += h;
+        hair(y, ri === 0 ? C.ink2 : C.line, ri === 0 ? 0.6 : 0.5);
+      }
+      ensure(60);
+      for (var ri = 0; ri < cells.length; ri++) row(ri);
+    }
+
+    var pages = doc.getNumberOfPages();
+    for (var p = 1; p <= pages; p++) {
+      doc.setPage(p);
+      hair(H - 52);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); color(C.muted);
+      doc.text(clean(brand + "   ·   Prequalification proposal" + (meta.account ? " for " + meta.account : "")), MX, H - 38);
+      doc.text("Page " + p + " of " + pages, W - MX, H - 38, { align: "right" });
+    }
+    doc.setProperties({ title: clean(title + " - Prequalification Proposal"), subject: "Prequalification proposal",
+                        author: clean(brand), creator: "Account Composition Intake" });
+    return doc;
+  }
+
+  var api = { render: render, blocks: blocks, inline: inline, clean: clean };
+  root.ProposalPDF = api;
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var TRIGGER_ID = "trig_01W9A9anRnfQxBWhb2FxEoPF";
+  var SERVER = "Claude Code Remote";
+  var CRM_URL = "https://claude.ai/artifact/8GigYGeoefKqxEptmeCHWG";
+  var KEYS = ["contacts","ledger","web","wh"];
+  var on = { contacts:true, ledger:true, web:true, wh:true };
+  var STORE = "acct-intake-v2";
+  var STEPS = [
+    ["find_account", "account"],
+    ["list_account_contacts", "account_contacts"],
+    ["assess_ledger_quality", "ledger_quality"],
+    ["fetch_page", "page_contents, page_url"],
+    ["apollo", "organization enrich · people at the domain"],
+    ["prospecting", "Vibe Prospecting match · firmographics · events"],
+    ["web_research", "site · market · competitors · adjacent · macroeconomics"],
+    ["summarize_page", "website_summary"],
+    ["warehouse_findings", "warehouse_findings"],
+    ["compose_proposal", "SMI proposal · data/proposals/<slug>-<date>.{json,md}"],
+    ["crm_write", "merged pre-qual note: proposal · note to the founder · review · coverage · sync schedule"]
+  ];
+
+  var db = null, mcp = null, downloads = null;
+  var currentRun = null, currentData = null, unsubRun = null, unsubRuns = null;
+
+  function $(id){ return document.getElementById(id); }
+  function val(id){ var e=$(id); return e ? e.value.trim() : ""; }
+  function linkedin(){ var e=$("accLinkedin"); return !!(e && e.checked); }
+  function esc(s){ return String(s == null ? "" : s); }
+
+  /* ---- per-viewer draft (localStorage only) ---- */
+  var FIELDS = ["reqText","reqUrl","reqName","reqLinkedin","accName","accDomain","accId","contactLimit","ledgerFloor","pageUrl","fetchFallback","whQuery","whSentinel"];
+  function saveDraft(){
+    try{
+      var d = { on:on, lastRun: currentRun };
+      FIELDS.forEach(function(f){ var e=$(f); if(e) d[f]=e.value; });
+      var r = document.querySelector('input[name="disp"]:checked');
+      d.disp = r ? r.value : null;
+      d.linkedin = linkedin();
+      d.spend = !!($("allowSpend") && $("allowSpend").checked);
+      localStorage.setItem(STORE, JSON.stringify(d));
+    }catch(e){}
+  }
+  function loadDraft(){
+    try{
+      var raw = localStorage.getItem(STORE);
+      if(!raw) return null;
+      var d = JSON.parse(raw);
+      if(d && d.on) KEYS.forEach(function(k){ if(typeof d.on[k]==="boolean") on[k]=d.on[k]; });
+      FIELDS.forEach(function(f){ var e=$(f); if(e && typeof d[f]==="string") e.value=d[f]; });
+      if(d && typeof d.linkedin==="boolean"){ var li=$("accLinkedin"); if(li) li.checked=d.linkedin; }
+      if(d && typeof d.spend==="boolean"){ var sp=$("allowSpend"); if(sp) sp.checked=d.spend; }
+      if(d && d.disp){ var r=$(d.disp==="apollo"?"rApollo":"rManual"); if(r) r.checked=true; }
+      return d && d.lastRun || null;
+    }catch(e){ return null; }
+  }
+
+  /* ---- manifest ---- */
+  function newRunId(){
+    var d = new Date().toISOString().slice(0,10).replace(/-/g,"");
+    var r = Math.random().toString(36).slice(2,8);
+    return "run_" + d + "_" + r;
+  }
+  function manifest(runId){
+    var m = { run: { event:"agents-go-live", run_id: runId || null, composed_at: runId ? new Date().toISOString() : null }, state: {} };
+    m.request = {
+      text: val("reqText") || null,
+      source_url: val("reqUrl") || null,
+      founder: { name: val("reqName") || null, linkedin_url: val("reqLinkedin") || null }
+    };
+    m.request.requester = m.request.founder; // same person: at a small startup the requester is the founder
+    m.state.account = { required:true, resolved_by:"find_account", name: val("accName") || null,
+                        domain: val("accDomain") || null, crm_account_id: val("accId") || null,
+                        source: linkedin() ? "linkedin" : null };
+    m.state.account_contacts = on.contacts ? { include:true, written_by:"list_account_contacts", limit: val("contactLimit") } : { include:false, opted_out:true };
+    m.state.ledger_quality = on.ledger ? { include:true, written_by:"assess_ledger_quality", quality_floor: val("ledgerFloor") } : { include:false, opted_out:true };
+    m.state.website_summary = on.web ? { include:true, written_by:"summarize_page", page_url: val("pageUrl") || null,
+                                         on_fetch_error: val("fetchFallback"), note:"page_contents and page_url are not read by analysis" } : { include:false, opted_out:true };
+    m.state.warehouse_findings = on.wh ? { include:true, written_by:"store_state sentinel", scope: val("whQuery") || null,
+                                           sentinel: val("whSentinel") || "not available" } : { include:false, opted_out:true };
+    var sp = $("allowSpend");
+    m.data_sources = { allow_credit_spend: !!(sp && sp.checked) };
+    var r = document.querySelector('input[name="disp"]:checked');
+    m.crm = { disposition: r ? r.value : null, pre_qual: linkedin() };
+    return m;
+  }
+
+  /* ---- render form state ---- */
+  function render(){
+    var hasAccount = !!(val("accName") || val("accDomain"));
+    var hasRequest = !!val("reqText");
+    var r = document.querySelector('input[name="disp"]:checked');
+    var hasDisp = !!(r && r.value);
+
+    $("cardAccount").setAttribute("data-filled", hasAccount ? "yes":"no");
+    $("cardRequest").setAttribute("data-filled", hasRequest ? "yes":"no");
+    $("liRow").setAttribute("data-on", linkedin() ? "yes":"no");
+    $("spendRow").setAttribute("data-on", ($("allowSpend") && $("allowSpend").checked) ? "yes":"no");
+    [["c-account",hasAccount],["c-account-2",hasAccount],["c-request",hasRequest],["c-request-2",hasRequest]].forEach(function(p){
+      var el=$(p[0]); if(!el) return;
+      el.textContent = p[1] ? "resolved" : "required";
+      el.className = "chip " + (p[1] ? "go" : "hold");
+    });
+
+    var map = { contacts:"c-contacts", ledger:"c-ledger", web:"c-web", wh:"c-wh" };
+    var cards = { contacts:"cardContacts", ledger:"cardLedger", web:"cardWeb", wh:"cardWh" };
+    var included = 0;
+    KEYS.forEach(function(k){
+      var chip = $(map[k]);
+      if(chip){ chip.textContent = on[k] ? "included" : "skipped"; chip.className = "chip " + (on[k] ? "go" : "skip"); }
+      var card = $(cards[k]);
+      if(card){
+        card.setAttribute("data-on", on[k] ? "yes":"no");
+        card.querySelectorAll('[data-k="'+k+'"]').forEach(function(b){
+          b.setAttribute("aria-pressed", String((b.getAttribute("data-v")==="on") === on[k]));
+        });
+        card.querySelectorAll("input,select,textarea").forEach(function(f){ f.disabled = !on[k]; });
+      }
+      if(on[k]) included++;
+    });
+
+    var ok = hasAccount && hasRequest;
+    var gate = $("gate");
+    gate.setAttribute("data-ok", ok ? "yes":"no");
+    $("gateTitle").textContent = ok ? "Preconditions met" : "Precondition not met";
+    $("gateSub").textContent = !hasRequest ? "request — required, empty" : (!hasAccount ? "account — required, not resolved" : "request + account — resolved");
+    $("gateCount").textContent = included + " of 4 optional keys included" + (on.web ? "" : " · no page fetch");
+
+    var canRun = ok && hasDisp;
+    var btn = $("btnRun");
+    btn.disabled = !canRun;
+    $("launchNote").textContent = !ok ? "request and account required"
+      : !hasDisp ? "choose a CRM disposition above"
+      : (mcp ? "ready — fires " + SERVER : (db ? "ready — run record only; the connector is not available here" : "ready — connector and database not available; use step 06"));
+
+    $("payload").textContent = JSON.stringify(manifest(null), null, 2);
+    $("optApollo").setAttribute("data-sel", r && r.value==="apollo" ? "yes":"no");
+    $("optManual").setAttribute("data-sel", r && r.value==="manual" ? "yes":"no");
+    $("apolloWarn").hidden = !(r && r.value==="apollo");
+    renderInvocation(canRun);
+    saveDraft();
+  }
+
+  /* ---- by-hand invocation ---- */
+  function slug(){
+    var s = (val("accDomain") || val("accName") || "account").toLowerCase();
+    s = s.replace(/^https?:\/\//,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+    return s.slice(0,40) || "account";
+  }
+  function fileName(){ return "manifest-" + slug() + "-" + new Date().toISOString().slice(0,10) + ".json"; }
+  var SKILL = "/anthropic-skills:account-composition-run";
+  function invocationText(){ return SKILL + " " + fileName(); }
+  function renderInvocation(ready){
+    $("invBlocked").hidden = ready;
+    $("invReady").hidden = !ready;
+    if(!ready) return;
+    var pre = $("invocation"); pre.innerHTML = "";
+    function line(txt, cls){ var s=document.createElement("span"); if(cls) s.className=cls; s.textContent=txt; pre.appendChild(s); }
+    line("# write the manifest beside the skill\n", "cm");
+    line("$ cat > " + fileName() + "\n\n");
+    line("# then invoke\n", "cm");
+    line(SKILL, "sk"); line(" " + fileName() + "\n\n");
+    line("# or, from the repo: python3 scripts/compose_account.py prepare " + fileName() + " --crm-dump <dump>\n", "cm");
+  }
+
+  /* ---- run record rendering ---- */
+  function statusChip(s){
+    if(s === "needs_founder") s = "needs_review"; // runs filed before the rename
+    var cls = { queued:"hold", running:"hold", not_fired:"stop", failed:"stop", halted:"stop", done:"go", needs_review:"hold" }[s] || "skip";
+    return { text: (s || "—").replace(/_/g," "), cls: cls };
+  }
+  function renderSeq(steps){
+    var list = $("seq"); list.innerHTML = "";
+    STEPS.forEach(function(st, i){
+      var raw = steps && steps[st[0]] || "";
+      var state = raw.split(":")[0] || "";
+      var li = document.createElement("li");
+      li.setAttribute("data-s", state || "waiting");
+      var ord = document.createElement("span"); ord.className="ord"; ord.textContent=String(i+1).padStart(2,"0");
+      var lamp = document.createElement("span"); lamp.className="lamp";
+      var body = document.createElement("div"); body.className="body";
+      var a = document.createElement("div"); a.className="agent"; a.textContent = st[0];
+      var w = document.createElement("div"); w.className="writes";
+      var em = document.createElement("em"); em.textContent = st[1];
+      w.appendChild(document.createTextNode(raw ? (raw.replace(/_/g," ") + " · ") : "waiting · "));
+      w.appendChild(em);
+      body.appendChild(a); body.appendChild(w);
+      li.appendChild(ord); li.appendChild(lamp); li.appendChild(body);
+      list.appendChild(li);
+    });
+  }
+  function renderReview(text, status){
+    var box = $("fnote"); box.innerHTML = "";
+    var lines = (text || "").split("\n").filter(function(l){ return l.trim(); });
+    if(!lines.length){
+      var d = document.createElement("div"); d.className="ln n"; d.textContent = status ? "No review yet: the run has not reached that step." : "—";
+      box.appendChild(d); return;
+    }
+    lines.forEach(function(l){
+      var d = document.createElement("div");
+      var m = l.match(/^(HOLD|Note)\s+[—-]\s+(.*)$/);
+      if(m){
+        d.className = "ln " + (m[1]==="HOLD" ? "h" : "n");
+        var b = document.createElement("b"); b.textContent = m[1].toUpperCase();
+        d.appendChild(b); d.appendChild(document.createTextNode(m[2]));
+      }else{
+        d.className = "ln " + (/Nothing extenuating/.test(l) ? "ok" : "n");
+        d.textContent = l;
+      }
+      box.appendChild(d);
+    });
+  }
+  function kv(dl, k, v, href){
+    var dt = document.createElement("dt"); dt.textContent = k;
+    var dd = document.createElement("dd");
+    if(href){ var a=document.createElement("a"); a.href=href; a.target="_blank"; a.rel="noopener"; a.textContent=v; dd.appendChild(a); }
+    else { dd.textContent = v; }
+    dl.appendChild(dt); dl.appendChild(dd);
+  }
+  function renderRun(id, data){
+    $("runPanel").hidden = false;
+    $("resultEmpty").hidden = true;
+    $("resultBody").hidden = false;
+    var acc = (data && data.account) || ((data && data.manifest && data.manifest.state && data.manifest.state.account) || {});
+    $("runTitle").textContent = (acc.name || acc.domain || "Composition") + " · " + id;
+    var meta = [];
+    if(data && data.requested_at) meta.push("requested " + data.requested_at.replace("T"," ").slice(0,16) + " UTC");
+    if(data && data.prepared_at) meta.push("prepared " + data.prepared_at.replace("T"," ").slice(0,16));
+    if(data && data.finished_at) meta.push("finished " + data.finished_at.replace("T"," ").slice(0,16));
+    if(data && data.error) meta.push("error: " + data.error);
+    $("runMeta").textContent = meta.join(" · ") || "live from the run record";
+    var sc = statusChip(data && data.status);
+    $("runStatus").textContent = sc.text; $("runStatus").className = "chip " + sc.cls;
+    renderSeq(data && data.steps);
+
+    currentData = data || null;
+    var fs = data && (data.review_status || data.founder_status || (["done","needs_review","needs_founder"].indexOf(data.status) !== -1 ? data.status : null));
+    if(fs === "needs_founder") fs = "needs_review";
+    var fsc = statusChip(fs || "");
+    $("fnStatus").textContent = fs ? fsc.text : "pending"; $("fnStatus").className = "chip " + (fs ? fsc.cls : "skip");
+    $("fnMeta").textContent = "for you, not the founder · " + (fs === "needs_review" ? "filed as drafted; nothing goes out until you decide" : (fs === "done" ? "nothing needs a decision" : "computed after the ledger legs"));
+    renderReview(data && (data.review != null ? data.review : data.founder_note), data && data.status);
+
+    var who = founderOf(data).name;
+    $("ntfMeta").textContent = (who ? "to " + who : "to the founder (the requester)") + " · goes with the proposal";
+    var note = data && data.note_to_founder;
+    $("ntfText").textContent = (note && brandFix(note)) || (data && data.proposal_markdown
+      ? "Not drafted for this run: it was filed before notes to the founder existed. A new run drafts one."
+      : "Drafted with the proposal.");
+    $("btnCopyNote").disabled = !note;
+
+    var dl = $("resultKv"); dl.innerHTML = "";
+    if(data && data.proposal_id) kv(dl, "proposal", data.proposal_id);
+    if(data && data.proposal_path) kv(dl, "file", data.proposal_path);
+    var crm = data && data.crm || {};
+    if(crm.contact_ids && crm.contact_ids.length) kv(dl, "contacts", crm.contact_ids.join(", "), CRM_URL);
+    if(crm.account_id) kv(dl, "account", crm.account_id, CRM_URL);
+    if(data && data.apollo_account_id) kv(dl, "apollo account", data.apollo_account_id);
+    if(data && data.manifest && data.manifest.crm) kv(dl, "disposition", data.manifest.crm.disposition || "—");
+    if(data && data.fire_error) kv(dl, "fire", data.fire_error);
+    $("propText").textContent = (data && data.proposal_markdown) ? brandFix(data.proposal_markdown) : "(not yet drafted)";
+    $("pdfNote").textContent = isVoid(data) ? "Voided proposal: not for sending, so no PDF."
+      : (fs === "needs_review" && data && data.proposal_markdown ? "The review above has HOLD lines. Decide on them before sending." : "");
+    renderPdfButton();
+  }
+
+  /* ---- Download PDF ---- */
+  /* The firm is Strategic Market Insights. Proposals filed on 24 Sep 2026 say
+     "Marketing"; their stored record keeps that wording, but everything this
+     page shows, copies or exports uses the firm's name. */
+  var BRAND = "Strategic Market Insights";
+  function brandFix(text){ return String(text == null ? "" : text).replace(/Strategic Marketing Insights/g, BRAND); }
+  function isVoid(data){ return !!(data && (data.void || data.status === "void")); }
+  function founderOf(data){
+    var r = data && data.manifest && data.manifest.request || {};
+    return (data && data.founder) || r.founder || r.requester || {};
+  }
+  var PDF_LIB = ["https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+                 "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"];
+  var pdfLib = null, pdfBusy = false, pdfOff = false;
+  function loadScript(src){
+    return new Promise(function(resolve){
+      var el = document.createElement("script"); el.src = src; el.async = true;
+      el.onload = function(){ resolve(!!(window.jspdf && window.jspdf.jsPDF)); };
+      el.onerror = function(){ el.remove(); resolve(false); };
+      document.head.appendChild(el);
+    });
+  }
+  function pdfLibrary(){
+    if(!pdfLib){
+      pdfLib = PDF_LIB.reduce(function(p, src){ return p.then(function(ok){ return ok || loadScript(src); }); },
+                              Promise.resolve(!!(window.jspdf && window.jspdf.jsPDF)))
+        .then(function(ok){ if(!ok){ pdfLib = null; throw new Error("jsPDF did not load"); } return window.jspdf.jsPDF; });
+    }
+    return pdfLib;
+  }
+  function renderPdfButton(){
+    var b = $("btnPdf"), has = !!(currentData && currentData.proposal_markdown);
+    b.hidden = !downloads || pdfOff;
+    b.disabled = !has || pdfBusy || isVoid(currentData);
+    if(has && downloads && !pdfOff && !isVoid(currentData)) pdfLibrary().catch(function(){});
+  }
+  function pdfName(){
+    var acc = currentData.account || {};
+    var base = String(acc.name || acc.domain || "proposal").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "proposal";
+    var day = String(currentData.finished_at || currentData.requested_at || new Date().toISOString()).slice(0, 10);
+    return base + "-prequalification-proposal-" + day + ".pdf";
+  }
+  async function downloadPdf(){
+    if(pdfBusy || !downloads || !currentData || !currentData.proposal_markdown || isVoid(currentData)) return;
+    var b = $("btnPdf"), note = $("pdfNote");
+    pdfBusy = true; b.textContent = "Preparing PDF…"; note.textContent = ""; renderPdfButton();
+    try{
+      var JsPDF;
+      try{ JsPDF = await pdfLibrary(); }
+      catch(e){ note.textContent = "The PDF library did not load. Check your connection and try again."; return; }
+      var blob, acc = currentData.account || {}, filename = pdfName();
+      try{
+        blob = window.ProposalPDF.render(JsPDF, brandFix(currentData.proposal_markdown), {
+          brand: BRAND,
+          account: acc.name || acc.domain || "", founder: founderOf(currentData).name || "",
+          date: currentData.finished_at || currentData.prepared_at || currentData.requested_at || "",
+          pid: currentData.proposal_id || ""
+        }).output("blob");
+      }catch(e){ note.textContent = "Could not lay out the PDF (" + ((e && e.message) || "error") + "). Copy the proposal instead."; return; }
+      try{
+        var res = await downloads.save({ filename: filename, data: blob });
+        if(res && res.status === "saved") note.textContent = "Saved " + filename + ".";
+      }catch(err){
+        var code = err && err.code;
+        if(code === "declined") note.textContent = "Download cancelled.";
+        else if(code === "rate_limited") note.textContent = "A save prompt is already open. Finish it, then try again.";
+        else if(code === "too_large") note.textContent = "The PDF is too large to save here.";
+        else if(code === "bad_request" || code === "transform_error") note.textContent = "The PDF could not be saved (" + code + "). Copy the proposal instead.";
+        else if(code === "rejected_extension" || code === "extension_not_enabled"){ pdfOff = true; note.textContent = "PDF downloads are not available in this view. Copy the proposal instead."; }
+        else { pdfOff = true; note.textContent = "Downloads are not available in this view. Copy the proposal instead."; }
+      }
+    }finally{
+      pdfBusy = false; b.textContent = "Download PDF"; renderPdfButton();
+    }
+  }
+
+  function watchRun(id){
+    if(unsubRun){ unsubRun(); unsubRun = null; }
+    currentRun = id; saveDraft();
+    if(!db){ return; }
+    unsubRun = db.doc("runs/" + id).onSnapshot(function(snap){
+      if(!snap.exists){ renderRun(id, { status:"queued" }); return; }
+      renderRun(id, snap.data());
+      markCurrent();
+    }, function(err){ showFail("Live updates stopped (" + err.code + "). Reload to resume."); });
+  }
+  function markCurrent(){
+    $("runs").querySelectorAll("li[data-id]").forEach(function(li){ li.setAttribute("data-cur", li.getAttribute("data-id")===currentRun ? "yes":"no"); });
+  }
+  function watchRuns(){
+    if(!db) return;
+    unsubRuns = db.collection("runs").orderBy("requested_at","desc").limit(10).onSnapshot(function(snap){
+      var ul = $("runs"); ul.innerHTML = "";
+      $("runsCount").textContent = String(snap.size);
+      if(snap.empty){ var e=document.createElement("li"); e.className="blocked"; e.style.cursor="default"; e.style.border="0"; e.textContent="No runs yet."; ul.appendChild(e); return; }
+      snap.docs.forEach(function(d){
+        var x = d.data() || {}; var acc = x.account || (x.manifest && x.manifest.state && x.manifest.state.account) || {};
+        var li = document.createElement("li"); li.setAttribute("data-id", d.id);
+        var name = document.createElement("span"); name.className="rname"; name.textContent = acc.name || acc.domain || "(account)";
+        var rid = document.createElement("span"); rid.className="rid"; rid.textContent = d.id;
+        var when = document.createElement("span"); when.className="rwhen"; when.textContent = (x.requested_at||"").replace("T"," ").slice(0,16);
+        var sc = statusChip(x.status); var chip = document.createElement("span"); chip.className="chip "+sc.cls; chip.textContent=sc.text;
+        li.appendChild(name); li.appendChild(rid); li.appendChild(when); li.appendChild(chip);
+        li.addEventListener("click", function(){ watchRun(d.id); $("runPanel").scrollIntoView({behavior:"smooth", block:"nearest"}); });
+        ul.appendChild(li);
+      });
+      markCurrent();
+    }, function(){ /* list stays static */ });
+  }
+
+  /* ---- failure copy, by error code ---- */
+  function showFail(html){ var f=$("runFail"); f.hidden=false; f.innerHTML=html; }
+  function hideFail(){ $("runFail").hidden = true; }
+  function fireCopy(err){
+    var code = err && err.code || "upstream_error";
+    var m = {
+      server_not_connected: "<b>Connector not added.</b> Add <i>Claude Code Remote</i> in claude.ai Settings → Connectors, reload, and press Run again. The run record was written; it will stay <i>not fired</i> until then.",
+      needs_reauth: "<b>Reconnect needed.</b> Reconnect <i>Claude Code Remote</i> in claude.ai Settings → Connectors, then press Run again.",
+      not_in_manifest: "<b>Connector turned off for this page.</b> Allow <i>Claude Code Remote</i> for this artifact and press Run again.",
+      selection_required: "<b>Two connectors share the name.</b> Choose one when the page asks, then press Run again.",
+      blocked_by_policy: "<b>Blocked by organization policy.</b> The run can still be started by hand — see step 06.",
+      approval_required: "<b>Needs per-call approval</b>, which pages cannot give. Start it by hand — see step 06.",
+      tool_error: "<b>The routine refused the call.</b> " + esc(err && err.message) + " — the run record is written; start it by hand if it persists.",
+      server_unavailable: "<b>The connector did not answer.</b> The routine may or may not have fired. Watch the run status below for a minute before pressing Run again.",
+      upstream_error: "<b>The call did not complete.</b> The routine may or may not have fired. Watch the run status below for a minute before pressing Run again.",
+      cancelled: "<b>Cancelled.</b> Press Run again when ready.",
+      not_granted: "<b>Connectors are not available in this view.</b> Start the run by hand — see step 06.",
+      capability_disabled: "<b>Connectors are not available in this view.</b> Start the run by hand — see step 06."
+    };
+    return m[code] || m.upstream_error;
+  }
+
+  /* ---- the button ---- */
+  async function run(){
+    hideFail();
+    var btn = $("btnRun"); btn.disabled = true; btn.textContent = "Starting…";
+    var id = newRunId();
+    var m = manifest(id);
+    var acc = m.state.account;
+    var doc = { run_id:id, manifest:m, status: "queued", requested_at: new Date().toISOString(), steps:{},
+                account:{ name: acc.name, domain: acc.domain } };
+    try{
+      if(db){
+        await db.doc("runs/" + id).set(doc);
+        watchRun(id);
+      }else{
+        renderRun(id, doc);
+      }
+      if(!mcp){
+        showFail("<b>Run record written, not fired.</b> This view has no connectors. Open the page in claude.ai, or start the run by hand from step 06 with run id <code>" + id + "</code>.");
+        return;
+      }
+      try{
+        await mcp.callTool(SERVER, "fire_trigger", { trigger_id: TRIGGER_ID, text: JSON.stringify({ run_id:id, manifest:m }) });
+        if(db){ try{ await db.doc("runs/" + id).update({ fired_at: new Date().toISOString() }); }catch(e){} }
+        $("runPanel").scrollIntoView({ behavior:"smooth", block:"nearest" });
+      }catch(err){
+        showFail(fireCopy(err));
+        if(db){ try{ await db.doc("runs/" + id).update({ status:"not_fired", fire_error: (err && err.code) || "unknown" }); }catch(e){} }
+      }
+    }catch(err){
+      var code = err && err.code || "unknown";
+      showFail(code === "quota_exceeded" ? "<b>The run database is full.</b> Delete old runs from the list, then try again."
+             : code === "invalid_argument" ? "<b>This view cannot write run records</b> (view-only access). Start the run by hand — see step 06."
+             : "<b>Could not write the run record</b> (" + esc(code) + "). Try again in a moment.");
+    }finally{
+      btn.textContent = "Run composition";
+      render();
+    }
+  }
+
+  /* ---- copy helpers ---- */
+  function copyTo(btn, txt, okMsg){
+    var orig = btn.textContent;
+    function done(m){ btn.textContent = m; setTimeout(function(){ btn.textContent = orig; }, 1600); }
+    try{ navigator.clipboard.writeText(txt).then(function(){ done(okMsg); }, function(){ done("Copy blocked — select manually"); }); }
+    catch(e){ done("Copy blocked — select manually"); }
+  }
+
+  /* ---- wiring ---- */
+  document.querySelectorAll(".toggle button").forEach(function(b){
+    b.addEventListener("click", function(){ on[b.getAttribute("data-k")] = b.getAttribute("data-v") === "on"; render(); });
+  });
+  FIELDS.forEach(function(f){ var e=$(f); if(e) e.addEventListener(e.tagName === "SELECT" ? "change" : "input", render); });
+  document.querySelectorAll('input[name="disp"]').forEach(function(r){ r.addEventListener("change", render); });
+  $("accLinkedin").addEventListener("change", render);
+  $("allowSpend").addEventListener("change", render);
+  var liTouched = false;
+  $("accLinkedin").addEventListener("click", function(){ liTouched = true; });
+  $("reqText").addEventListener("input", function(){ if(!liTouched && val("reqText")){ $("accLinkedin").checked = true; render(); } });
+  $("btnRun").addEventListener("click", run);
+  $("btnCopy").addEventListener("click", function(){ copyTo(this, JSON.stringify(manifest(null), null, 2), "Copied"); $("foldPayload").open = true; });
+  $("btnCopyInv").addEventListener("click", function(){ copyTo(this, invocationText(), "Copied"); });
+  $("btnCopyFile").addEventListener("click", function(){ copyTo(this, JSON.stringify(manifest(null), null, 2), "Copied — save as " + fileName()); });
+  $("btnCopyProp").addEventListener("click", function(){ copyTo(this, $("propText").textContent, "Copied"); });
+  $("btnCopyNote").addEventListener("click", function(){ copyTo(this, $("ntfText").textContent, "Copied"); });
+  $("btnPdf").addEventListener("click", downloadPdf);
+
+  var lastRun = loadDraft();
+  render();
+
+  /* ---- capabilities light up later, never in the first run ---- */
+  if(window.claude && typeof window.claude.use === "function"){
+    window.claude.use("db").then(function(ns){
+      db = ns;
+      $("cap-db").setAttribute("data-on", db ? "yes" : "no");
+      if(db){ watchRuns(); if(lastRun) watchRun(lastRun); }
+      render();
+    });
+    window.claude.use("mcp").then(function(ns){
+      mcp = ns;
+      $("cap-mcp").setAttribute("data-on", mcp ? "yes" : "no");
+      render();
+    });
+    window.claude.use("downloads").then(function(ns){
+      downloads = ns;
+      $("cap-dl").setAttribute("data-on", downloads ? "yes" : "no");
+      renderPdfButton();
+    });
+  }
+})();
+</script>

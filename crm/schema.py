@@ -15,27 +15,44 @@ from typing import Any
 
 SOURCE_APOLLO = "apollo"
 SOURCE_EXPLORIUM = "explorium"
+SOURCE_LINKEDIN = "linkedin"
 SOURCE_MANUAL = "manual"
 
 #: Per-field source precedence. Higher wins when two sources disagree and
 #: neither is meaningfully fresher. Manual edits made in the CRM artifact
-#: always outrank both feeds -- a human who corrected a record should not have
+#: always outrank every feed -- a human who corrected a record should not have
 #: that correction overwritten by the next weekly run.
+#:
+#: LinkedIn is weighted as what it actually is: a record the person maintains
+#: about themselves. That makes it the best source for how someone describes
+#: their own job and the worst for how to reach them -- a profile rarely
+#: exposes an email or a direct line, so a value attributed to it must never
+#: displace Apollo's verified contact data.
+#:
+#: Every source named here MUST appear in every row. `trust_for` falls back to
+#: 0 for a source it does not find, and a field at trust 0 loses every
+#: conflict *and* is overwritten by anything -- silently. A missing weight is
+#: not a neutral default; it is a data-loss bug.
 FIELD_TRUST: dict[str, dict[str, int]] = {
-    "email": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 20, SOURCE_EXPLORIUM: 10},
-    "phone": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 15},
-    "title": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 20},
-    "company_name": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 20},
-    "company_domain": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 20, SOURCE_EXPLORIUM: 20},
-    "linkedin_url": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 20, SOURCE_EXPLORIUM: 15},
-    "location": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 20},
-    "seniority": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 20},
-    "employee_count": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 10, SOURCE_EXPLORIUM: 25},
-    "industry": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 10, SOURCE_EXPLORIUM: 25},
-    "technologies": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 25},
+    "email": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 20, SOURCE_EXPLORIUM: 10, SOURCE_LINKEDIN: 5},
+    "phone": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 15, SOURCE_LINKEDIN: 5},
+    "title": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 20, SOURCE_LINKEDIN: 25},
+    "company_name": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 20, SOURCE_LINKEDIN: 25},
+    "company_domain": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 20, SOURCE_EXPLORIUM: 20, SOURCE_LINKEDIN: 20},
+    "linkedin_url": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 20, SOURCE_EXPLORIUM: 15, SOURCE_LINKEDIN: 25},
+    "location": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 20, SOURCE_LINKEDIN: 20},
+    "seniority": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 20, SOURCE_LINKEDIN: 25},
+    "employee_count": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 10, SOURCE_EXPLORIUM: 25, SOURCE_LINKEDIN: 20},
+    "industry": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 10, SOURCE_EXPLORIUM: 25, SOURCE_LINKEDIN: 20},
+    "technologies": {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 25, SOURCE_LINKEDIN: 15},
 }
 
-DEFAULT_TRUST = {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 15}
+DEFAULT_TRUST = {SOURCE_MANUAL: 30, SOURCE_APOLLO: 15, SOURCE_EXPLORIUM: 15, SOURCE_LINKEDIN: 15}
+
+#: Every source the merge knows how to rank. `test_merge.py` asserts that each
+#: one carries a weight in every FIELD_TRUST row, so adding a source here
+#: without weighting it fails the suite instead of losing data in production.
+KNOWN_SOURCES = (SOURCE_MANUAL, SOURCE_APOLLO, SOURCE_EXPLORIUM, SOURCE_LINKEDIN)
 
 #: Fields whose values are set-valued and accumulate rather than replace --
 #: each source only ever sees part of the stack, so the last writer must not win.
@@ -134,11 +151,20 @@ class Contact:
     def identity_keys(self) -> list[str]:
         """Keys this record can be matched on, strongest first.
 
-        Email is the only key treated as globally unique. LinkedIn is close.
+        Vendor ids first, then email (the only globally unique human key),
+        then LinkedIn, which is close.
         Name+domain is a heuristic and deliberately last -- two different
         J. Smiths at the same company will collide, which the merge logs.
         """
         keys = []
+        # A vendor's own record id is the strongest identity there is: it
+        # survives an email change, a name change and a missing email. Without
+        # these, an Apollo contact with no email could only match on
+        # name+domain, and the 2026-09-21 merge duplicated 15 of them.
+        if self.apollo_contact_id:
+            keys.append(f"apollo:{self.apollo_contact_id}")
+        if self.explorium_prospect_id:
+            keys.append(f"explorium:{self.explorium_prospect_id}")
         email = normalize_email(self.email)
         if email:
             keys.append(f"email:{email}")

@@ -11,11 +11,10 @@ from pathlib import Path
 
 # --- Endpoints -------------------------------------------------------------
 
-# The Mintlify-hosted Explorium *documentation* MCP. Read-only; no credentials.
-# NOTE: this URL follows Mintlify's `<docs-host>/mcp` convention and was not
-# reachable from the environment this repo was scaffolded in (egress blocked),
-# so it is unverified. If `explorium-docs` fails to connect, correct it here
-# and in .mcp.json -- those are the only two places it appears.
+# The Mintlify-hosted Explorium *documentation* MCP. Read-only; OAuth login.
+# Follows Mintlify's `<docs-host>/mcp` convention and has been observed
+# answering with an OAuth challenge. If it ever moves, it is defined here and
+# in .mcp.json only.
 EXPLORIUM_DOCS_MCP_URL = os.environ.get(
     "EXPLORIUM_DOCS_MCP_URL", "https://developers.explorium.ai/mcp"
 )
@@ -46,6 +45,22 @@ CHANGELOG = DATA_DIR / "CHANGELOG.md"
 
 APOLLO_STAGING = STAGING_DIR / "apollo.json"
 EXPLORIUM_STAGING = STAGING_DIR / "explorium.json"
+#: Optional and hand-staged. No pull script writes this -- see merge_master.py.
+LINKEDIN_STAGING = STAGING_DIR / "linkedin.json"
+
+#: Prequalification proposals the account-research agent writes. Committed:
+#: they are the durable record of what was sent, and push_proposals_to_crm.py
+#: reads them.
+PROPOSALS_DIR = DATA_DIR / "proposals"
+#: One directory per button-driven composition run (manifest, state, review,
+#: prompts). Committed: it is the audit trail of what the run saw.
+RUNS_DIR = DATA_DIR / "runs"
+#: The account-research agent package; its ledger/fetch/write_proposal tools
+#: are pure Python and scripts/compose_account.py imports them from here.
+AGENT_DIR = REPO_ROOT / "python" / "agents" / "account-research"
+#: Derived batch files for the CRM System artifact (not the retired ledger).
+#: Gitignored under data/artifact/.
+CRM_BATCH_DIR = DATA_DIR / "artifact" / "crm"
 
 # --- Sync tunables ---------------------------------------------------------
 

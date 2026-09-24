@@ -16,8 +16,19 @@ mirrored in this repo.
                           (run in parallel)    │
                                                └──▶  push_apollo.py  (opt-in writeback)
 
-  After the Action   ─── Claude routine:  import artifact edits ▶ re-merge ▶ push master into artifact db
+  Monday 11:30 UTC   ─── Claude routine:  dump CRM ▶ validate_sync ▶ push_enrichment_to_crm ▶ push_proposals_to_crm (catch-up)
+
+  On demand — the ONE proposal process:
+    Intake page ▶ Run composition ▶ routine wakes the repo session ▶ compose_account.py prepare
+      ▶ web research (session web search + fetch) ▶ brief ▶ draft ▶ finalize ▶ CRM batch ▶ page shows review, note to the founder, proposal (PDF)
 ```
+
+Every prequalification proposal goes through the Intake page
+(https://claude.ai/artifact/BtU87XpWsN9VDNTFwidnA3). The earlier GitHub
+Actions request queue (`data/prequal/requests/`, `prequal-proposal.yml`) is
+retired: it needed an Anthropic API key and wrote proposals without the
+review or the CRM write. `adk web` still runs the same agents for
+development, but it is not a path into the CRM.
 
 | Step | Script | Reads | Writes |
 |---|---|---|---|
@@ -25,8 +36,27 @@ mirrored in this repo.
 | Enrich via Explorium | `scripts/pull_explorium.py` | previous master + Explorium API | `data/staging/explorium.json` |
 | Merge | `scripts/merge_master.py` | both staging files | `data/master/contacts.json`, `data/CHANGELOG.md` |
 | Writeback (opt-in) | `scripts/push_apollo.py` | master | Apollo API |
-| Artifact → repo | `scripts/import_artifact_edits.py` | a db dump | master |
-| Repo → artifact | `scripts/export_artifact_batch.py` | master | `data/artifact/batch_*.json` (fed to the artifact db) |
+| Validate | `scripts/validate_sync.py` | master (+ a CRM dump) | nothing -- exit 1 on an unknown source, duplicate id, bad proposal field, or low join coverage. Runs in CI after every merge. |
+| Enrichment → CRM | `scripts/push_enrichment_to_crm.py` | master + a CRM dump | `data/artifact/crm/enrich_*.json`: fills empty enrichment fields and sets the `proposal_ready` flag; never stage, notes or Apollo-owned fields |
+| **Prequalification proposal** *(the one process: Intake page → Run composition)* | `scripts/compose_account.py` | the page's run manifest, master, a CRM dump, the account's site and the open web | `data/runs/<id>/`, `data/proposals/<slug>-<date>-<run_id>.{json,md}` (SMI short form, cited, no prices, note to the founder, review; PDF from the page), and the CRM writes: the contact's notes, or the account's for a prospect. See `docs/composition-run.md` |
+| Proposal → CRM *(Monday catch-up)* | `scripts/push_proposals_to_crm.py` | `data/proposals/*.json` + a CRM dump (contacts and accounts) | re-applies any proposal a run left unapplied; idempotent by `proposal_ref`, so a proposal the run already wrote is skipped |
+| Artifact → repo *(retired ledger)* | `scripts/import_artifact_edits.py` | a db dump | master |
+| Repo → artifact *(retired ledger)* | `scripts/export_artifact_batch.py` | master | `data/artifact/batch_*.json` |
+
+The canonical CRM is the **CRM System** artifact; the three CRM-facing
+scripts above target its schema and are applied by the Monday 11:30 UTC
+routine (validate → enrichment → proposals). The routine takes a dump with
+`ArtifactData list … out_dir=<dump>` and writes `<dump>/versions.json` from
+the listing's per-document versions, because the batch tool refuses an
+unpinned update and the dump files carry no version; the push scripts pin
+every write with it. The routine is bound to the session that built the
+pipeline -- a fresh-session routine cannot load `ArtifactData`, which is how
+the earlier ledger-sync routine reported success for a month while writing
+nothing. The last two rows fed the
+original ledger artifact, which has been superseded; they stay for history.
+Prequalification proposals are composed by the account-research agent
+(`prequal <account>: <request>`, see `python/agents/account-research/`) on the
+Anthropic API -- nothing in this loop touches Google Cloud.
 
 The two pulls are independent jobs in
 [`.github/workflows/weekly-crm-sync.yml`](.github/workflows/weekly-crm-sync.yml).
@@ -98,6 +128,22 @@ python scripts/import_artifact_edits.py dump
 The artifact database holds at most 5,000 documents. Past that, split the
 ledger by list or region.
 
+## Agents
+
+[`python/agents/account-research/`](python/agents/account-research/) — a Google ADK
+multi-agent workflow, modelled on Google's `fomc-research` sample, that writes
+an account brief for any company in the master ledger. See its README for
+setup, running with `adk run` / `adk web`, and deployment to Agent Runtime.
+
+[`python/agents/brand-aligned-presentations/`](python/agents/brand-aligned-presentations/)
+— vendored verbatim from `google/adk-samples`, pinned to a commit
+(brand-adherent `.pptx` decks from research, RAG and a corporate template).
+[`python/agents/README.md`](python/agents/README.md) records provenance and
+which directories are ours versus copies.
+
+[`terraform/`](terraform/) — the BigQuery dataset for Claude request/response
+logging, managed in HCP Terraform with workload identity federation.
+
 ## MCP servers
 
 [`.mcp.json`](.mcp.json) registers two Explorium servers for Claude Code.
@@ -110,10 +156,84 @@ They are different servers on different hosts:
   `match-prospects`, `fetch-businesses-events`, …). Spends credits; needs
   `EXPLORIUM_API_KEY`.
 
-The docs server URL follows Mintlify's `<docs-host>/mcp` convention and could
-not be verified from the environment this repo was built in (outbound access
-to `explorium.ai` was blocked). If it fails to connect, correct it in
-`.mcp.json` and `crm/config.py` — the only two places it appears.
+Both servers use **OAuth**. `.mcp.json` deliberately carries no
+`Authorization` header: setting one disables the OAuth flow, and the REST
+API key in `crm/config.py` is not a token for the MCP endpoint anyway.
+
+### ADK documentation
+
+[`adk-docs`](https://github.com/langchain-ai/mcpdoc) serves
+[adk.dev/llms.txt](https://adk.dev/llms.txt) over stdio, for working on the
+agents under [`python/agents/`](python/agents/). It needs no credentials —
+only `uvx` (ships with [uv](https://docs.astral.sh/uv/)) on your PATH.
+
+The `--with mcp<2` pin in its `args` is required, not cosmetic: `mcpdoc`
+imports `mcp.server.fastmcp`, which `mcp` 2.x removed (renamed `MCPServer`),
+so without the pin `uvx` resolves 2.x and the server exits on import.
+
+### Authorizing the MCP servers
+
+`/mcp enable`, `disable` and `reconnect` never authenticate — they only
+toggle a server's config. Authorization needs a browser, so it happens in
+one of two places:
+
+- **Local Claude Code (terminal or desktop app).** Open this repo; approve
+  the project's `.mcp.json` when prompted. Run `/mcp` with no arguments,
+  pick the server, choose **Authenticate**, and log in in the browser tab
+  it opens. This applies to that machine only.
+- **claude.ai and remote Claude Code sessions.** These cannot run OAuth
+  themselves. Instead add the server as a connector: claude.ai → Settings →
+  Connectors → *Add custom connector*, with the same URL from `.mcp.json`.
+  OAuth runs in the browser there, and the tools then appear in every web
+  session as `mcp__<Connector name>__*`.
+
+The docs server URL follows Mintlify's `<docs-host>/mcp` convention and has
+been observed answering with an OAuth challenge, which confirms it is a live
+MCP endpoint. If it ever moves, it is defined in `.mcp.json` and
+`crm/config.py` only.
+
+### Google Cloud MCP servers
+
+`.mcp.json` also registers three of Google Cloud's remote MCP servers for
+your project — set `GCP_PROJECT` (see `scripts/gcp_mcp_env.sh`). The registry
+names them by URN; the client connects by URL:
+
+| URN (`urn:mcp:googleapis.com:projects:<NUMBER>:locations:global:…`) | Entry | URL | What it does |
+|---|---|---|---|
+| `…:agentregistry` | `gcp-agent-registry` | `https://agentregistry.googleapis.com/mcp` | Discover agents, MCP servers and model endpoints catalogued in the project |
+| `…:aiplatform` | `gcp-agent-platform` | `https://aiplatform.googleapis.com/mcp/generate` | Agent Platform (Vertex AI) — the `generate` toolset; other toolsets live at their own `/mcp/<toolset>` path |
+| `…:bigquery` | `gcp-bigquery` | `https://bigquery.googleapis.com/mcp` | List datasets and tables, read metadata, run SQL against the project's BigQuery data |
+
+Google's servers do **not** use the in-client OAuth flow the Explorium
+servers use. They take a Google bearer token and a quota-project header,
+which `.mcp.json` reads from the environment:
+
+```bash
+# once per machine
+gcloud auth application-default login
+
+# before each Claude Code session (token lives ~1 h)
+eval "$(scripts/gcp_mcp_env.sh)" && claude
+```
+
+`scripts/gcp_mcp_env.sh` exports `GCP_MCP_ACCESS_TOKEN` from
+`gcloud auth application-default print-access-token` and `GCP_PROJECT`
+(override it to point the same entries at another project). The token never
+lands in the repo. In the project, enable the APIs — the BigQuery MCP server
+is switched on by enabling the BigQuery API itself:
+
+```bash
+gcloud services enable agentregistry.googleapis.com cloudapiregistry.googleapis.com apihub.googleapis.com
+gcloud services enable aiplatform.googleapis.com
+gcloud services enable bigquery.googleapis.com
+```
+
+and give your identity the Agent Registry viewer, Vertex AI user, and
+BigQuery job user / data viewer roles as needed.
+
+These two entries work from a **local** Claude Code session with `gcloud`
+installed. Remote and web sessions have no `gcloud` and cannot mint the
+token, so there they will show as failed to connect — that is expected.
 
 ## Layout
 
@@ -121,12 +241,19 @@ to `explorium.ai` was blocked). If it fails to connect, correct it in
 .mcp.json                     MCP server registration
 crm/config.py                 every endpoint, credential and tunable, once
 crm/schema.py                 canonical record, identity keys, trust table
-crm/master.py                 field-level merge, load/save
+crm/master.py                 field-level merge, load/save, vendor-id dedupe
+crm/crm_sync.py               CRM System dump reader, proposal_ready rule, batch writer
+crm/review.py                 review before sending: HOLD / Note criteria for a composition run (internal)
+crm/note_to_founder.py        the cover note to the founder (= the requester) that goes with the proposal
 crm/http.py                   retrying stdlib JSON client
-scripts/                      the six entrypoints above
+scripts/                      the entrypoints above
 tests/test_merge.py           merge behaviour
 data/master/contacts.json     committed mirror of the artifact database
 data/CHANGELOG.md             per-run record of what changed
+data/proposals/               prequalification proposals the agent wrote (committed)
+data/runs/<id>/               what each Intake-page composition run saw and produced (committed) -- the only proposal path
+docs/composition-run.md       the one-button flow: page → routine → scripts → CRM
+artifact/intake.html          source of the Account Composition Intake page (v2, one button)
 artifact/crm.html             the published ledger page
 .github/workflows/            weekly schedule
 ```

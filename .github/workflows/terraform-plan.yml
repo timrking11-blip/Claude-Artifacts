@@ -1,0 +1,160 @@
+name: Terraform plan
+
+# Plans the terraform/ root against the HCP Terraform workspace, so the result
+# is readable in CI rather than only on one person's machine.
+#
+# This workflow NEVER applies. Applying stays a deliberate local act.
+#
+# Note what is *not* here: any GCP credential. The `cloud {}` block means HCP
+# executes the run remotely, and HCP authenticates to Google with workload
+# identity federation (see terraform/setup-wif.ps1). GitHub only ever holds an
+# HCP token.
+#
+# Deliberately not triggered by `pull_request`: this repo is public, and
+# push-only means the workflow runs solely for people with write access.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "terraform/**"
+      # Documentation changes cannot affect a plan, and a run that tells you
+      # nothing still costs a red check while the setup is incomplete.
+      - "!terraform/**.md"
+      - ".github/workflows/terraform-plan.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  # One plan at a time: the HCP workspace serialises runs anyway, and a queued
+  # second run would just wait.
+  group: terraform-plan
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: terraform
+
+jobs:
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    env:
+      TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
+      TF_WORKSPACE: ${{ vars.TF_WORKSPACE }}
+      TF_IN_AUTOMATION: "true"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Report what is missing by name rather than letting Terraform fail
+      # obscurely, and report lengths rather than values -- the pattern that
+      # diagnosed the empty Apollo/Explorium secrets earlier.
+      #
+      # Nothing configured at all is "not set up yet", not a failure: it skips
+      # the remaining steps and stays green, so an unconfigured repo does not
+      # sit red and teach people to ignore the check. Configured *partially*
+      # IS a failure -- that is a mistake someone made, and it should be loud.
+      - name: Preflight
+        id: preflight
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+        run: |
+          found=0; missing=""; echoed=""
+          check() {   # name, value, where
+            if [ -z "$2" ]; then
+              missing="$missing $1($3)"
+              return
+            fi
+            found=$((found + 1))
+            # A value identical to its own name means the name was pasted into
+            # the value box. It has cost this repo two runs already (the Apollo
+            # and Explorium secrets did the same), and it is invisible to a
+            # non-empty check, so catch it by name.
+            if [ "$2" = "$1" ]; then
+              echoed="$echoed $1"
+            fi
+          }
+          check TF_API_TOKEN          "$TF_API_TOKEN"          secret
+          check TF_CLOUD_ORGANIZATION "$TF_CLOUD_ORGANIZATION" variable
+          check TF_WORKSPACE          "$TF_WORKSPACE"          variable
+
+          if [ "$found" -eq 0 ]; then
+            echo "::warning::Terraform plan is not configured yet, skipping."
+            echo "Set repository secret TF_API_TOKEN and variables"
+            echo "TF_CLOUD_ORGANIZATION and TF_WORKSPACE, then re-run."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$found" -lt 3 ]; then
+            echo "::error::Partially configured -- missing:$missing"
+            echo "Secret:    Settings -> Secrets and variables -> Actions -> Secrets"
+            echo "Variables: Settings -> Secrets and variables -> Actions -> Variables"
+            exit 1
+          fi
+          if [ -n "$echoed" ]; then
+            echo "::error::These hold their own name as their value:$echoed"
+            echo "The name went into the value box. Edit each and set the real value:"
+            echo "  TF_CLOUD_ORGANIZATION -> the /app/<name>/ segment of your app.terraform.io URL"
+            echo "  TF_WORKSPACE          -> the workspace name"
+            exit 1
+          fi
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+          echo "organization: $TF_CLOUD_ORGANIZATION"
+          echo "workspace:    $TF_WORKSPACE"
+          echo "TF_API_TOKEN present (${#TF_API_TOKEN} chars)"
+
+      # What the workspace actually holds. Terraform's error for a missing
+      # variable names variables.tf, not the workspace, and cannot distinguish
+      # "not set" from "set under the wrong category" or "in a variable set
+      # that is not applied here". This asks HCP directly.
+      #
+      # Prints keys and categories only -- never a value, sensitive or not.
+      - name: Workspace variables (diagnostic)
+        if: steps.preflight.outputs.configured == 'true'
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+        run: |
+          api() { curl -sS -H "Authorization: Bearer $TF_API_TOKEN" -H "Content-Type: application/vnd.api+json" "$1"; }
+          base=https://app.terraform.io/api/v2
+          info=$(api "$base/organizations/$TF_CLOUD_ORGANIZATION/workspaces/$TF_WORKSPACE")
+          ws=$(echo "$info" | jq -r '.data.id // empty')
+          if [ -z "$ws" ]; then echo "::error::Could not resolve the workspace via the API."; exit 1; fi
+          echo "workspace id: $ws"
+          # execution-mode decides whether workspace variables are injected at
+          # all: "remote" runs the plan on HCP with them; "local" only stores
+          # state, runs the plan here, and injects nothing.
+          echo "$info" | jq -r '"execution-mode: \(.data.attributes["execution-mode"])   terraform-version: \(.data.attributes["terraform-version"])   vcs: \(if .data.attributes["vcs-repo"] then "connected" else "none" end)"'
+          echo
+          echo "--- variables on the workspace (keys and categories only) ---"
+          api "$base/workspaces/$ws/vars" | jq -r '(.data // []) | if length == 0 then "  (none)" else .[] | "  \(.attributes.key)\t category=\(.attributes.category)\t sensitive=\(.attributes.sensitive)" end'
+          echo
+          echo "--- variable sets applied to this workspace ---"
+          api "$base/workspaces/$ws/varsets" | jq -r '(.data // []) | if length == 0 then "  (none)" else .[] | "  \(.attributes.name)" end'
+          echo
+          echo "project_id must appear above with category=terraform."
+
+      - uses: hashicorp/setup-terraform@v3
+        if: steps.preflight.outputs.configured == 'true'
+        with:
+          # Matches required_version in main.tf. The remote run uses the
+          # workspace's own Terraform version, which must agree with it too.
+          terraform_version: 1.16.3
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: terraform fmt -check
+        if: steps.preflight.outputs.configured == 'true'
+        run: terraform fmt -check -diff
+
+      - name: terraform init
+        if: steps.preflight.outputs.configured == 'true'
+        run: terraform init -input=false
+
+      - name: terraform validate
+        if: steps.preflight.outputs.configured == 'true'
+        run: terraform validate
+
+      - name: terraform plan
+        if: steps.preflight.outputs.configured == 'true'
+        run: terraform plan -no-color -input=false

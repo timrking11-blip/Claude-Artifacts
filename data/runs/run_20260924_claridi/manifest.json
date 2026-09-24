@@ -1,0 +1,52 @@
+{
+  "run": {
+    "event": "agents-go-live",
+    "run_id": "run_20260924_claridi",
+    "composed_at": "2026-09-24T21:10:00Z",
+    "migrated_from": "data/prequal/requests/claridi-ai-2026-09-24.json (retired request queue)"
+  },
+  "request": {
+    "text": null,
+    "source_url": null,
+    "requester": {
+      "name": null,
+      "linkedin_url": null
+    }
+  },
+  "state": {
+    "account": {
+      "required": true,
+      "resolved_by": "find_account",
+      "name": "Claridi.ai",
+      "domain": "claridi.ai",
+      "crm_account_id": "crm_20260924_pwoclb",
+      "source": "linkedin"
+    },
+    "account_contacts": {
+      "include": true,
+      "written_by": "list_account_contacts",
+      "limit": "25"
+    },
+    "ledger_quality": {
+      "include": true,
+      "written_by": "assess_ledger_quality",
+      "quality_floor": "fair"
+    },
+    "website_summary": {
+      "include": true,
+      "written_by": "summarize_page",
+      "page_url": null,
+      "on_fetch_error": "store_state"
+    },
+    "warehouse_findings": {
+      "include": true,
+      "written_by": "store_state sentinel",
+      "scope": null,
+      "sentinel": "not available"
+    }
+  },
+  "crm": {
+    "disposition": "manual",
+    "pre_qual": true
+  }
+}

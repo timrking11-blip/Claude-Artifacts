@@ -5,7 +5,18 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from crm.schema import Contact, SOURCE_APOLLO, SOURCE_EXPLORIUM, SOURCE_MANUAL, Provenance
+from crm.schema import (
+    Contact,
+    SOURCE_APOLLO,
+    SOURCE_EXPLORIUM,
+    SOURCE_LINKEDIN,
+    SOURCE_MANUAL,
+    Provenance,
+    FIELD_TRUST,
+    DEFAULT_TRUST,
+    KNOWN_SOURCES,
+    trust_for,
+)
 from crm.master import merge_all, resolve_field, build_index
 
 
@@ -177,3 +188,125 @@ def test_reaffirmation_keeps_original_source():
     assert prov["company_domain"]["source"] == SOURCE_APOLLO
     assert prov["company_domain"]["observed_at"] == "2026-09-10T00:00:00+00:00"
     assert prov["title"]["source"] == SOURCE_MANUAL
+
+
+# --------------------------------------------------------------------------
+# LinkedIn as a source. The weights, not the constant, are the feature: a
+# source with no weight resolves to trust 0, which loses every conflict AND
+# gets silently overwritten. These tests exist so that trap cannot reopen.
+# --------------------------------------------------------------------------
+
+
+def test_every_known_source_is_weighted_everywhere():
+    """A source without a weight is a data-loss bug, not a neutral default.
+
+    trust_for() falls back to 0 for an unrecognised source. A field sitting at
+    0 is beaten by every other source and can never hold a conflict, so a
+    source added to KNOWN_SOURCES but omitted from a FIELD_TRUST row would
+    quietly discard data. Fail here instead.
+    """
+    for source in KNOWN_SOURCES:
+        assert source in DEFAULT_TRUST, f"{source} missing from DEFAULT_TRUST"
+        for field_name, weights in FIELD_TRUST.items():
+            assert source in weights, f"{source} missing from FIELD_TRUST[{field_name!r}]"
+            assert trust_for(field_name, source) > 0
+
+
+def test_manual_still_outranks_every_feed_on_every_field():
+    """The one invariant the whole merge rests on: a human edit is final."""
+    feeds = [s for s in KNOWN_SOURCES if s != SOURCE_MANUAL]
+    for field_name in FIELD_TRUST:
+        for feed in feeds:
+            assert trust_for(field_name, SOURCE_MANUAL) > trust_for(field_name, feed), (
+                f"{feed} would beat a manual edit on {field_name}"
+            )
+
+
+def test_linkedin_wins_title_over_apollo():
+    """Someone's own profile describes their job better than a data vendor."""
+    master, _ = merge_all([], [Contact(email="ada@example.com", title="Engineer")],
+                          SOURCE_APOLLO, "2026-09-01T00:00:00+00:00")
+    merged, _ = merge_all(master, [Contact(email="ada@example.com", title="Head of Platform")],
+                          SOURCE_LINKEDIN, "2026-09-02T00:00:00+00:00")
+    assert merged[0].title == "Head of Platform"
+    assert merged[0].provenance["title"]["source"] == SOURCE_LINKEDIN
+
+
+def test_linkedin_never_displaces_a_verified_email():
+    """A profile rarely exposes an address; Apollo's verified one must hold."""
+    master, _ = merge_all([], [Contact(email="ada@example.com", company_domain="example.com")],
+                          SOURCE_APOLLO, "2026-09-01T00:00:00+00:00")
+    merged, _ = merge_all(master, [Contact(email="ada@personal.example",
+                                           company_domain="example.com")],
+                          SOURCE_LINKEDIN, "2026-09-02T00:00:00+00:00")
+    # Matching is by email, so LinkedIn's differing address creates a second
+    # record rather than overwriting the first. What matters is that Apollo's
+    # value is still intact and still credited to Apollo.
+    apollo_rec = [c for c in merged if c.email == "ada@example.com"][0]
+    assert apollo_rec.provenance["email"]["source"] == SOURCE_APOLLO
+    assert trust_for("email", SOURCE_LINKEDIN) < trust_for("email", SOURCE_APOLLO)
+
+
+def test_linkedin_loses_phone_conflict_head_to_head():
+    """The field-level rule, isolated from record matching."""
+    value, prov, reason = resolve_field(
+        "phone",
+        "+1 555 0100",
+        {"source": SOURCE_APOLLO, "observed_at": "2026-09-01T00:00:00+00:00"},
+        "+1 555 9999",
+        Provenance(source=SOURCE_LINKEDIN, observed_at="2026-09-02T00:00:00+00:00"),
+    )
+    assert value == "+1 555 0100"
+    assert reason == "lower_trust_held"
+    assert prov["source"] == SOURCE_APOLLO
+
+
+# --------------------------------------------------------------------------
+# Vendor ids as identity. The 2026-09-21 run duplicated 15 Apollo contacts
+# that had no email: with nothing but name+domain to match on, they became
+# new records. A vendor's own id must be the strongest key.
+# --------------------------------------------------------------------------
+
+from crm.master import dedupe_by_vendor_id  # noqa: E402
+
+
+def test_apollo_id_matches_a_contact_with_no_email():
+    base, _ = merge_all([], [Contact(first_name="Benjamin", last_name="Lowe",
+                                     apollo_contact_id="ap_1")],
+                        SOURCE_APOLLO, "2026-09-17T00:00:00+00:00")
+    merged, report = merge_all(base, [Contact(first_name="Benjamin", last_name="Lowe",
+                                              apollo_contact_id="ap_1", title="Owner")],
+                               SOURCE_APOLLO, "2026-09-21T00:00:00+00:00")
+    assert len(merged) == 1, "same Apollo id must never create a second record"
+    assert merged[0].title == "Owner"
+    assert report.created == []
+
+
+def test_vendor_ids_come_first_in_identity_keys():
+    c = Contact(email="ada@example.com", apollo_contact_id="ap_1", explorium_prospect_id="ex_1")
+    assert c.identity_keys()[:2] == ["apollo:ap_1", "explorium:ex_1"]
+
+
+def test_dedupe_folds_duplicates_keeping_the_older_record():
+    older = Contact(contact_id="c_old", first_name="Karen", last_name="Desousa",
+                    apollo_contact_id="ap_2", first_seen="2026-09-17T00:00:00+00:00",
+                    last_updated="2026-09-17T00:00:00+00:00", sources=[SOURCE_APOLLO],
+                    provenance={"first_name": {"source": SOURCE_APOLLO, "observed_at": "2026-09-17T00:00:00+00:00"}})
+    newer = Contact(contact_id="c_new", first_name="Karen", last_name="Desousa", title="CFO",
+                    apollo_contact_id="ap_2", first_seen="2026-09-21T00:00:00+00:00",
+                    last_updated="2026-09-21T00:00:00+00:00", sources=[SOURCE_APOLLO],
+                    provenance={"title": {"source": SOURCE_APOLLO, "observed_at": "2026-09-21T00:00:00+00:00"}})
+    clean, folded = dedupe_by_vendor_id([older, newer, Contact(contact_id="c_x", email="x@example.com")])
+    ids = sorted(c.contact_id for c in clean)
+    assert ids == ["c_old", "c_x"]
+    assert folded == [("c_old", "c_new")]
+    kept = next(c for c in clean if c.contact_id == "c_old")
+    assert kept.title == "CFO"                                   # the newer record's field survived
+    assert kept.provenance["title"]["source"] == SOURCE_APOLLO
+    assert kept.first_seen == "2026-09-17T00:00:00+00:00"
+
+
+def test_dedupe_is_a_no_op_on_a_clean_master():
+    master = [Contact(contact_id="a", apollo_contact_id="ap_a"), Contact(contact_id="b", apollo_contact_id="ap_b")]
+    clean, folded = dedupe_by_vendor_id(master)
+    assert folded == [] and sorted(c.contact_id for c in clean) == ["a", "b"]
