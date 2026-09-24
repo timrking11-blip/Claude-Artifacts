@@ -48,7 +48,7 @@ def test_resumes_a_paused_turn_and_collects_sources():
     # the resume re-sends the paused assistant turn and adds no user message
     assert [m["role"] for m in calls[1]["messages"]] == ["user", "assistant"]
     assert {t["type"] for t in calls[0]["tools"]} == {"web_search_20260209", "web_fetch_20260209"}
-    assert "https://acme.example" in calls[0]["messages"][0]["content"]
+    assert "Website: https://acme.example" in calls[0]["messages"][0]["content"].splitlines()
     assert calls[0]["fallbacks"] == "default"
 
 
