@@ -11,7 +11,9 @@ proposal is for, it plans one `update` that:
     status that has moved on (sent / in_discussion / accepted / declined),
   - fills proposal_scope from the request's first line when empty,
   - records proposal_ref = the proposal id, which is what makes a re-run a
-    no-op for contacts that already carry this proposal.
+    no-op for contacts that already carry this proposal,
+  - carries the founder note (crm/founder_note.py) under the proposal when the
+    record has one, so the extenuating criteria travel with the draft.
 
 Contacts are found by the Apollo ids the proposal file carries, then by the
 master contact ids it carries, then -- for a request that named a company
@@ -107,6 +109,9 @@ def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str,
                 skipped += 1
                 continue
             block = NOTES_HEADER.format(date=date, pid=pid) + "\n" + p["proposal_markdown"].strip()
+            founder = (p.get("founder_note") or {}).get("text") if isinstance(p.get("founder_note"), dict) else p.get("founder_note")
+            if founder:
+                block += "\n\nFounder note:\n" + str(founder).strip()
             existing = (doc.get("notes") or "").rstrip()
             data: dict[str, Any] = {
                 "notes": (existing + "\n\n" + block) if existing else block,

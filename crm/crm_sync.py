@@ -44,10 +44,10 @@ def utcnow_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
-def load_crm_dump(dump_dir: Path) -> dict[str, dict[str, Any]]:
+def load_crm_dump(dump_dir: Path, collection: str = CONTACTS_COLLECTION) -> dict[str, dict[str, Any]]:
     """Read a dump made with `ArtifactData list ... out_dir=<dump_dir>`.
 
-    The layout is <dump_dir>/contacts/<doc_id>.json with the document's fields
+    The layout is <dump_dir>/<collection>/<doc_id>.json with the document's fields
     at the top level of each file. The files do NOT carry the document
     version, but the listing that produced them does, and the batch tool
     refuses an unpinned update to an existing document. So the session that
@@ -55,12 +55,17 @@ def load_crm_dump(dump_dir: Path) -> dict[str, dict[str, Any]]:
     the listing; when it exists, each doc gets a private `_version` and the
     push scripts pin their writes with it. Every write is still an `update`
     (a field merge), never a `set` -- the blast radius is the fields written.
+
+    A second collection (the CRM's `accounts`) reads the same way, with its
+    versions in <dump_dir>/versions_<collection>.json; absent, it is empty.
     """
-    contacts_dir = dump_dir / CONTACTS_COLLECTION
+    contacts_dir = dump_dir / collection
     if not contacts_dir.is_dir():
+        if collection != CONTACTS_COLLECTION:
+            return {}
         contacts_dir = dump_dir
     versions: dict[str, Any] = {}
-    vpath = dump_dir / "versions.json"
+    vpath = dump_dir / ("versions.json" if collection == CONTACTS_COLLECTION else f"versions_{collection}.json")
     if vpath.exists():
         versions = json.loads(vpath.read_text() or "{}")
     docs: dict[str, dict[str, Any]] = {}

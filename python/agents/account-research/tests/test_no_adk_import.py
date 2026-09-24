@@ -16,7 +16,8 @@ import sys
 sys.path.insert(0, %r)
 import account_research.tools.ledger  # the promise covers the ledger tools
 import account_research.tools.write_proposal  # and the proposal writer;
-# store_state / fetch_page take a real ToolContext and do import ADK.
+import account_research.tools.fetch_page  # and the page fetcher (compose_account.py reuses it);
+# store_state takes a real ToolContext and does import ADK.
 leaked = sorted(m for m in sys.modules if m == "google.adk" or m.startswith("google.adk."))
 anthropic = [m for m in sys.modules if m == "anthropic" or m.startswith("anthropic.")]
 print("ADK:", leaked)
