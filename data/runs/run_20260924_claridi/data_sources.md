@@ -6,5 +6,5 @@
 - match-business for {Claridi.ai, claridi.ai} and {Clarid AI, clarid.ai}: no business_id returned for either (Vibe Prospecting, 2026-09-24). No enrichment attempted; no credits spent.
 
 ## Identity
-- The CRM record is claridi.ai (name confirmed by the founder on 2026-09-24).
-- Open-web search for "claridi.ai" resolves to Clarid (clarid.ai), a compliance-intelligence platform for community banks; one search summary called it "also accessible at claridi.ai", which could not be verified because both sites are blocked here. Treat the match as unconfirmed.
+- The CRM record is claridi.ai, name confirmed by the founder on 2026-09-24.
+- Open-web research resolves to the compliance-intelligence platform for community banks published at clarid.ai. The founder confirmed on 2026-09-24 that claridi.ai is this company; the proposal names it Claridi.ai throughout. Neither site could be read from this environment (network policy), so the research rests on search results and third-party listings.

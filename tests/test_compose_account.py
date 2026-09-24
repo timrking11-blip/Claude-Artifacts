@@ -350,3 +350,25 @@ def test_accounts_dump_reads_its_own_versions_file(tmp_path):
     (tmp_path / "dump" / "versions_accounts.json").write_text(json.dumps({"acc_1": 5}))
     accs = compose.push_proposals_to_crm.load_accounts_dump(tmp_path / "dump")
     assert accs["acc_1"]["_version"] == 5
+
+
+def test_revise_supersedes_the_runs_filed_proposal(ledger, dump, tmp_path):
+    run_dir = _prepared(ledger, dump, tmp_path)
+    docs, master = compose.load_crm_dump(dump), load_master(ledger)
+    with pytest.raises(SystemExit):  # nothing filed yet, nothing to revise
+        compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW, revise=True)
+    first = compose.finalize(run_dir, PROPOSAL, None, ["Identity unconfirmed"], master, docs, {}, NOW)
+    jp, mp = compose.write_proposal_files(first["record"], tmp_path / "proposals", NOW)
+    compose.write_finalize(run_dir, first, tmp_path / "batch", jp, mp, NOW)
+    # the CRM now carries the first proposal; a plain re-run would write nothing
+    docs["ap_ada"]["notes"] += first["writes"][0]["data"]["notes"]
+    docs["ap_ada"]["proposal_ref"] = first["record"]["proposal_id"]
+    again = compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW)
+    assert [w for w in again["writes"] if w["collection"] == "contacts"] == []
+    rev = compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW, revise=True)
+    r = rev["record"]
+    assert r["revises"] == first["record"]["proposal_id"] and r["proposal_id"] != r["revises"]
+    assert r["proposal_markdown"].startswith("_Revision of " + r["revises"])
+    assert r["founder_note"]["holds"] == [], "the identity hold is gone once the founder confirms"
+    contact = [w for w in rev["writes"] if w["collection"] == "contacts"][0]
+    assert contact["data"]["proposal_ref"] == r["proposal_id"]

@@ -441,8 +441,14 @@ def brief(run_dir: Path, web_research: str | None, web_sources: list[str], websi
 # --------------------------------------------------------------- finalize ----
 
 def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str, proposal_md: str,
-                    founder: dict[str, Any], composer_flags: list[str], now: datetime) -> dict[str, Any]:
-    """Same shape as the agent's write_proposal tool, plus founder_note and run."""
+                    founder: dict[str, Any], composer_flags: list[str], now: datetime,
+                    revises: str | None = None) -> dict[str, Any]:
+    """Same shape as the agent's write_proposal tool, plus founder_note and run.
+
+    `revises` is the id of an earlier proposal from this run that this one
+    corrects. It gets its own id (notes are append-only, so a correction is a
+    new block that names the one it replaces), and the record says so.
+    """
     missing = missing_sections(proposal_md)
     if missing:
         raise GateError(f"proposal is missing section(s): {missing}")
@@ -460,7 +466,9 @@ def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str
     slug = slugify(account.get("name") or account.get("domain") or "account")
     # One id per run: a re-run of the same account on the same day with better
     # research is a new proposal, not a silent no-op against yesterday's draft.
-    pid = "prq_" + hashlib.sha256(f"{slug}|{request_text}|{now.date()}|{run_id}".encode()).hexdigest()[:12]
+    pid = "prq_" + hashlib.sha256(
+        f"{slug}|{request_text}|{now.date()}|{run_id}{'|revises=' + revises if revises else ''}".encode()
+    ).hexdigest()[:12]
     holds = list(founder.get("holds") or []) + [f"Composer: {f}" for f in composer_flags if f.strip()]
     notes = list(founder.get("notes") or [])
     if state.get("web_research_error") or not state.get("web_sources"):
@@ -482,6 +490,7 @@ def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str
     appendix += [f"- {line}" for line in sync_schedule_lines(now)]
     return {
         "proposal_id": pid,
+        "revises": revises,
         "generated_at": _iso(now),
         "model": os.getenv("ACCOUNT_RESEARCH_CLAUDE_MODEL", "session"),
         "run_id": run_id,
@@ -572,15 +581,28 @@ def plan_account_write(record: dict[str, Any], manifest: dict[str, Any], account
 
 def finalize(run_dir: Path, proposal_md: str, website_summary: str | None, composer_flags: list[str],
              master, docs: dict[str, dict[str, Any]], accounts: dict[str, dict[str, Any]],
-             now: datetime) -> dict[str, Any]:
-    """Validate, build the record, plan every CRM write. Pure apart from reading run_dir."""
+             now: datetime, revise: bool = False) -> dict[str, Any]:
+    """Validate, build the record, plan every CRM write. Pure apart from reading run_dir.
+
+    With `revise`, the proposal this run already filed (run_final.json) is
+    superseded by a new one that names it.
+    """
     manifest = json.loads((run_dir / "manifest.json").read_text())
     state = json.loads((run_dir / "state.json").read_text())
     founder = json.loads((run_dir / "founder.json").read_text())
     run_id = run_dir.name
     if website_summary:
         state["website_summary"] = website_summary.strip()
-    record = proposal_record(state, manifest, run_id, proposal_md, founder, composer_flags, now)
+    revises = None
+    if revise:
+        prior = run_dir / "run_final.json"
+        if not prior.exists():
+            raise GateError("--revise needs a proposal this run already filed (no run_final.json)")
+        revises = json.loads(prior.read_text()).get("proposal_id")
+    record = proposal_record(state, manifest, run_id, proposal_md, founder, composer_flags, now, revises=revises)
+    if revises:
+        record["proposal_markdown"] = (f"_Revision of {revises}; that draft stays above for the record._\n\n"
+                                       + record["proposal_markdown"])
     writes, log = push_proposals_to_crm.plan([record], master, docs, now=_iso(now))
     contact_ids = [w["doc_id"] for w in writes]
     account_write = plan_account_write(record, manifest, accounts, contact_ids, now)
@@ -665,6 +687,7 @@ def main(argv: list[str] | None = None) -> int:
     f.add_argument("--proposal", type=Path, required=True, help="the drafted Markdown")
     f.add_argument("--website-summary", type=Path, default=None)
     f.add_argument("--composer-flag", action="append", default=[], help="a judgement-call HOLD line; repeatable")
+    f.add_argument("--revise", action="store_true", help="supersede the proposal this run already filed")
     f.add_argument("--crm-dump", type=Path, required=True)
     f.add_argument("--runs-dir", type=Path, default=config.RUNS_DIR)
     f.add_argument("--proposals-dir", type=Path, default=config.PROPOSALS_DIR)
@@ -712,7 +735,8 @@ def main(argv: list[str] | None = None) -> int:
     accounts = load_crm_dump(args.crm_dump, "accounts")
     master = load_master(args.master)
     summary = args.website_summary.read_text() if args.website_summary else None
-    result = finalize(run_dir, args.proposal.read_text(), summary, args.composer_flag, master, docs, accounts, now)
+    result = finalize(run_dir, args.proposal.read_text(), summary, args.composer_flag, master, docs, accounts, now,
+                      revise=args.revise)
     json_path, md_path = write_proposal_files(result["record"], args.proposals_dir, now)
     writes_path = write_finalize(run_dir, result, args.out_dir / f"compose_{args.run_id}", json_path, md_path, now)
     print(json.dumps({"run_id": args.run_id, "proposal_id": result["record"]["proposal_id"],
