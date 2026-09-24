@@ -1,9 +1,12 @@
 # Composition run: from the Intake page to the CRM, one button
 
 The Account Composition Intake page
-(https://claude.ai/artifact/BtU87XpWsN9VDNTFwidnA3) is the preferred way to
-engage the account-research agents and to file a prequalification proposal
-that came in through LinkedIn. Nothing is copied into a terminal.
+(https://claude.ai/artifact/BtU87XpWsN9VDNTFwidnA3) is **the one process** for
+engaging the account-research agents and filing a prequalification proposal,
+LinkedIn or otherwise. Nothing is copied into a terminal, and there is no
+second path: the GitHub Actions request queue that briefly existed
+(`data/prequal/requests/`, `prequal-proposal.yml`) was retired on 24 Sep 2026
+and its one request (Claridi.ai) moved to `data/runs/run_20260924_claridi/`.
 
 ```
 Intake page                                   Session that owns this repo
@@ -14,7 +17,11 @@ press Run ──► db  runs/<run_id> = {manifest, status: queued}
                                               ▼
                                    git pull · dump CRM (contacts + accounts, with versions)
                                    scripts/compose_account.py prepare      ──► runs/<id> status running, steps
-                                   summarise page · draft proposal (LLM legs)
+                                   web research: the session's own web search + fetch,
+                                     briefed by account_research/tools/web_research.py SYSTEM
+                                   summarise page (when our fetch got it)
+                                   scripts/compose_account.py brief        ──► proposal_prompt.md, research filled in
+                                   draft the SMI prequalification proposal
                                    scripts/compose_account.py finalize     ──► data/proposals/<slug>-<date>.{json,md}
                                    ArtifactData batch (CRM contact notes, account record)
                                    ArtifactData update runs/<id> ◄── run_final.json (founder note, proposal, ids)
@@ -36,16 +43,43 @@ is. That session has the repo, `ArtifactData`, `WebFetch` and the Apollo
 connector. It is woken by `fire_trigger`, which the page calls through the
 viewer's own `Claude Code Remote` connector (consent asked once per page).
 
-Cost: the routine runs on that session's model. Switch it to
-`/model claude-opus-5` before the first run; the only language-model work is
-the page summary and the proposal draft. Everything else is scripts.
+Cost: the routine runs on that session's model. The language-model work is
+the web research, the page summary and the proposal draft; everything else is
+scripts. The research runs on the session's own web tools, so no Anthropic API
+key is needed (the agent package's `web_research` tool, which calls the API
+directly, is the same brief for `adk web` development only).
+
+## The research leg ("agent crawlers")
+
+`prepare` writes the research desk brief into `prompts.md`: fetch the
+company's own site first (home, about, product, customers, team, careers,
+news), then search the company by name and domain, then its market, buyer and
+competitors. The memo comes back under fixed headings (Company, Evidence of
+stage, Market and buyer, Competitors, Signals worth a conversation, Gaps) with
+a source link and an evidence tag -- `[supported]`, `[needs stipulation]`,
+`[unsupported]` -- on every factual sentence. The session saves it as
+`web_research.md` plus `web_sources.txt`; `brief` stores both in the run state.
+It runs even when our own page fetch failed: a site that blocks plain HTTP
+fetchers is often still readable from the search side. A run whose research
+found nothing gets a Note in the founder note.
+
+## The proposal
+
+The SMI short form, from `prequal_agent_prompt.py`: a title line, "Prepared by
+Strategic Marketing Insights", then **Engagement summary** (the one decision it
+closes), **What we heard** (signals table), **The problem in front of
+<account>** (sourced, evidence-tagged constraints), **Approach** (phases with
+gates, no fees), **What we'd need to qualify this**, **Next step** (a 30-minute
+scoping call), **Sources**. `finalize` refuses a draft that misses a section,
+mentions money, runs past 900 words, or cites nothing when the research found
+sources -- the same checks as the agent's `write_proposal` tool.
 
 ## What the page does
 
 | Step | On the page | In the run |
 |---|---|---|
 | 00 LinkedIn request | request text (required), post URL, requester | `request_text` for the composer; the founder note reads it for pricing asks |
-| 01 Precondition | account name / domain / existing CRM id, LinkedIn-source tick (`state.account.source`, `crm.pre_qual`) | `find_account` against `data/master/contacts.json`; an unknown account still runs, with a Note |
+| 01 Precondition | account name / domain / existing CRM id, LinkedIn-source tick (`state.account.source`, `crm.pre_qual`); an account not in the ledger is researched as a prospect | `find_account` against `data/master/contacts.json`; an unknown account still runs, with a Note |
 | 02 Optional state | include/skip + settings, as before | opt-outs are recorded in the manifest and the founder note |
 | 03 Disposition | apollo / manual | `manual` mints `crm_<date>_<rand>` with `pending_apollo`; `apollo` gets a HOLD only if `meta/config.account_lists` is empty at run time |
 | 04 Run | **Run composition** | writes `runs/<id>` in the page's database, fires the routine; the sequence lamps follow `steps` live |
@@ -78,11 +112,14 @@ CRM dump; tested criterion by criterion in `tests/test_founder_note.py`.
 
 **Note** — for information; the run ends `done`:
 
-8. No CRM contact matched (proposal filed on the account record only).
+8. No CRM contact matched: a prospect. The full proposal goes on the account
+   record's notes instead, and a LinkedIn lead's account gets `source:
+   linkedin` and `pre_qual: true` when unset.
 9. No matched contact is `proposal_ready` (cold outreach).
 10. Account not in the enriched data layer, ledger quality below the floor,
     or every ledger contact older than 90 days.
-11. Website fetch failed; warehouse findings are the sentinel.
+11. Website fetch failed; web research found no sources; warehouse findings
+    are the sentinel.
 12. Keys opted out at intake.
 
 The note is stored in the proposal record (`founder_note`), printed under the
@@ -96,8 +133,10 @@ data/runs/<run_id>/
   manifest.json        exactly what the page sent
   state.json           account, account_contacts, ledger_quality, website_summary, warehouse_findings
   founder.json         holds, notes, text, matched_doc_ids
-  prompts.md           the two prompts the session answered
+  prompts.md           the research brief and the page-summary prompt
+  web_research.md      the research memo; web_sources.txt its URLs
   website_summary.txt  (when a page was fetched)
+  proposal_prompt.md   the SMI proposal prompt with the research filled in (from `brief`)
   proposal.md          the draft as composed
   run_update.json      first page update (steps after the deterministic legs)
   run_final.json       last page update (status, founder note, proposal, CRM ids)
@@ -112,7 +151,10 @@ accounts, each with its versions file):
 
 ```
 python3 scripts/compose_account.py prepare data/runs/<id>/manifest.json --run-id <id> --crm-dump <dump>
-# answer data/runs/<id>/prompts.md → website_summary.txt, proposal.md
+# answer data/runs/<id>/prompts.md → web_research.md, web_sources.txt, website_summary.txt
+python3 scripts/compose_account.py brief <id> --web-research data/runs/<id>/web_research.md \
+    --web-sources data/runs/<id>/web_sources.txt [--website-summary data/runs/<id>/website_summary.txt]
+# answer data/runs/<id>/proposal_prompt.md → proposal.md
 python3 scripts/compose_account.py finalize <id> --proposal data/runs/<id>/proposal.md \
     --website-summary data/runs/<id>/website_summary.txt --crm-dump <dump> [--composer-flag "…"]
 # then ArtifactData batch with data/artifact/crm/compose_<id>/writes.json
@@ -120,8 +162,15 @@ python3 scripts/compose_account.py finalize <id> --proposal data/runs/<id>/propo
 
 `prepare` exits 2 on a gate failure (no account name or domain, null
 disposition, ambiguous account) or a halt (`on_fetch_error: halt`).
-`finalize` exits 2 when the draft is missing one of the five headings or
-mentions money — the same checks as the agent's `write_proposal` tool.
+`finalize` exits 2 when the draft misses a section, mentions money, runs past
+900 words, or cites nothing when the research found sources.
+
+## Monday
+
+The 11:30 UTC routine dumps contacts **and accounts** (with `versions.json`
+and `versions_accounts.json`) so `push_proposals_to_crm.py` can re-apply any
+proposal a run left unapplied, on a contact or on a prospect's account. It is
+idempotent by `proposal_ref`, which every run sets on what it wrote.
 
 ## Rules the run keeps (from the account-composition-run skill)
 

@@ -24,6 +24,12 @@ one plain sentence, without technical details.
    the state key "website_summary" with the value "Website could not be
    fetched: <error>" using store_state, and continue.
 
+3b) Call the web_research tool with `focus` set to the request text below
+   (or "" if there is none). It searches the open web and reads the account's
+   own site from Anthropic's servers, so run it even if step 3 failed. If it
+   returns an error, continue; the proposal will say what could not be found.
+   The account may be a prospect with no ledger contacts -- that is expected.
+
 4) If a BigQuery tool is available, use it to look for any additional rows
    about this account's domain or company name in the CRM dataset and store a
    one-paragraph summary under the state key "warehouse_findings" using

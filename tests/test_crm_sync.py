@@ -217,7 +217,7 @@ def test_proposal_with_no_match_writes_nothing(master, dump):
     from crm.master import load_master
     p = _proposal(pid="p3", apollo_contact_ids=[], contact_ids=[], account={"name": "Nobody", "domain": "nobody.example"})
     writes, log = push_proposals.plan([p], load_master(master), load_crm_dump(dump))
-    assert writes == [] and "no CRM contact matched" in log[0]
+    assert writes == [] and "no CRM contact or account matched" in log[0]
 
 
 # ---------- validation gate ------------------------------------------------------
@@ -275,3 +275,23 @@ def test_writes_are_pinned_when_the_dump_knows_versions(master, dump):
     by_id = {w["doc_id"]: w for w in writes}
     assert by_id["ap_ada"]["if_version"] == 7
     assert "_version" not in by_id["ap_ada"]["data"]          # never written to the document
+
+
+def test_prospect_proposal_lands_on_the_account(master, dump):
+    from crm.master import load_master
+    docs = load_crm_dump(dump)
+    accounts = {"crm_acc": {"name": "Prospect", "domain": "prospect.example", "notes": "earlier", "activity": [],
+                            "_version": 3},
+                "crm_other": {"name": "Other", "domain": "other.example"}}
+    p = _proposal(pid="p9", account={"name": "Prospect", "domain": "prospect.example"},
+                  lead_source="linkedin", contact_ids=[], apollo_contact_ids=[])
+    writes, log = push_proposals.plan([p], load_master(master), docs, now="2026-09-24T12:00:00Z", accounts=accounts)
+    assert len(writes) == 1, log
+    w = writes[0]
+    assert w["collection"] == "accounts" and w["doc_id"] == "crm_acc" and w["if_version"] == 3
+    assert w["data"]["notes"].startswith("earlier\n\n--- Prequalification proposal")
+    assert w["data"]["source"] == "linkedin" and w["data"]["pre_qual"] is True
+    assert "stage" not in w["data"]
+    accounts["crm_acc"]["proposal_ref"] = "p9"
+    again, _ = push_proposals.plan([p], load_master(master), docs, accounts=accounts)
+    assert again == []  # idempotent by proposal_ref

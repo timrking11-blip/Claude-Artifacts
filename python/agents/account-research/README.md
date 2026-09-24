@@ -87,13 +87,32 @@ research does not need the Fable tier, and Opus is half the price per token.
 
 - **`research <account>`** -- the account brief (`analysis_agent`).
 - **`prequal <account>: <request text>`** -- a prequalification proposal in
-  reply to an inbound request (`prequal_agent`): what we understood, what we
-  know about them, where we can help, what we need to qualify it, next step.
-  No prices or timelines -- none are set, and the `write_proposal` tool
-  refuses a draft that mentions money or is missing a section. The result is
-  written to `data/proposals/<account>-<date>.json` + `.md` at the repo root,
-  from where `scripts/push_proposals_to_crm.py` appends it to the contact's
-  notes in the CRM.
+  reply to an inbound request or a LinkedIn contact (`prequal_agent`). It is
+  the short form of SMI's engagement proposals (PREDICTION, ValueFirst):
+  engagement summary with the one decision it closes, what we heard, the
+  problem in front of the account (outside evidence, each claim tagged
+  supported / needs stipulation / unsupported), approach with gates, the SMI
+  intake's qualifying questions, next step, sources. No prices -- the
+  `write_proposal` tool refuses a draft that mentions money, runs past
+  900 words, is missing a section, or cites nothing when the research found
+  sources. The result is written to `data/proposals/<account>-<date>.json` +
+  `.md` at the repo root, from where `scripts/push_proposals_to_crm.py`
+  appends it to the contact's notes in the CRM -- or, for a prospect with no
+  contacts, to the matching CRM account.
+
+The research is outward-facing. Beside the ledger, `research_agent` fetches
+the account's site and calls `web_research`, one Claude request with the
+server-side `web_search_20260209` and `web_fetch_20260209` tools (server-side
+fallbacks on, paused turns resumed). It returns a sourced memo on the company,
+its stage, its buyer and market, competitors and conversation-worthy signals.
+A company the ledger has never heard of is registered as a prospect
+(`register_prospect`) for a prequal, instead of stopping at NOT_FOUND.
+
+**Where proposals come from:** one process -- the Account Composition Intake
+page's Run button (see `docs/composition-run.md` at the repo root). That run
+reuses this package's prompts and tools (`web_research.SYSTEM` as the crawler
+brief, `prequal_agent_prompt.PROMPT`, `write_proposal`'s checks) without the
+ADK runtime or an API key. `adk web` here is for development only.
 
 ### Claude on Vertex AI
 

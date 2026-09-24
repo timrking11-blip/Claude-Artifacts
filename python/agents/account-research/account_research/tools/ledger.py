@@ -145,6 +145,39 @@ def find_account_tool(query: str, tool_context: "ToolContext") -> dict[str, Any]
     return {"status": "OK", "account": account}
 
 
+def register_prospect_tool(name: str, domain: str, tool_context: "ToolContext") -> dict[str, Any]:
+    """Stores an account the ledger has no contacts at, so outward research can run.
+
+    Use only after find_account returned NOT_FOUND for a prequalification
+    proposal. The account carries zero ledger contacts and is marked a
+    prospect; nothing about its people is invented.
+
+    Args:
+      name: The company name as the user gave it (may be empty if only a domain was given).
+      domain: The company's web domain, e.g. "example.com" (may be empty).
+      tool_context: ToolContext object.
+
+    Returns:
+      status "OK" with the stored account, or "ERROR" when both are empty.
+    """
+    dom = normalize_domain(domain)
+    nm = (name or "").strip() or (dom or "")
+    if not nm:
+        return {"status": "ERROR", "message": "Give a company name or a domain."}
+    account = {
+        "key": f"domain:{dom}" if dom else f"name:{nm.lower()}",
+        "name": nm,
+        "domain": dom,
+        "contact_count": 0,
+        "industry": None,
+        "employee_count": None,
+        "prospect": True,
+    }
+    tool_context.state.update({"account": account})
+    logger.info("register_prospect_tool(): %s", account["key"])
+    return {"status": "OK", "account": account}
+
+
 def _seniority_sort_key(contact: dict[str, Any]) -> tuple[int, str]:
     s = (contact.get("seniority") or "").lower()
     rank = SENIORITY_RANK.get(s, 9)

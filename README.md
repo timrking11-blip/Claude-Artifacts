@@ -16,9 +16,19 @@ mirrored in this repo.
                           (run in parallel)    │
                                                └──▶  push_apollo.py  (opt-in writeback)
 
-  Monday 11:30 UTC   ─── Claude routine:  dump CRM ▶ validate_sync ▶ push_enrichment_to_crm ▶ push_proposals_to_crm
-  On demand          ─── adk web: "prequal <account>: <request>"  ──▶  data/proposals/<account>-<date>.{json,md}
+  Monday 11:30 UTC   ─── Claude routine:  dump CRM ▶ validate_sync ▶ push_enrichment_to_crm ▶ push_proposals_to_crm (catch-up)
+
+  On demand — the ONE proposal process:
+    Intake page ▶ Run composition ▶ routine wakes the repo session ▶ compose_account.py prepare
+      ▶ web research (session web search + fetch) ▶ brief ▶ draft ▶ finalize ▶ CRM batch ▶ page shows founder note
 ```
+
+Every prequalification proposal goes through the Intake page
+(https://claude.ai/artifact/BtU87XpWsN9VDNTFwidnA3). The earlier GitHub
+Actions request queue (`data/prequal/requests/`, `prequal-proposal.yml`) is
+retired: it needed an Anthropic API key and wrote proposals without the
+founder note or the CRM write. `adk web` still runs the same agents for
+development, but it is not a path into the CRM.
 
 | Step | Script | Reads | Writes |
 |---|---|---|---|
@@ -28,8 +38,8 @@ mirrored in this repo.
 | Writeback (opt-in) | `scripts/push_apollo.py` | master | Apollo API |
 | Validate | `scripts/validate_sync.py` | master (+ a CRM dump) | nothing -- exit 1 on an unknown source, duplicate id, bad proposal field, or low join coverage. Runs in CI after every merge. |
 | Enrichment → CRM | `scripts/push_enrichment_to_crm.py` | master + a CRM dump | `data/artifact/crm/enrich_*.json`: fills empty enrichment fields and sets the `proposal_ready` flag; never stage, notes or Apollo-owned fields |
-| Proposal → CRM | `scripts/push_proposals_to_crm.py` | `data/proposals/*.json` + a CRM dump | `data/artifact/crm/proposal_*.json`: appends the proposal to the contact's notes, status `drafted`, idempotent by `proposal_ref` |
-| Composition run *(on demand, from the Intake page button)* | `scripts/compose_account.py` | the page's run manifest, master, a CRM dump | `data/runs/<id>/` (state, founder note, prompts), `data/proposals/<slug>-<date>.{json,md}`, `data/artifact/crm/compose_<id>/writes.json`. The session drafts the proposal between `prepare` and `finalize`; see `docs/composition-run.md` |
+| **Prequalification proposal** *(the one process: Intake page → Run composition)* | `scripts/compose_account.py` | the page's run manifest, master, a CRM dump, the account's site and the open web | `data/runs/<id>/`, `data/proposals/<slug>-<date>.{json,md}` (SMI short form, cited, no prices, founder note), and the CRM writes: the contact's notes, or the account's for a prospect. See `docs/composition-run.md` |
+| Proposal → CRM *(Monday catch-up)* | `scripts/push_proposals_to_crm.py` | `data/proposals/*.json` + a CRM dump (contacts and accounts) | re-applies any proposal a run left unapplied; idempotent by `proposal_ref`, so a proposal the run already wrote is skipped |
 | Artifact → repo *(retired ledger)* | `scripts/import_artifact_edits.py` | a db dump | master |
 | Repo → artifact *(retired ledger)* | `scripts/export_artifact_batch.py` | master | `data/artifact/batch_*.json` |
 
@@ -240,7 +250,7 @@ tests/test_merge.py           merge behaviour
 data/master/contacts.json     committed mirror of the artifact database
 data/CHANGELOG.md             per-run record of what changed
 data/proposals/               prequalification proposals the agent wrote (committed)
-data/runs/<id>/               what each Intake-page composition run saw and produced (committed)
+data/runs/<id>/               what each Intake-page composition run saw and produced (committed) -- the only proposal path
 docs/composition-run.md       the one-button flow: page → routine → scripts → CRM
 artifact/intake.html          source of the Account Composition Intake page (v2, one button)
 artifact/crm.html             the published ledger page

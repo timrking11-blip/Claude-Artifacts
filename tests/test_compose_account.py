@@ -30,20 +30,33 @@ def _load_script(name):
 compose = _load_script("compose_account")
 NOW = datetime(2026, 9, 24, 20, 0, tzinfo=timezone.utc)
 
-PROPOSAL = """## What we understand you're asking for
-A second location.
+PROPOSAL = """# Example Co -- Prequalification Proposal
+Prepared by Strategic Marketing Insights
 
-## What we know about you
-Example Co; Ada Lovelace, CTO.
+## Engagement summary
+By a date we set together, Example Co decides whether to open a second location.
 
-## Where we can help
-- A cost-to-serve model.
+## What we heard
+You asked for help planning a second location.
+
+| Signal | Source | What SMI reads into it |
+| --- | --- | --- |
+| Hiring techs | [careers](https://example.com/careers) | Capacity is the constraint. [supported] |
+
+## The problem in front of Example Co
+1. Service radius caps growth ([site](https://example.com/about)) [needs stipulation]
+
+## Approach
+**Territory scan** (3 weeks). Gate: Example Co approves the shortlist.
 
 ## What we'd need to qualify this
-1. Which towns?
+1. Which towns are in scope, and by when?
 
-## Proposed next step
-A short call with Ada.
+## Next step
+A 30-minute call with Ada Lovelace, CTO.
+
+## Sources
+- https://example.com/careers
 """
 
 
@@ -124,6 +137,8 @@ def test_prepare_runs_ledger_legs_and_respects_limit(ledger, dump):
     assert steps["fetch_page"] == "failed:store_state" and s["website_summary"].startswith("Website fetch failed")
     assert s["warehouse_findings"] == "not available" and steps["warehouse_findings"] == "sentinel"
     assert steps["compose_proposal"] == "pending" and steps["crm_write"] == "pending"
+    assert steps["web_research"] == "pending", "the crawler runs even when our own fetch failed"
+    assert s["request_id"] == "run_t" and s["lead_source"] == ""
     assert r["founder"].matched_doc_ids == ["ap_ada"]
     assert r["halted"] is False
 
@@ -132,9 +147,10 @@ def test_prepare_unknown_account_proceeds_with_a_note(ledger, dump):
     m = manifest(account={"name": "Brand New LLC", "domain": "brandnew.example", "crm_account_id": None})
     r = compose.prepare(m, "run_t", compose.load_crm_dump(dump), NOW, fetch=False)
     assert r["steps"]["find_account"] == "not_found"
-    assert r["state"]["account"] == {"key": None, "name": "Brand New LLC", "domain": "brandnew.example",
-                                     "contact_count": 0, "industry": None, "employee_count": None,
-                                     "in_ledger": False, "crm_account_id": None}
+    assert r["state"]["account"] == {"key": "domain:brandnew.example", "name": "Brand New LLC",
+                                     "domain": "brandnew.example", "contact_count": 0, "industry": None,
+                                     "employee_count": None, "in_ledger": False, "prospect": True,
+                                     "crm_account_id": None}
     assert r["steps"]["list_account_contacts"] == "empty"
     assert any("not in the enriched data layer" in n for n in r["founder"].notes)
     assert any("No CRM contact matched" in n for n in r["founder"].notes)
@@ -165,9 +181,15 @@ def test_write_prepare_emits_prompts_and_run_update(ledger, dump, tmp_path):
     compose.write_prepare(run_dir, manifest(), r, "run_t", NOW)
     assert {p.name for p in run_dir.iterdir()} == {"manifest.json", "state.json", "founder.json", "prompts.md", "run_update.json"}
     prompts = (run_dir / "prompts.md").read_text()
+    assert "research desk" in prompts and "Website: https://example.com" in prompts, "crawler brief is prompt 1"
     assert "skip this leg" in prompts, "no page fetched -> summariser leg skipped"
-    assert "Ada Lovelace" in prompts and "Help us plan a second location." in prompts
-    assert "write_proposal tool" not in prompts and "compose_account.py finalize" in prompts
+    assert "compose_account.py brief run_t" in prompts
+    prompt = compose.brief(run_dir, "## Company\nExamples. ([site](https://example.com/about)) [supported]", [], None)
+    assert "Ada Lovelace" in prompt and "Help us plan a second location." in prompt
+    assert "https://example.com/about" in prompt, "sources come from the memo's links when no list is given"
+    assert "write_proposal tool" not in prompt and "compose_account.py finalize" in prompt
+    assert "{web_research" not in prompt and "{account" not in prompt, "every slot filled"
+    assert (run_dir / "proposal_prompt.md").exists()
     upd = json.loads((run_dir / "run_update.json").read_text())
     assert upd["status"] == "running" and upd["steps"]["find_account"] == "done"
     assert upd["matched_contact_ids"] == ["ap_ada"] and upd["account"]["in_ledger"] is True
@@ -187,9 +209,16 @@ def test_finalize_refuses_missing_section_and_money(ledger, dump, tmp_path):
     run_dir = _prepared(ledger, dump, tmp_path)
     docs, master = compose.load_crm_dump(dump), load_master(ledger)
     with pytest.raises(SystemExit):
-        compose.finalize(run_dir, PROPOSAL.replace("## Proposed next step", "## Next"), None, [], master, docs, {}, NOW)
+        compose.finalize(run_dir, PROPOSAL.replace("## Sources", "## Links"), None, [], master, docs, {}, NOW)
     with pytest.raises(SystemExit):
         compose.finalize(run_dir, PROPOSAL + "\nAbout $2,000 per month.\n", None, [], master, docs, {}, NOW)
+    with pytest.raises(SystemExit):
+        compose.finalize(run_dir, PROPOSAL + ("word " * 900), None, [], master, docs, {}, NOW)
+    compose.brief(run_dir, "memo", ["https://example.com/careers"], None)
+    uncited = PROPOSAL.replace("[careers](https://example.com/careers)", "careers").replace(
+        "([site](https://example.com/about)) ", "").replace("- https://example.com/careers", "- none")
+    with pytest.raises(SystemExit):
+        compose.finalize(run_dir, uncited, None, [], master, docs, {}, NOW)
 
 
 def test_finalize_plans_contact_note_and_mints_account(ledger, dump, tmp_path):
@@ -215,6 +244,9 @@ def test_finalize_plans_contact_note_and_mints_account(ledger, dump, tmp_path):
     assert d["name"] == "Example Co" and d["domain"] == "example.com" and d["website"] == "https://example.com"
     assert d["origin"] == "crm" and d["flags"] == ["pending_apollo"] and d["stage"] == "cold"
     assert rec["proposal_id"] in d["notes"] and d["activity"][0]["type"] == "system"
+    assert d["proposal_ref"] == rec["proposal_id"] and "source" not in d, "not a LinkedIn lead"
+    assert rec["sources"] == ["https://example.com/careers", "https://example.com/about"]
+    assert "see contact notes" in d["notes"], "contacts matched -> account gets a pointer, not the text"
     assert set(compose.ACCOUNT_DEFAULTS) <= set(d)
 
 
@@ -227,10 +259,11 @@ def test_finalize_appends_to_existing_account_and_is_idempotent(ledger, dump, tm
     acc = [w for w in res["writes"] if w["collection"] == "accounts"][0]
     assert acc["op"] == "update" and acc["doc_id"] == "acc_1" and acc["if_version"] == 9
     assert acc["data"]["notes"].startswith("keep\n\n---") and "stage" not in acc["data"]
+    assert acc["data"]["proposal_ref"] == res["record"]["proposal_id"]
     pid = res["record"]["proposal_id"]
     # Once the CRM carries the proposal, a re-run plans nothing.
     docs["ap_ada"]["proposal_ref"] = pid
-    accounts["acc_1"]["notes"] += "\n\n" + acc["data"]["notes"].split("\n\n", 1)[1]
+    accounts["acc_1"]["proposal_ref"] = pid
     again = compose.finalize(run_dir, PROPOSAL, None, [], master, docs, accounts, NOW)
     assert again["writes"] == [] and again["record"]["proposal_id"] == pid
 
@@ -250,7 +283,7 @@ def test_write_finalize_emits_batch_files_and_run_final(ledger, dump, tmp_path):
     final = json.loads((run_dir / "run_final.json").read_text())
     assert final["status"] == "done" and final["steps"]["compose_proposal"] == "done"
     assert final["crm"]["contact_ids"] == ["ap_ada"] and final["crm"]["writes_planned"] == 2
-    assert final["proposal_markdown"].startswith("## What we understand")
+    assert final["proposal_markdown"].startswith("# Example Co -- Prequalification Proposal")
 
 
 def test_cli_prepare_then_finalize(ledger, dump, tmp_path):
@@ -267,3 +300,38 @@ def test_cli_prepare_then_finalize(ledger, dump, tmp_path):
     assert rc == 0
     assert (tmp_path / "batch" / "compose_run_t" / "writes.json").exists()
     assert (tmp_path / "runs" / "run_t" / "run_final.json").exists()
+
+
+def test_linkedin_prospect_gets_the_proposal_on_its_account(ledger, dump, tmp_path):
+    m = manifest(account={"name": "Brand New LLC", "domain": "brandnew.example", "crm_account_id": None,
+                          "source": "linkedin"})
+    m["crm"]["pre_qual"] = True
+    r = compose.prepare(m, "run_p", compose.load_crm_dump(dump), NOW, fetch=False)
+    assert r["state"]["lead_source"] == "linkedin" and r["state"]["account"]["prospect"] is True
+    run_dir = tmp_path / "runs" / "run_p"
+    compose.write_prepare(run_dir, m, r, "run_p", NOW)
+    compose.brief(run_dir, "", [], None)
+    draft = PROPOSAL.replace("Example Co", "Brand New LLC")
+    res = compose.finalize(run_dir, draft, None, [], load_master(ledger), compose.load_crm_dump(dump), {}, NOW)
+    rec = res["record"]
+    assert rec["lead_source"] == "linkedin" and rec["account"]["prospect"] is True
+    assert any("no sources" in n for n in rec["founder_note"]["notes"])
+    assert [w["collection"] for w in res["writes"]] == ["accounts"], "no contacts -> the account only"
+    d = res["writes"][0]["data"]
+    assert d["source"] == "linkedin" and d["pre_qual"] is True and d["proposal_ref"] == rec["proposal_id"]
+    assert "## Engagement summary" in d["notes"] and "Founder note:" in d["notes"]
+    # The Monday catch-up sees proposal_ref on the account and does not add it again.
+    push = compose.push_proposals_to_crm
+    again, _ = push.plan([rec], load_master(ledger), compose.load_crm_dump(dump),
+                         accounts={res["writes"][0]["doc_id"]: {**d, "domain": "brandnew.example"}})
+    assert again == []
+
+
+def test_accounts_dump_reads_its_own_versions_file(tmp_path):
+    d = tmp_path / "dump" / "accounts"
+    d.mkdir(parents=True)
+    (d / "acc_1.json").write_text(json.dumps({"name": "A", "domain": "a.example"}))
+    (tmp_path / "dump" / "versions.json").write_text(json.dumps({"acc_1": 99}))
+    (tmp_path / "dump" / "versions_accounts.json").write_text(json.dumps({"acc_1": 5}))
+    accs = compose.push_proposals_to_crm.load_accounts_dump(tmp_path / "dump")
+    assert accs["acc_1"]["_version"] == 5

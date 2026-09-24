@@ -23,16 +23,22 @@ if TYPE_CHECKING:  # annotation only; keeps ADK out of the import path
 
 logger = logging.getLogger(__name__)
 
-#: Five sections a prequalification proposal must carry. The tool refuses a
-#: draft that is missing one so a half-written proposal never reaches a
-#: contact's notes.
+#: Sections a prequalification proposal must carry, in SMI's proposal shape
+#: (see prequal_agent_prompt.py). The tool refuses a draft that is missing one
+#: so a half-written proposal never reaches a CRM record.
 REQUIRED_SECTIONS = (
-    "What we understand",
-    "What we know about you",
-    "Where we can help",
+    "Engagement summary",
+    "What we heard",
+    "The problem in front of",
+    "Approach",
     "What we'd need to qualify",
-    "Proposed next step",
+    "Next step",
+    "Sources",
 )
+
+#: "In short": a prequalification proposal is one page, not the full proposal.
+MAX_WORDS = 900
+_LINK = re.compile(r"\]\((https?://[^)\s]+)\)|<(https?://[^>\s]+)>|(?<![(<])\b(https?://[^\s)>\]]+)")
 
 #: Money in a prequalification proposal is a bug: no rates are set.
 _MONEY = re.compile(r"(\$\s?\d|\b\d[\d,]*\s?(?:USD|dollars)\b|\bper\s+(?:hour|day|month)\b)", re.I)
@@ -49,6 +55,16 @@ def default_proposals_dir() -> Path:
 
 def slugify(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", (text or "account").lower()).strip("-")[:60] or "account"
+
+
+def cited_links(markdown: str) -> list[str]:
+    """Every http(s) link in the proposal, in first-seen order."""
+    out: list[str] = []
+    for m in _LINK.finditer(markdown):
+        url = next(g for g in m.groups() if g)
+        if url not in out:
+            out.append(url)
+    return out
 
 
 def missing_sections(markdown: str) -> list[str]:
@@ -80,6 +96,14 @@ def write_proposal_tool(proposal_markdown: str, tool_context: "ToolContext") -> 
     if money:
         return {"status": "ERROR",
                 "message": f"Proposal mentions money ({money.group(0)!r}); no rates are set. Remove it and call again."}
+    words = len(proposal_markdown.split())
+    if words > MAX_WORDS:
+        return {"status": "ERROR",
+                "message": f"Proposal is {words} words; keep it under {MAX_WORDS}. Cut and call again."}
+    cited = cited_links(proposal_markdown)
+    if state.get("web_sources") and not cited:
+        return {"status": "ERROR",
+                "message": "Web research found sources but the proposal cites none. Link the claims to them and call again."}
 
     contacts = state.get("account_contacts") or []
     request_text = state.get("request_text") or ""
@@ -92,7 +116,11 @@ def write_proposal_tool(proposal_markdown: str, tool_context: "ToolContext") -> 
         "proposal_id": proposal_id,
         "generated_at": stamp,
         "model": os.getenv("ACCOUNT_RESEARCH_CLAUDE_MODEL", "claude-opus-5"),
-        "account": {"name": account.get("name"), "domain": account.get("domain")},
+        "account": {"name": account.get("name"), "domain": account.get("domain"),
+                    "prospect": bool(account.get("prospect"))},
+        "lead_source": state.get("lead_source") or None,
+        "request_id": state.get("request_id") or None,
+        "sources": cited,
         "contact_ids": [c.get("contact_id") for c in contacts if c.get("contact_id")],
         "apollo_contact_ids": [c.get("apollo_contact_id") for c in contacts if c.get("apollo_contact_id")],
         "request_text": request_text,
