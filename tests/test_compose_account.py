@@ -277,7 +277,7 @@ def test_write_finalize_emits_batch_files_and_run_final(ledger, dump, tmp_path):
     docs, master = compose.load_crm_dump(dump), load_master(ledger)
     res = compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW)
     json_path, md_path = compose.write_proposal_files(res["record"], tmp_path / "proposals", NOW)
-    assert json_path.name == "example-co-2026-09-24.json" and "**Founder note**" in md_path.read_text()
+    assert json_path.name == "example-co-2026-09-24-run_t.json" and "**Founder note**" in md_path.read_text()
     writes_path = compose.write_finalize(run_dir, res, tmp_path / "batch", json_path, md_path, NOW)
     entries = json.loads(writes_path.read_text())
     assert [e["collection"] for e in entries] == ["contacts", "accounts"]

@@ -529,7 +529,8 @@ def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str
 def write_proposal_files(record: dict[str, Any], proposals_dir: Path, now: datetime) -> tuple[Path, Path]:
     proposals_dir.mkdir(parents=True, exist_ok=True)
     slug = slugify(record["account"].get("name") or record["account"].get("domain") or "account")
-    base = proposals_dir / f"{slug}-{now.date()}"
+    # The run id keeps two runs on one account in one day from overwriting each other.
+    base = proposals_dir / f"{slug}-{now.date()}-{record['run_id']}"
     json_path, md_path = base.with_suffix(".json"), base.with_suffix(".md")
     _write_json(json_path, record)
     first = record["request_text"].strip().splitlines()[0] if record["request_text"].strip() else "(none)"
