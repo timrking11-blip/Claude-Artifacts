@@ -36,6 +36,9 @@ def test_lookalike_is_a_different_domain_with_a_near_label():
 def test_primary_macro_hosts():
     assert is_primary_macro("www.fdic.gov") and is_primary_macro("ffiec.cfpb.gov")
     assert is_primary_macro("www.kansascityfed.org") and not is_primary_macro("mercercapital.com")
+    assert is_primary_macro("fred.stlouisfed.org") and is_primary_macro("stlouisfed.org")
+    assert not is_primary_macro("evilfederalreserve.org"), "whole labels only"
+    assert not is_primary_macro("gov.example.com") and not is_primary_macro("notimf.org")
 
 
 def test_found_on_intake_domain():

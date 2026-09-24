@@ -25,12 +25,14 @@ from urllib.parse import urlparse
 
 from .schema import normalize_domain
 
-#: Hosts a not-found proposal may still cite for its "Why now" section.
-PRIMARY_MACRO_SUFFIXES = (
-    ".gov", ".mil", ".fed.us", "federalreserve.org", "stlouisfed.org", "kansascityfed.org",
-    "newyorkfed.org", "clevelandfed.org", "atlantafed.org", "richmondfed.org", "dallasfed.org",
-    "chicagofed.org", "bostonfed.org", "philadelphiafed.org", "minneapolisfed.org",
-    "sanfranciscofed.org", "bis.org", "imf.org", "worldbank.org", "oecd.org", "ecb.europa.eu",
+#: Hosts a not-found proposal may still cite for its "Why now" section:
+#: government TLDs, and these institutions' own domains and their subdomains.
+PRIMARY_MACRO_TLDS = (".gov", ".mil")
+PRIMARY_MACRO_DOMAINS = (
+    "fed.us", "federalreserve.org", "stlouisfed.org", "kansascityfed.org", "newyorkfed.org",
+    "clevelandfed.org", "atlantafed.org", "richmondfed.org", "dallasfed.org", "chicagofed.org",
+    "bostonfed.org", "philadelphiafed.org", "minneapolisfed.org", "sanfranciscofed.org",
+    "bis.org", "imf.org", "worldbank.org", "oecd.org", "ecb.europa.eu",
 )
 
 _URL = re.compile(r"https?://[^\s)\]>\"']+")
@@ -86,8 +88,15 @@ def is_lookalike(host: str, intake_domain: str) -> bool:
 
 
 def is_primary_macro(host: str) -> bool:
-    host = host.lower()
-    return any(host == s.lstrip(".") or host.endswith(s) or host.endswith("." + s.lstrip(".")) for s in PRIMARY_MACRO_SUFFIXES)
+    """A government host, or one of the listed institutions' domains or subdomains.
+
+    Matches on whole labels only: 'evilfederalreserve.org' is not
+    'federalreserve.org'.
+    """
+    host = host.lower().removeprefix("www.")
+    if host.endswith(PRIMARY_MACRO_TLDS):
+        return True
+    return any(host == d or host.endswith("." + d) for d in PRIMARY_MACRO_DOMAINS)
 
 
 def urls_in(text: str | None) -> list[str]:
