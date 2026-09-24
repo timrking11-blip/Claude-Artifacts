@@ -86,7 +86,7 @@ def write_proposal_tool(proposal_markdown: str, tool_context: "ToolContext") -> 
     now = datetime.now(timezone.utc)
     stamp = now.isoformat(timespec="seconds").replace("+00:00", "Z")
     slug = slugify(account.get("name") or account.get("domain") or "account")
-    proposal_id = "prq_" + hashlib.sha1(f"{slug}|{request_text}|{now.date()}".encode()).hexdigest()[:10]
+    proposal_id = "prq_" + hashlib.sha256(f"{slug}|{request_text}|{now.date()}".encode()).hexdigest()[:12]
 
     record = {
         "proposal_id": proposal_id,
