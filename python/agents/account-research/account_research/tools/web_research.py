@@ -71,6 +71,11 @@ Report in Markdown under exactly these headings:
 ## Gaps -- what you looked for and could not find
 
 Rules:
+- Research only the company at the given domain. A company with a similar
+  name at a different domain is NOT a match, even if a search result says it
+  is: list it under Gaps as "similarly named, not this company" and use
+  nothing from it. When the domain itself yields nothing, the memo says so;
+  it never substitutes a lookalike.
 - Every factual sentence ends with its source as a Markdown link to a page you
   actually fetched or a search result you read, followed by one evidence tag:
   [supported] when a named source states it, [needs stipulation] when it is

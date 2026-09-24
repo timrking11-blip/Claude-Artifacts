@@ -363,6 +363,8 @@ def write_prepare(run_dir: Path, manifest: dict[str, Any], result: dict[str, Any
         "\"web\": ...}, each value \"ok: <what>\" or \"none: <why>\" or \"error: <why>\" — for example "
         "\"none: host blocked by the environment's network policy\".\n\n"
         "## 1 · Web research → web_research.md + web_sources.txt\n\n"
+        "Only the company at this domain counts: a similarly named company at another domain is not a "
+        "match, even if a search result claims it is — record it under Gaps and use nothing from it. "
         "Answer with your own web search and web fetch tools. Save the memo to web_research.md and every URL "
         "you fetched or cited, one per line, to web_sources.txt.\n\n"
         + research_prompt(result["state"]).strip() + "\n\n"
