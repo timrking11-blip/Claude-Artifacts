@@ -58,6 +58,10 @@ Report in Markdown under exactly these headings:
 ## Gaps -- what you looked for and could not find
 
 Rules:
+- Research only the company at the given website. Search engines often return
+  companies with similar names (one letter off, or a better-known brand).
+  Those are different companies: never use them as facts about this one. Treat
+  a result as this company's only if it names the exact domain or links to it.
 - Every factual sentence ends with its source as a Markdown link to a page you
   actually fetched or a search result you read, followed by one evidence tag:
   [supported] when a named source states it, [needs stipulation] when it is
