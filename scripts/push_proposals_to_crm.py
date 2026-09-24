@@ -127,7 +127,7 @@ def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str,
             done = 0
             for acc_id in acc_ids:
                 acc = (accounts or {})[acc_id]
-                if acc.get("proposal_ref") == pid:
+                if acc.get("proposal_ref") == pid or pid in (acc.get("notes") or ""):
                     continue
                 block = NOTES_HEADER.format(date=date, pid=pid) + "\n" + p["proposal_markdown"].strip()
                 existing = (acc.get("notes") or "").rstrip()
@@ -149,13 +149,15 @@ def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str,
         applied = skipped = 0
         for doc_id in ids:
             doc = docs[doc_id]
-            if doc.get("proposal_ref") == pid:
+            if doc.get("proposal_ref") == pid or pid in (doc.get("notes") or ""):
                 skipped += 1
                 continue
             block = NOTES_HEADER.format(date=date, pid=pid) + "\n" + p["proposal_markdown"].strip()
             founder = (p.get("founder_note") or {}).get("text") if isinstance(p.get("founder_note"), dict) else p.get("founder_note")
             if founder:
                 block += "\n\nFounder note:\n" + str(founder).strip()
+            if p.get("notes_appendix"):
+                block += "\n\n" + str(p["notes_appendix"]).strip()
             existing = (doc.get("notes") or "").rstrip()
             data: dict[str, Any] = {
                 "notes": (existing + "\n\n" + block) if existing else block,
@@ -166,6 +168,8 @@ def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str,
             status = doc.get("proposal_status") or "none"
             if status not in ADVANCED:
                 data["proposal_status"] = "drafted"
+            if not isinstance(doc.get("pre_qual"), bool):
+                data["pre_qual"] = True  # a drafted proposal puts the contact in the pre-qual phase
             if not doc.get("proposal_scope"):
                 scope = first_line(p.get("request_text")) or first_line(p["proposal_markdown"].replace("#", ""))
                 if scope:

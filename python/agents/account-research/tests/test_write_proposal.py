@@ -28,6 +28,9 @@ You asked for help sizing the northeast market.
 | --- | --- | --- |
 | New Boston office | [press](https://acme.example/news) | Expansion is funded. |
 
+## Why now: the market and the economy
+Northeast construction spending rose in 2026 ([census](https://census.example/c30)) [supported].
+
 ## The problem in front of Acme
 1. Two incumbents hold the channel ([report](https://example.org/r)) [supported]
 
@@ -64,7 +67,7 @@ def test_writes_json_and_markdown(tmp_path, monkeypatch):
     assert rec["contact_ids"] == ["c_ada"] and rec["apollo_contact_ids"] == ["ap_ada"]
     assert rec["request_text"].startswith("Need help")
     assert "## The problem in front of Acme" in rec["proposal_markdown"]
-    assert rec["sources"] == ["https://acme.example/news", "https://example.org/r"]
+    assert rec["sources"] == ["https://acme.example/news", "https://census.example/c30", "https://example.org/r"]
     md = Path(out["markdown"]).read_text()
     assert md.startswith("# Prequalification proposal — Acme")
     assert ctx.state["proposal_id"] == rec["proposal_id"]

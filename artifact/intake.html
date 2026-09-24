@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Account Composition Intake</title>
+<title>Linkedin RFP Request and Proposal Generation with Agentic AI</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
   :root{
@@ -228,7 +228,7 @@
       <span class="stamp">v2 · one button</span>
     </div>
     <h1>Account Composition Intake</h1>
-    <p class="lead">Paste the LinkedIn request, name the account, press <b>Run composition</b>. The research agents run in the session that owns the repo, the prequalification proposal is drafted and filed into the CRM contact's notes, and the note to the founder shows up below. Nothing to copy into a terminal.</p>
+    <p class="lead">Paste the LinkedIn request, name the account, press <b>Run composition</b>. The research agents read the ledger, crawl the company's site and the open web, draft the SMI prequalification proposal and file it into the CRM (the contact's notes, or the account's for a new prospect); the note to the founder shows up below. This is the only way proposals are made. Nothing to copy into a terminal.</p>
 
     <div class="gate" id="gate" data-ok="no">
       <div class="gate-msg">
@@ -444,7 +444,7 @@
       <!-- 04 -->
       <section class="step" id="s4">
         <div class="step-head"><span class="step-num">04</span><h3>Run</h3></div>
-        <p class="step-desc">One press writes the run record and wakes the session that owns the repo. It re-gates the manifest, runs the ledger tools, fetches the page, drafts the proposal, files it into the CRM contact's notes, and reports back here as each step returns.</p>
+        <p class="step-desc">One press writes the run record and wakes the session that owns the repo. In order: re-gate the manifest → ledger tools → the company's site → Apollo and Vibe Prospecting → open-web research (company, market, competitors, adjacent, macroeconomics) → the SMI proposal with a ValueFirst "why now" → founder note → one merged note into the CRM record's pre-qual phase, with the Apollo and CRM sync schedule that follows. Each step reports back here as it returns.</p>
         <div class="card">
           <div class="launch-bar">
             <button type="button" class="btn btn-primary" id="btnRun" disabled>Run composition</button>
@@ -552,10 +552,13 @@
     ["list_account_contacts", "account_contacts"],
     ["assess_ledger_quality", "ledger_quality"],
     ["fetch_page", "page_contents, page_url"],
+    ["apollo", "organization enrich · people at the domain"],
+    ["prospecting", "Vibe Prospecting match · firmographics · events"],
+    ["web_research", "site · market · competitors · adjacent · macroeconomics"],
     ["summarize_page", "website_summary"],
     ["warehouse_findings", "warehouse_findings"],
-    ["compose_proposal", "data/proposals/<slug>-<date>.{json,md}"],
-    ["crm_write", "contact notes · proposal_status · accounts/<id>"]
+    ["compose_proposal", "SMI proposal · data/proposals/<slug>-<date>.{json,md}"],
+    ["crm_write", "merged pre-qual note: proposal · founder note · coverage · sync schedule"]
   ];
 
   var db = null, mcp = null;

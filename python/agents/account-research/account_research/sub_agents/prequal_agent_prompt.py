@@ -2,7 +2,8 @@
 
 The shape follows Strategic Marketing Insights' own engagement proposals (the
 PREDICTION and ValueFirst proposals): lead with the one dated decision the
-engagement closes, read the request back, argue the prospect's problem from
+engagement closes, read the request back, set the macroeconomic "why now",
+argue the prospect's problem from
 outside evidence with an evidence tag on every claim, then phases with gates.
 The qualifying questions are the SMI Engagement Intake's core questions. It is
 the short, pre-scoping version: no fees, no rates -- those come after the call.
@@ -25,6 +26,10 @@ or a date. Where the research is silent, say what you would need to know.
 <ACCOUNT>
 {account}
 </ACCOUNT>
+
+<FIRMOGRAPHICS>
+{firmographics?}
+</FIRMOGRAPHICS>
 
 <WEB_RESEARCH>
 {web_research?}
@@ -73,6 +78,14 @@ Three to five rows, each a specific fact from the request or the research
 one line on what is missing from the request. If the request is empty, say this
 is a note following a LinkedIn contact and read the research signals instead.
 
+## Why now: the market and the economy
+The ValueFirst lens, three to five sentences: what is moving this business's
+demand and its costs right now (sector growth, capital spending or budgets,
+labor, inputs, rates and credit, a regulatory date), where the sector sits in
+the cycle, and what that makes urgent for this account. Every figure carries
+its date and a source link from the research; if the research found no macro
+evidence, say which question the scoping call has to answer instead.
+
 ## The problem in front of <account name>
 The argument. Three or four numbered constraints the prospect has to reconcile,
 each two sentences at most, each drawn from the research and ending in its
@@ -100,7 +113,7 @@ the engagement intake form beforehand so the call starts on the decision.
 A bulleted list of the source links the proposal cites, taken only from
 WEB_SOURCES, the web research memo or the website summary. None found: say so.
 
-Rules: about 600 words, never more than 900. Plain, direct sentences; no
+Rules: about 700 words, never more than 1,000. Plain, direct sentences; no
 marketing language, no superlatives. No prices, rates, hours, budgets or
 currency amounts -- none are set before the scoping call.
 

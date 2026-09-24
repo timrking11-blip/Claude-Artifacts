@@ -17,13 +17,17 @@ press Run ──► db  runs/<run_id> = {manifest, status: queued}
                                               ▼
                                    git pull · dump CRM (contacts + accounts, with versions)
                                    scripts/compose_account.py prepare      ──► runs/<id> status running, steps
-                                   web research: the session's own web search + fetch,
-                                     briefed by account_research/tools/web_research.py SYSTEM
-                                   summarise page (when our fetch got it)
+                                   0 data sources: Apollo (org enrich, people), Vibe Prospecting
+                                     (match, firmographics, events)          ──► data_sources.md, coverage.json
+                                   1 web research: site → company → market → competitors → adjacent
+                                     → macroeconomics (the session's own web tools, briefed by
+                                     account_research/tools/web_research.py SYSTEM)
+                                   2 summarise page (when our fetch got it)
                                    scripts/compose_account.py brief        ──► proposal_prompt.md, research filled in
-                                   draft the SMI prequalification proposal
+                                   3 draft the SMI proposal (ValueFirst "Why now" section required)
                                    scripts/compose_account.py finalize     ──► data/proposals/<slug>-<date>.{json,md}
-                                   ArtifactData batch (CRM contact notes, account record)
+                                   ArtifactData batch: ONE merged note into the CRM record's pre-qual
+                                     phase — proposal · founder note · research coverage · sync schedule
                                    ArtifactData update runs/<id> ◄── run_final.json (founder note, proposal, ids)
                                    git commit data/runs/<id> + data/proposals · push
 page renders live: sequence lamps · note to the founder · proposal · CRM ids
@@ -49,6 +53,28 @@ scripts. The research runs on the session's own web tools, so no Anthropic API
 key is needed (the agent package's `web_research` tool, which calls the API
 directly, is the same brief for `adk web` development only).
 
+## Order of operations
+
+1. **Intake** — request, account, options, disposition; press Run.
+2. **Gate and ledger** — `prepare`: find_account, contacts, ledger quality,
+   our own fetch of the site, warehouse sentinel, founder criteria.
+3. **Data sources** — the session pulls Apollo (organization enrich, people at
+   the domain) and Vibe Prospecting (business match, firmographics, events),
+   surfacing any credit cost first, and records each source's outcome in
+   `coverage.json`.
+4. **Web research** — company, market and buyer, competitors, adjacent items
+   (parent, partners, customers, investors, hiring, leadership backgrounds),
+   and the macroeconomic context with dated primary sources.
+5. **Brief and draft** — `brief` fills the SMI proposal prompt; the session
+   drafts it, including the ValueFirst **Why now** section.
+6. **File and note** — `finalize` validates, files the proposal, and plans one
+   merged note for the CRM record: the proposal, the founder note, research
+   coverage per source, and the Apollo / CRM sync schedule for the record.
+   `pre_qual` is set on the record; `stage` is never touched.
+7. **Sync** — the Monday chain carries the record on: 06:00 UTC merge into the
+   data layer, 11:00 Apollo ⇄ CRM (uploads `pending_apollo` accounts and
+   re-keys them), 11:30 enrichment push + proposal catch-up, 12:00 GTM refresh.
+
 ## The research leg ("agent crawlers")
 
 `prepare` writes the research desk brief into `prompts.md`: fetch the
@@ -61,17 +87,22 @@ a source link and an evidence tag -- `[supported]`, `[needs stipulation]`,
 `web_research.md` plus `web_sources.txt`; `brief` stores both in the run state.
 It runs even when our own page fetch failed: a site that blocks plain HTTP
 fetchers is often still readable from the search side. A run whose research
-found nothing gets a Note in the founder note.
+found nothing gets a Note in the founder note. Any data source that came back
+empty or errored (no credits, plan refusal, host blocked by the environment's
+network policy) also becomes a Note, so the founder sees what the proposal
+was and was not built on.
 
 ## The proposal
 
 The SMI short form, from `prequal_agent_prompt.py`: a title line, "Prepared by
 Strategic Marketing Insights", then **Engagement summary** (the one decision it
-closes), **What we heard** (signals table), **The problem in front of
+closes), **What we heard** (signals table), **Why now: the market and the
+economy** (the ValueFirst lens: demand and cost drivers, rates and credit,
+policy calendar, cycle position, every figure dated), **The problem in front of
 <account>** (sourced, evidence-tagged constraints), **Approach** (phases with
 gates, no fees), **What we'd need to qualify this**, **Next step** (a 30-minute
 scoping call), **Sources**. `finalize` refuses a draft that misses a section,
-mentions money, runs past 900 words, or cites nothing when the research found
+mentions money, runs past 1,000 words, or cites nothing when the research found
 sources -- the same checks as the agent's `write_proposal` tool.
 
 ## What the page does
@@ -134,6 +165,7 @@ data/runs/<run_id>/
   state.json           account, account_contacts, ledger_quality, website_summary, warehouse_findings
   founder.json         holds, notes, text, matched_doc_ids
   prompts.md           the research brief and the page-summary prompt
+  data_sources.md      Apollo and Vibe Prospecting findings; coverage.json per-source outcome
   web_research.md      the research memo; web_sources.txt its URLs
   website_summary.txt  (when a page was fetched)
   proposal_prompt.md   the SMI proposal prompt with the research filled in (from `brief`)
@@ -153,7 +185,8 @@ accounts, each with its versions file):
 python3 scripts/compose_account.py prepare data/runs/<id>/manifest.json --run-id <id> --crm-dump <dump>
 # answer data/runs/<id>/prompts.md → web_research.md, web_sources.txt, website_summary.txt
 python3 scripts/compose_account.py brief <id> --web-research data/runs/<id>/web_research.md \
-    --web-sources data/runs/<id>/web_sources.txt [--website-summary data/runs/<id>/website_summary.txt]
+    --web-sources data/runs/<id>/web_sources.txt --data-sources data/runs/<id>/data_sources.md \
+    --coverage data/runs/<id>/coverage.json [--website-summary data/runs/<id>/website_summary.txt]
 # answer data/runs/<id>/proposal_prompt.md → proposal.md
 python3 scripts/compose_account.py finalize <id> --proposal data/runs/<id>/proposal.md \
     --website-summary data/runs/<id>/website_summary.txt --crm-dump <dump> [--composer-flag "…"]
@@ -163,7 +196,7 @@ python3 scripts/compose_account.py finalize <id> --proposal data/runs/<id>/propo
 `prepare` exits 2 on a gate failure (no account name or domain, null
 disposition, ambiguous account) or a halt (`on_fetch_error: halt`).
 `finalize` exits 2 when the draft misses a section, mentions money, runs past
-900 words, or cites nothing when the research found sources.
+1,000 words, or cites nothing when the research found sources.
 
 ## Monday
 

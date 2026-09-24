@@ -48,12 +48,25 @@ Work outward from the company's own site, then the wider web:
 3. Search the market it sells into: the buyer, the forces moving that buyer's
    budget this year, named competitors, and any rule or standard that constrains
    how the product is bought.
+4. Search the adjacent ground: parent company, subsidiaries, partners and
+   integrations, named customers and case studies, investors, board and
+   leadership backgrounds, job postings (what they are hiring for says what
+   they are building), reviews, and conference or press appearances.
+5. Build the macroeconomic picture of the business, ValueFirst-grade: what
+   drives demand in its sector (end-market growth, capital spending, budgets),
+   what drives its costs (labor, inputs, compute, rates and credit), the
+   policy and regulatory calendar, and where the sector sits in the cycle.
+   Prefer dated primary sources -- BLS, BEA, Census, FRED / Federal Reserve,
+   SEC filings, industry associations, reputable analysts -- and state the
+   date of every figure.
 
 Report in Markdown under exactly these headings:
 ## Company -- what it does, in its own words, and who it sells to
 ## Evidence of stage -- founding date, size, funding, leadership, hiring
 ## Market and buyer -- the forces on the buyer that make this a live problem now
 ## Competitors -- named, with one line each on how they position
+## Adjacent -- parent, partners, customers, investors, hiring, leadership backgrounds
+## Macroeconomic context -- demand drivers, cost drivers, rates and credit, policy calendar, cycle position; every figure dated
 ## Signals worth a conversation -- three to five specific facts a proposal can lead with
 ## Gaps -- what you looked for and could not find
 
@@ -65,7 +78,7 @@ Rules:
   hypothesis with no source.
 - If a page cannot be fetched or a fact cannot be found, say "not found" under
   Gaps. Never guess a number, a name or a date.
-- Be terse: short sentences, no marketing language, under 700 words.
+- Be terse: short sentences, no marketing language, under 1,000 words.
 """
 
 

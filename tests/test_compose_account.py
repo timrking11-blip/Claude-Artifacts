@@ -43,6 +43,9 @@ You asked for help planning a second location.
 | --- | --- | --- |
 | Hiring techs | [careers](https://example.com/careers) | Capacity is the constraint. [supported] |
 
+## Why now: the market and the economy
+Service demand in the region grew in 2026 ([bls](https://bls.example/ces)) [needs stipulation].
+
 ## The problem in front of Example Co
 1. Service radius caps growth ([site](https://example.com/about)) [needs stipulation]
 
@@ -213,10 +216,11 @@ def test_finalize_refuses_missing_section_and_money(ledger, dump, tmp_path):
     with pytest.raises(SystemExit):
         compose.finalize(run_dir, PROPOSAL + "\nAbout $2,000 per month.\n", None, [], master, docs, {}, NOW)
     with pytest.raises(SystemExit):
-        compose.finalize(run_dir, PROPOSAL + ("word " * 900), None, [], master, docs, {}, NOW)
+        compose.finalize(run_dir, PROPOSAL + ("word " * 1000), None, [], master, docs, {}, NOW)
     compose.brief(run_dir, "memo", ["https://example.com/careers"], None)
     uncited = PROPOSAL.replace("[careers](https://example.com/careers)", "careers").replace(
-        "([site](https://example.com/about)) ", "").replace("- https://example.com/careers", "- none")
+        "([site](https://example.com/about)) ", "").replace("([bls](https://bls.example/ces)) ", "").replace(
+        "- https://example.com/careers", "- none")
     with pytest.raises(SystemExit):
         compose.finalize(run_dir, uncited, None, [], master, docs, {}, NOW)
 
@@ -245,7 +249,7 @@ def test_finalize_plans_contact_note_and_mints_account(ledger, dump, tmp_path):
     assert d["origin"] == "crm" and d["flags"] == ["pending_apollo"] and d["stage"] == "cold"
     assert rec["proposal_id"] in d["notes"] and d["activity"][0]["type"] == "system"
     assert d["proposal_ref"] == rec["proposal_id"] and "source" not in d, "not a LinkedIn lead"
-    assert rec["sources"] == ["https://example.com/careers", "https://example.com/about"]
+    assert rec["sources"] == ["https://example.com/careers", "https://bls.example/ces", "https://example.com/about"]
     assert "see contact notes" in d["notes"], "contacts matched -> account gets a pointer, not the text"
     assert set(compose.ACCOUNT_DEFAULTS) <= set(d)
 

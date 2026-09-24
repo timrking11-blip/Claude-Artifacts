@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 REQUIRED_SECTIONS = (
     "Engagement summary",
     "What we heard",
+    "Why now",
     "The problem in front of",
     "Approach",
     "What we'd need to qualify",
@@ -37,7 +38,7 @@ REQUIRED_SECTIONS = (
 )
 
 #: "In short": a prequalification proposal is one page, not the full proposal.
-MAX_WORDS = 900
+MAX_WORDS = 1000
 _LINK = re.compile(r"\]\((https?://[^)\s]+)\)|<(https?://[^>\s]+)>|(?<![(<])\b(https?://[^\s)>\]]+)")
 
 #: Money in a prequalification proposal is a bug: no rates are set.
