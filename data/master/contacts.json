@@ -161,27 +161,27 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -427,17 +427,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -447,53 +447,6 @@
       ],
       "technologies": [],
       "title": "President"
-    },
-    {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd73",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_1d599f25aa80a9d2",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Eric",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Sweet",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": "Massachusetts, United States",
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "location": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "Owner"
     },
     {
       "apollo_contact_id": "6aab6fed2d1ce70010679750",
@@ -720,17 +673,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -1462,53 +1415,6 @@
       "title": "Founder & CEO"
     },
     {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd6b",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_447a55874f270ac4",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Bryan",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Foulds",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": "New Hampshire, United States",
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "location": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "Chief Executive Officer"
-    },
-    {
       "apollo_contact_id": "6aab6fed2d1ce7001067973d",
       "apollo_person_id": "60fc961c655bc500016233b3",
       "company_domain": "jobleap.ai",
@@ -1670,22 +1576,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -1790,22 +1696,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -1888,53 +1794,6 @@
       ],
       "technologies": [],
       "title": "Founder and CEO"
-    },
-    {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd67",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_5959c16daceeb5a4",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Andrew",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Wade",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": "Massachusetts, United States",
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "location": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "President & Chief Executive Officer"
     },
     {
       "apollo_contact_id": "6aab6fed2d1ce7001067974e",
@@ -2453,17 +2312,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -2495,17 +2354,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -2515,53 +2374,6 @@
       ],
       "technologies": [],
       "title": "Chief Executive Officer and Founder of Sanford Controls LLC"
-    },
-    {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd69",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_7a2faa3df728b18e",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Todd",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Rea",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": "Vermont, United States",
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "location": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "Chief Financial Officer"
     },
     {
       "apollo_contact_id": "6aab6fed2d1ce7001067973f",
@@ -2641,132 +2453,6 @@
       "apollo_person_id": null,
       "company_domain": null,
       "company_name": null,
-      "contact_id": "c_7c9c14b214167dfb",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Mike",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Bolt",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": null,
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "Chief Financial Officer"
-    },
-    {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd6f",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_80cd89154e6d2cac",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Karen",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Desousa",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": null,
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "President"
-    },
-    {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd6c",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_80fedd4272a3c11a",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Nick",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "DePalma",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": null,
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "President"
-    },
-    {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd66",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
       "contact_id": "c_8282e25ea97951b2",
       "email": null,
       "employee_count": null,
@@ -2783,17 +2469,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -2825,17 +2511,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -2845,58 +2531,6 @@
       ],
       "technologies": [],
       "title": "Chief Operations Officer"
-    },
-    {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd64",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_8682c6fa1a703edc",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Benjamin",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Lowe",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": "Lee, New Hampshire, United States",
-      "phone": "+16364975894",
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "location": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "phone": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "Chief Financial Officer"
     },
     {
       "apollo_contact_id": "6aab6fed2d1ce7001067974f",
@@ -2992,17 +2626,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -3085,48 +2719,6 @@
       ],
       "technologies": [],
       "title": "Sales Representative"
-    },
-    {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd72",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_90bce6c74bc452d3",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Mark",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Hefford Jr",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": null,
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "Owner Direct Sales"
     },
     {
       "apollo_contact_id": "6aab6fed2d1ce70010679751",
@@ -3348,48 +2940,6 @@
       "title": "CEO & Co-Founder"
     },
     {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd6d",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_9a7cbe65a55e4f24",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Mark",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Hodsdon",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": null,
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "President"
-    },
-    {
       "apollo_contact_id": "6aab6fed2d1ce70010679749",
       "apollo_person_id": "66fc98df44c28c000197c537",
       "company_domain": "trutharts.com",
@@ -3546,22 +3096,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -3593,22 +3143,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -3827,53 +3377,6 @@
       ],
       "technologies": [],
       "title": "CEO & CO Founder"
-    },
-    {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd70",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_baaa277e69cf1bb0",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Paul",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Battaglia",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": "Massachusetts, United States",
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "location": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "President"
     },
     {
       "apollo_contact_id": "6aab8bd085b567001480a0bb",
@@ -4168,17 +3671,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -4263,48 +3766,6 @@
       "title": "Founding Partner"
     },
     {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd6e",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_dad1aa47d945ef51",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Christopher J.",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Anthony",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": null,
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "Chief Operations Officer"
-    },
-    {
       "apollo_contact_id": "6aab69ff54d1bb001063bd6c",
       "apollo_person_id": null,
       "company_domain": null,
@@ -4325,17 +3786,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -4638,90 +4099,6 @@
       "title": "CEO/Founder"
     },
     {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd6a",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_ee2ad3ee3548eaac",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Paul",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Carter",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": null,
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "President - Earthwise Energy Technologies"
-    },
-    {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd71",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_f231c2255421dd45",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Mac",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Lynch",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": null,
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "President"
-    },
-    {
       "apollo_contact_id": "6aab8bbe18ac5f001c840662",
       "apollo_person_id": "66fa78d7beb11300012b12fa",
       "company_domain": "modella.ai",
@@ -4790,48 +4167,6 @@
       "title": "President & Chief Executive Officer"
     },
     {
-      "apollo_contact_id": "6aab69ff54d1bb001063bd68",
-      "apollo_person_id": null,
-      "company_domain": null,
-      "company_name": null,
-      "contact_id": "c_f6983e602f4f5a94",
-      "email": null,
-      "employee_count": null,
-      "explorium_business_id": null,
-      "explorium_prospect_id": null,
-      "first_name": "Howard",
-      "first_seen": "2026-09-21T06:05:13+00:00",
-      "industry": null,
-      "last_name": "Sanford",
-      "last_updated": "2026-09-21T06:05:13+00:00",
-      "linkedin_url": null,
-      "location": null,
-      "phone": null,
-      "provenance": {
-        "first_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "last_name": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        },
-        "title": {
-          "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
-          "source": "apollo"
-        }
-      },
-      "seniority": null,
-      "sources": [
-        "apollo"
-      ],
-      "technologies": [],
-      "title": "Chief Executive Officer and Founder of Sanford Controls LLC"
-    },
-    {
       "apollo_contact_id": "6aab69ff54d1bb001063bd70",
       "apollo_person_id": null,
       "company_domain": null,
@@ -4852,22 +4187,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-17T14:05:03+00:00",
+          "observed_at": "2026-09-21T06:05:13+00:00",
           "source": "apollo"
         }
       },
@@ -5020,7 +4355,7 @@
       "title": "Chief Executive Officer"
     }
   ],
-  "count": 82,
-  "generated_at": "2026-09-21T06:05:45+00:00",
+  "count": 67,
+  "generated_at": "2026-09-24T18:43:06+00:00",
   "schema_version": 1
 }

@@ -151,11 +151,20 @@ class Contact:
     def identity_keys(self) -> list[str]:
         """Keys this record can be matched on, strongest first.
 
-        Email is the only key treated as globally unique. LinkedIn is close.
+        Vendor ids first, then email (the only globally unique human key),
+        then LinkedIn, which is close.
         Name+domain is a heuristic and deliberately last -- two different
         J. Smiths at the same company will collide, which the merge logs.
         """
         keys = []
+        # A vendor's own record id is the strongest identity there is: it
+        # survives an email change, a name change and a missing email. Without
+        # these, an Apollo contact with no email could only match on
+        # name+domain, and the 2026-09-21 merge duplicated 15 of them.
+        if self.apollo_contact_id:
+            keys.append(f"apollo:{self.apollo_contact_id}")
+        if self.explorium_prospect_id:
+            keys.append(f"explorium:{self.explorium_prospect_id}")
         email = normalize_email(self.email)
         if email:
             keys.append(f"email:{email}")

@@ -48,6 +48,14 @@ EXPLORIUM_STAGING = STAGING_DIR / "explorium.json"
 #: Optional and hand-staged. No pull script writes this -- see merge_master.py.
 LINKEDIN_STAGING = STAGING_DIR / "linkedin.json"
 
+#: Prequalification proposals the account-research agent writes. Committed:
+#: they are the durable record of what was sent, and push_proposals_to_crm.py
+#: reads them.
+PROPOSALS_DIR = DATA_DIR / "proposals"
+#: Derived batch files for the CRM System artifact (not the retired ledger).
+#: Gitignored under data/artifact/.
+CRM_BATCH_DIR = DATA_DIR / "artifact" / "crm"
+
 # --- Sync tunables ---------------------------------------------------------
 
 # Apollo caps search at 100 records/page, 500 pages.

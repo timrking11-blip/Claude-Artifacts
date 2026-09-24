@@ -268,6 +268,46 @@ def merge_contact(
     return merged
 
 
+def dedupe_by_vendor_id(master: list[Contact], report: MergeReport | None = None) -> tuple[list[Contact], list[tuple[str, str]]]:
+    """Fold records that share an Apollo or Explorium id into one.
+
+    Before vendor ids were identity keys, an Apollo contact with no email
+    could be created twice. Each group keeps its OLDEST record (first_seen,
+    then contact_id for determinism) and folds the others into it through
+    the same field-level merge the weekly run uses, with each field's own
+    provenance -- so nothing a human or a stronger source asserted is lost.
+    Returns the deduplicated list and the (kept, dropped) id pairs. Safe to
+    run every week; a clean master returns unchanged.
+    """
+    report = report or MergeReport()
+    groups: dict[str, list[Contact]] = {}
+    for c in master:
+        for key in (c.apollo_contact_id and f"apollo:{c.apollo_contact_id}",
+                    c.explorium_prospect_id and f"explorium:{c.explorium_prospect_id}"):
+            if key:
+                groups.setdefault(key, []).append(c)
+
+    dropped: dict[str, str] = {}
+    kept_by_id = {c.ensure_id(): c for c in master}
+    for members in groups.values():
+        live = [kept_by_id[m.contact_id] for m in members if m.contact_id in kept_by_id and m.contact_id not in dropped]
+        if len(live) < 2:
+            continue
+        live.sort(key=lambda c: (c.first_seen or "9999", c.contact_id))
+        keep, rest = live[0], live[1:]
+        for dup in rest:
+            # Replay the duplicate as an observation from its own sources so
+            # resolve_field ranks every field by real trust, not by recency.
+            src = (dup.sources or ["manual"])[0]
+            keep = merge_contact(keep, dup, src, dup.last_updated or utcnow(), report)
+            keep.sources = sorted(set(keep.sources) | set(dup.sources or []))
+            keep.first_seen = min(filter(None, (keep.first_seen, dup.first_seen)), default=keep.first_seen)
+            dropped[dup.contact_id] = keep.contact_id
+            kept_by_id.pop(dup.contact_id, None)
+        kept_by_id[keep.contact_id] = keep
+    return list(kept_by_id.values()), [(k, d) for d, k in dropped.items()]
+
+
 def merge_all(
     master: list[Contact], incoming: list[Contact], source: str, observed_at: str | None = None
 ) -> tuple[list[Contact], MergeReport]:

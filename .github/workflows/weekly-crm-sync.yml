@@ -166,6 +166,11 @@ jobs:
         run: pip install -q pytest && python -m pytest tests -q
       - name: Merge
         run: python scripts/merge_master.py
+      # Refuse to commit a master that names an unknown source or carries a
+      # duplicate identity. Master-only here (no CRM dump in CI); the Monday
+      # routine runs the same gate with --crm-dump before it pushes anything.
+      - name: Validate data layer
+        run: python scripts/validate_sync.py
       - name: Commit master
         run: |
           git config user.name "crm-sync[bot]"

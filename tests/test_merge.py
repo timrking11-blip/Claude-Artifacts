@@ -259,3 +259,54 @@ def test_linkedin_loses_phone_conflict_head_to_head():
     assert value == "+1 555 0100"
     assert reason == "lower_trust_held"
     assert prov["source"] == SOURCE_APOLLO
+
+
+# --------------------------------------------------------------------------
+# Vendor ids as identity. The 2026-09-21 run duplicated 15 Apollo contacts
+# that had no email: with nothing but name+domain to match on, they became
+# new records. A vendor's own id must be the strongest key.
+# --------------------------------------------------------------------------
+
+from crm.master import dedupe_by_vendor_id  # noqa: E402
+
+
+def test_apollo_id_matches_a_contact_with_no_email():
+    base, _ = merge_all([], [Contact(first_name="Benjamin", last_name="Lowe",
+                                     apollo_contact_id="ap_1")],
+                        SOURCE_APOLLO, "2026-09-17T00:00:00+00:00")
+    merged, report = merge_all(base, [Contact(first_name="Benjamin", last_name="Lowe",
+                                              apollo_contact_id="ap_1", title="Owner")],
+                               SOURCE_APOLLO, "2026-09-21T00:00:00+00:00")
+    assert len(merged) == 1, "same Apollo id must never create a second record"
+    assert merged[0].title == "Owner"
+    assert report.created == []
+
+
+def test_vendor_ids_come_first_in_identity_keys():
+    c = Contact(email="ada@example.com", apollo_contact_id="ap_1", explorium_prospect_id="ex_1")
+    assert c.identity_keys()[:2] == ["apollo:ap_1", "explorium:ex_1"]
+
+
+def test_dedupe_folds_duplicates_keeping_the_older_record():
+    older = Contact(contact_id="c_old", first_name="Karen", last_name="Desousa",
+                    apollo_contact_id="ap_2", first_seen="2026-09-17T00:00:00+00:00",
+                    last_updated="2026-09-17T00:00:00+00:00", sources=[SOURCE_APOLLO],
+                    provenance={"first_name": {"source": SOURCE_APOLLO, "observed_at": "2026-09-17T00:00:00+00:00"}})
+    newer = Contact(contact_id="c_new", first_name="Karen", last_name="Desousa", title="CFO",
+                    apollo_contact_id="ap_2", first_seen="2026-09-21T00:00:00+00:00",
+                    last_updated="2026-09-21T00:00:00+00:00", sources=[SOURCE_APOLLO],
+                    provenance={"title": {"source": SOURCE_APOLLO, "observed_at": "2026-09-21T00:00:00+00:00"}})
+    clean, folded = dedupe_by_vendor_id([older, newer, Contact(contact_id="c_x", email="x@example.com")])
+    ids = sorted(c.contact_id for c in clean)
+    assert ids == ["c_old", "c_x"]
+    assert folded == [("c_old", "c_new")]
+    kept = next(c for c in clean if c.contact_id == "c_old")
+    assert kept.title == "CFO"                                   # the newer record's field survived
+    assert kept.provenance["title"]["source"] == SOURCE_APOLLO
+    assert kept.first_seen == "2026-09-17T00:00:00+00:00"
+
+
+def test_dedupe_is_a_no_op_on_a_clean_master():
+    master = [Contact(contact_id="a", apollo_contact_id="ap_a"), Contact(contact_id="b", apollo_contact_id="ap_b")]
+    clean, folded = dedupe_by_vendor_id(master)
+    assert folded == [] and sorted(c.contact_id for c in clean) == ["a", "b"]

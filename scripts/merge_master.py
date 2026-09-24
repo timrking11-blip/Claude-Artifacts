@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from crm import config
-from crm.master import load_master, save_master, merge_all, MergeReport
+from crm.master import dedupe_by_vendor_id, load_master, save_master, merge_all, MergeReport
 from crm.schema import Contact, SOURCE_APOLLO, SOURCE_EXPLORIUM, SOURCE_LINKEDIN, utcnow
 
 log = logging.getLogger("merge_master")
@@ -101,6 +101,12 @@ def main() -> int:
         master, report = merge_all(master, incoming, source, observed_at)
         log.info("%s: %s", source, report.summary())
         reports.append((source, report))
+
+    # Self-heal: anything that shares a vendor id is one person. Runs every
+    # week so a duplicate can never survive more than one cycle.
+    master, folded = dedupe_by_vendor_id(master)
+    if folded:
+        log.warning("folded %s duplicate record(s) by vendor id: %s", len(folded), folded[:5])
 
     if not reports:
         log.error(
