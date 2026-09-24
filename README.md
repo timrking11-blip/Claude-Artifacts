@@ -16,7 +16,8 @@ mirrored in this repo.
                           (run in parallel)    │
                                                └──▶  push_apollo.py  (opt-in writeback)
 
-  After the Action   ─── Claude routine:  import artifact edits ▶ re-merge ▶ push master into artifact db
+  Monday 11:30 UTC   ─── Claude routine:  dump CRM ▶ validate_sync ▶ push_enrichment_to_crm ▶ push_proposals_to_crm
+  On demand          ─── adk web: "prequal <account>: <request>"  ──▶  data/proposals/<account>-<date>.{json,md}
 ```
 
 | Step | Script | Reads | Writes |
@@ -25,8 +26,19 @@ mirrored in this repo.
 | Enrich via Explorium | `scripts/pull_explorium.py` | previous master + Explorium API | `data/staging/explorium.json` |
 | Merge | `scripts/merge_master.py` | both staging files | `data/master/contacts.json`, `data/CHANGELOG.md` |
 | Writeback (opt-in) | `scripts/push_apollo.py` | master | Apollo API |
-| Artifact → repo | `scripts/import_artifact_edits.py` | a db dump | master |
-| Repo → artifact | `scripts/export_artifact_batch.py` | master | `data/artifact/batch_*.json` (fed to the artifact db) |
+| Validate | `scripts/validate_sync.py` | master (+ a CRM dump) | nothing -- exit 1 on an unknown source, duplicate id, bad proposal field, or low join coverage. Runs in CI after every merge. |
+| Enrichment → CRM | `scripts/push_enrichment_to_crm.py` | master + a CRM dump | `data/artifact/crm/enrich_*.json`: fills empty enrichment fields and sets the `proposal_ready` flag; never stage, notes or Apollo-owned fields |
+| Proposal → CRM | `scripts/push_proposals_to_crm.py` | `data/proposals/*.json` + a CRM dump | `data/artifact/crm/proposal_*.json`: appends the proposal to the contact's notes, status `drafted`, idempotent by `proposal_ref` |
+| Artifact → repo *(retired ledger)* | `scripts/import_artifact_edits.py` | a db dump | master |
+| Repo → artifact *(retired ledger)* | `scripts/export_artifact_batch.py` | master | `data/artifact/batch_*.json` |
+
+The canonical CRM is the **CRM System** artifact; the three CRM-facing
+scripts above target its schema and are applied by the Monday 11:30 UTC
+routine (validate → enrichment → proposals). The last two rows fed the
+original ledger artifact, which has been superseded; they stay for history.
+Prequalification proposals are composed by the account-research agent
+(`prequal <account>: <request>`, see `python/agents/account-research/`) on the
+Anthropic API -- nothing in this loop touches Google Cloud.
 
 The two pulls are independent jobs in
 [`.github/workflows/weekly-crm-sync.yml`](.github/workflows/weekly-crm-sync.yml).
@@ -211,12 +223,14 @@ token, so there they will show as failed to connect — that is expected.
 .mcp.json                     MCP server registration
 crm/config.py                 every endpoint, credential and tunable, once
 crm/schema.py                 canonical record, identity keys, trust table
-crm/master.py                 field-level merge, load/save
+crm/master.py                 field-level merge, load/save, vendor-id dedupe
+crm/crm_sync.py               CRM System dump reader, proposal_ready rule, batch writer
 crm/http.py                   retrying stdlib JSON client
 scripts/                      the six entrypoints above
 tests/test_merge.py           merge behaviour
 data/master/contacts.json     committed mirror of the artifact database
 data/CHANGELOG.md             per-run record of what changed
+data/proposals/               prequalification proposals the agent wrote (committed)
 artifact/crm.html             the published ledger page
 .github/workflows/            weekly schedule
 ```
