@@ -57,12 +57,49 @@ The agent then attaches the BigQuery and Agent Registry MCP servers for the
 project in `GOOGLE_CLOUD_PROJECT` as tools. With it off, the warehouse step is skipped
 and everything else works.
 
-## Claude on Vertex AI
+## Model provider
 
 The provider is chosen in `account_research/model.py` (the tools never import
-it, so they stay ADK-free). The agent runs on Claude by default, through ADK's `Claude` model wrapper --
-the same `AnthropicVertex(project_id, region)` client the Anthropic SDK
-documents, authenticated with Application Default Credentials.
+it, so they stay ADK-free). Three are supported; the default needs no Google
+Cloud at all.
+
+### Anthropic API — no Google Cloud required (default)
+
+`ACCOUNT_RESEARCH_MODEL_PROVIDER=anthropic` runs the same agent through ADK's
+`AnthropicLlm`, which builds the Anthropic SDK's `AsyncAnthropic()` client.
+The SDK resolves the credential on its own -- `ANTHROPIC_API_KEY`, or a
+profile from `ant auth login` -- so there is no project, no ADC and no Model
+Garden step:
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...     # or: ant auth login
+adk web .                               # then: "prequal Acme: <the request>"
+```
+
+Two limits, stated rather than hidden. ADK owns the request, so the API's
+server-side `fallbacks` parameter cannot be set through it; a safety decline
+still surfaces as a `SAFETY` finish and the run stops there. And the default
+model is `claude-opus-5` -- a prequalification proposal from structured
+research does not need the Fable tier, and Opus is half the price per token.
+`ACCOUNT_RESEARCH_CLAUDE_MODEL=claude-fable-5-1` opts back in.
+
+### Two documents
+
+- **`research <account>`** -- the account brief (`analysis_agent`).
+- **`prequal <account>: <request text>`** -- a prequalification proposal in
+  reply to an inbound request (`prequal_agent`): what we understood, what we
+  know about them, where we can help, what we need to qualify it, next step.
+  No prices or timelines -- none are set, and the `write_proposal` tool
+  refuses a draft that mentions money or is missing a section. The result is
+  written to `data/proposals/<account>-<date>.json` + `.md` at the repo root,
+  from where `scripts/push_proposals_to_crm.py` appends it to the contact's
+  notes in the CRM.
+
+### Claude on Vertex AI
+
+`ACCOUNT_RESEARCH_MODEL_PROVIDER=claude` runs it through ADK's `Claude` wrapper
+instead -- the same `AnthropicVertex(project_id, region)` client the
+Anthropic SDK documents, authenticated with Application Default Credentials.
 
 ```bash
 gcloud auth application-default login          # once
@@ -91,8 +128,9 @@ it isn't. Variables:
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `ACCOUNT_RESEARCH_MODEL_PROVIDER` | `claude` | `claude` or `gemini` |
-| `ACCOUNT_RESEARCH_CLAUDE_MODEL` | `claude-fable-5-1` | Bare first-party id; `claude-opus-5` is the drop-in alternative |
+| `ACCOUNT_RESEARCH_MODEL_PROVIDER` | `anthropic` | `anthropic` (API), `claude` (Vertex) or `gemini` |
+| `ACCOUNT_RESEARCH_CLAUDE_MODEL` | `claude-opus-5` | Bare first-party id on both Anthropic paths; `claude-fable-5-1` for the top tier |
+| `ANTHROPIC_API_KEY` | unset | `anthropic` provider only; an `ant auth login` profile works instead |
 | `ACCOUNT_RESEARCH_CLAUDE_EFFORT` | unset (`high`) | `low` … `max`; ADK's `AnthropicGenerateContentConfig` |
 | `ACCOUNT_RESEARCH_MAX_TOKENS` | `16000` | Output cap per model call |
 | `GOOGLE_CLOUD_LOCATION` | `global` | Claude accepts `global`; Gemini wants a region |

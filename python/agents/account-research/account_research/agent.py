@@ -9,6 +9,7 @@ from . import root_agent_prompt
 from .model import GENERATE_CONFIG, MODEL, model_name
 from .shared_libraries.callbacks import rate_limit_callback
 from .sub_agents.analysis_agent import AnalysisAgent
+from .sub_agents.prequal_agent import PrequalAgent
 from .sub_agents.research_agent import ResearchAgent
 from .tools.ledger import find_account_tool
 from .tools.store_state import store_state_tool
@@ -23,13 +24,15 @@ root_agent = Agent(
     name="root_agent",
     description=(
         "Resolve the account the user asks about against the CRM master "
-        "ledger, then coordinate research and an account brief."
+        "ledger, then coordinate research and either an account brief or a "
+        "prequalification proposal."
     ),
     instruction=root_agent_prompt.PROMPT,
     tools=[find_account_tool, store_state_tool],
     sub_agents=[
         ResearchAgent,
         AnalysisAgent,
+        PrequalAgent,
     ],
     generate_content_config=GENERATE_CONFIG,
     before_model_callback=rate_limit_callback,

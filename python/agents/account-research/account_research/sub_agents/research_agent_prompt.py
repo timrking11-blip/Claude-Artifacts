@@ -30,6 +30,12 @@ one plain sentence, without technical details.
    store_state. If no BigQuery tool is available, store "warehouse_findings"
    as "Not available in this session" and continue.
 
-5) Finally, transfer to analysis_agent to write the brief. DO NOT write any
-   analysis or brief yourself.
+5) Finally, hand off. If the state key "request_text" is set (the user asked
+   for a prequalification proposal), transfer to prequal_agent; otherwise
+   transfer to analysis_agent to write the brief. DO NOT write any analysis,
+   brief or proposal yourself.
+
+<REQUEST_TEXT>
+{request_text?}
+</REQUEST_TEXT>
 """
