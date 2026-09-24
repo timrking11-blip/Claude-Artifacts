@@ -29,6 +29,7 @@ mirrored in this repo.
 | Validate | `scripts/validate_sync.py` | master (+ a CRM dump) | nothing -- exit 1 on an unknown source, duplicate id, bad proposal field, or low join coverage. Runs in CI after every merge. |
 | Enrichment → CRM | `scripts/push_enrichment_to_crm.py` | master + a CRM dump | `data/artifact/crm/enrich_*.json`: fills empty enrichment fields and sets the `proposal_ready` flag; never stage, notes or Apollo-owned fields |
 | Proposal → CRM | `scripts/push_proposals_to_crm.py` | `data/proposals/*.json` + a CRM dump | `data/artifact/crm/proposal_*.json`: appends the proposal to the contact's notes, status `drafted`, idempotent by `proposal_ref` |
+| Composition run *(on demand, from the Intake page button)* | `scripts/compose_account.py` | the page's run manifest, master, a CRM dump | `data/runs/<id>/` (state, founder note, prompts), `data/proposals/<slug>-<date>.{json,md}`, `data/artifact/crm/compose_<id>/writes.json`. The session drafts the proposal between `prepare` and `finalize`; see `docs/composition-run.md` |
 | Artifact → repo *(retired ledger)* | `scripts/import_artifact_edits.py` | a db dump | master |
 | Repo → artifact *(retired ledger)* | `scripts/export_artifact_batch.py` | master | `data/artifact/batch_*.json` |
 
@@ -232,12 +233,16 @@ crm/config.py                 every endpoint, credential and tunable, once
 crm/schema.py                 canonical record, identity keys, trust table
 crm/master.py                 field-level merge, load/save, vendor-id dedupe
 crm/crm_sync.py               CRM System dump reader, proposal_ready rule, batch writer
+crm/founder_note.py           the note to the founder: HOLD / Note criteria for a composition run
 crm/http.py                   retrying stdlib JSON client
-scripts/                      the six entrypoints above
+scripts/                      the entrypoints above
 tests/test_merge.py           merge behaviour
 data/master/contacts.json     committed mirror of the artifact database
 data/CHANGELOG.md             per-run record of what changed
 data/proposals/               prequalification proposals the agent wrote (committed)
+data/runs/<id>/               what each Intake-page composition run saw and produced (committed)
+docs/composition-run.md       the one-button flow: page → routine → scripts → CRM
+artifact/intake.html          source of the Account Composition Intake page (v2, one button)
 artifact/crm.html             the published ledger page
 .github/workflows/            weekly schedule
 ```
