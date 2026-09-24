@@ -66,6 +66,7 @@
 
   .cols{display:grid;grid-template-columns:230px 1fr;gap:36px;margin-top:30px;align-items:start}
   @media (max-width:820px){.cols{grid-template-columns:1fr;gap:26px}}
+  .cols > *{min-width:0}
   .rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
   @media (max-width:820px){.rail{position:static}}
   .rail h2{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
@@ -118,6 +119,12 @@
   input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--go);outline-offset:2px}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   @media (max-width:560px){.row2{grid-template-columns:1fr}}
+  .check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:11px 12px;border-radius:8px;border:1px solid var(--line-2);background:var(--paper);cursor:pointer}
+  .check[data-on="yes"]{border-color:var(--go);background:var(--go-soft)}
+  .check input{width:16px;height:16px;flex:none;margin-top:3px;accent-color:var(--go)}
+  .check .t{display:block;font-size:13.5px;font-weight:600;color:var(--ink)}
+  .check .d{display:block;font-size:12px;color:var(--ink-2);margin-top:2px}
+  .check .d code{font-family:var(--mono);font-size:.9em}
 
   .launch-bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:4px}
   .btn{font-family:var(--sans);font-size:14px;font-weight:600;padding:11px 20px;border-radius:8px;border:1px solid transparent;cursor:pointer}
@@ -318,6 +325,13 @@
             <label for="accId">Existing CRM account id <span class="hint">leave blank if new — the run will mint <code>crm_&lt;date&gt;_&lt;rand&gt;</code></span></label>
             <input type="text" id="accId" placeholder="(blank for new)" autocomplete="off">
           </div>
+          <label class="check" id="liRow" data-on="no" for="accLinkedin">
+            <input type="checkbox" id="accLinkedin">
+            <span>
+              <span class="t">LinkedIn proposal request or source</span>
+              <span class="d">Tick when the account came from LinkedIn. The record is tagged <code>source: linkedin</code> and its pre-qual box in the CRM's proposal phase starts ticked. Ticked for you when the request above is filled in.</span>
+            </span>
+          </label>
         </div>
       </section>
 
@@ -423,7 +437,7 @@
             <span class="d">Creates <code>accounts/crm_&lt;date&gt;_&lt;rand&gt;</code> with <code>origin:"crm"</code>. CRM-owned fields — stage, notes, next_step, activity — stay untouched by any later sync.</span></span>
         </label>
         <div class="warn" id="apolloWarn" hidden>
-          <b>Check before choosing Apollo.</b> As of 17 Sep 2026 <code>account_lists</code> in <code>meta/config</code> is empty, so account ingest is off. The founder note will HOLD the run until the list id is back or you switch to manual.
+          <b>Check before choosing Apollo.</b> Account ingest reads the lists in <code>meta/config.account_lists</code>. The Strategic Market Insights list was re-added on 24 Sep 2026. The run reads that setting first; if it is ever empty again the founder note HOLDs until the list id is back or you switch to manual.
         </div>
       </section>
 
@@ -510,7 +524,7 @@
               <tr><td>Apollo connector auth</td><td><span class="sev stop">Blocking</span></td><td>OAuth does not carry into a terminal. No auth → manual disposition; the Monday sync picks the record up.</td></tr>
               <tr><td>BigQuery absent</td><td><span class="sev hold">Degrades</span></td><td>The sentinel goes into <code>warehouse_findings</code>; an unset key reads differently downstream.</td></tr>
               <tr><td>Sync window</td><td><span class="sev hold">Degrades</span></td><td>Apollo ⇄ CRM sync Mon 07:00 ET, enrichment push 07:30, Command Center 08:00. A run inside 06:45–08:15 ET gets a HOLD in the founder note.</td></tr>
-              <tr><td><code>account_lists</code> empty</td><td><span class="sev stop">Blocking on Apollo</span></td><td>Re-add the accounts list id to <code>meta/config.account_lists</code>, or choose manual.</td></tr>
+              <tr><td><code>account_lists</code> empty</td><td><span class="sev stop">Blocking on Apollo</span></td><td>Re-added 24 Sep (Strategic Market Insights). The run reads <code>meta/config.account_lists</code> first; empty → HOLD. By hand, confirm it is not empty or choose manual.</td></tr>
               <tr><td>Empty-value overwrite</td><td><span class="sev stop">Blocking</span></td><td>Never let an empty field overwrite a populated one. The run's writes are field merges of only what changed.</td></tr>
             </tbody>
           </table>
@@ -549,6 +563,7 @@
 
   function $(id){ return document.getElementById(id); }
   function val(id){ var e=$(id); return e ? e.value.trim() : ""; }
+  function linkedin(){ var e=$("accLinkedin"); return !!(e && e.checked); }
   function esc(s){ return String(s == null ? "" : s); }
 
   /* ---- per-viewer draft (localStorage only) ---- */
@@ -559,6 +574,7 @@
       FIELDS.forEach(function(f){ var e=$(f); if(e) d[f]=e.value; });
       var r = document.querySelector('input[name="disp"]:checked');
       d.disp = r ? r.value : null;
+      d.linkedin = linkedin();
       localStorage.setItem(STORE, JSON.stringify(d));
     }catch(e){}
   }
@@ -569,6 +585,7 @@
       var d = JSON.parse(raw);
       if(d && d.on) KEYS.forEach(function(k){ if(typeof d.on[k]==="boolean") on[k]=d.on[k]; });
       FIELDS.forEach(function(f){ var e=$(f); if(e && typeof d[f]==="string") e.value=d[f]; });
+      if(d && typeof d.linkedin==="boolean"){ var li=$("accLinkedin"); if(li) li.checked=d.linkedin; }
       if(d && d.disp){ var r=$(d.disp==="apollo"?"rApollo":"rManual"); if(r) r.checked=true; }
       return d && d.lastRun || null;
     }catch(e){ return null; }
@@ -588,7 +605,8 @@
       requester: { name: val("reqName") || null, linkedin_url: val("reqLinkedin") || null }
     };
     m.state.account = { required:true, resolved_by:"find_account", name: val("accName") || null,
-                        domain: val("accDomain") || null, crm_account_id: val("accId") || null };
+                        domain: val("accDomain") || null, crm_account_id: val("accId") || null,
+                        source: linkedin() ? "linkedin" : null };
     m.state.account_contacts = on.contacts ? { include:true, written_by:"list_account_contacts", limit: val("contactLimit") } : { include:false, opted_out:true };
     m.state.ledger_quality = on.ledger ? { include:true, written_by:"assess_ledger_quality", quality_floor: val("ledgerFloor") } : { include:false, opted_out:true };
     m.state.website_summary = on.web ? { include:true, written_by:"summarize_page", page_url: val("pageUrl") || null,
@@ -596,7 +614,7 @@
     m.state.warehouse_findings = on.wh ? { include:true, written_by:"store_state sentinel", scope: val("whQuery") || null,
                                            sentinel: val("whSentinel") || "not available" } : { include:false, opted_out:true };
     var r = document.querySelector('input[name="disp"]:checked');
-    m.crm = { disposition: r ? r.value : null };
+    m.crm = { disposition: r ? r.value : null, pre_qual: linkedin() };
     return m;
   }
 
@@ -609,6 +627,7 @@
 
     $("cardAccount").setAttribute("data-filled", hasAccount ? "yes":"no");
     $("cardRequest").setAttribute("data-filled", hasRequest ? "yes":"no");
+    $("liRow").setAttribute("data-on", linkedin() ? "yes":"no");
     [["c-account",hasAccount],["c-account-2",hasAccount],["c-request",hasRequest],["c-request-2",hasRequest]].forEach(function(p){
       var el=$(p[0]); if(!el) return;
       el.textContent = p[1] ? "resolved" : "required";
@@ -872,6 +891,10 @@
   });
   FIELDS.forEach(function(f){ var e=$(f); if(e) e.addEventListener(e.tagName === "SELECT" ? "change" : "input", render); });
   document.querySelectorAll('input[name="disp"]').forEach(function(r){ r.addEventListener("change", render); });
+  $("accLinkedin").addEventListener("change", render);
+  var liTouched = false;
+  $("accLinkedin").addEventListener("click", function(){ liTouched = true; });
+  $("reqText").addEventListener("input", function(){ if(!liTouched && val("reqText")){ $("accLinkedin").checked = true; render(); } });
   $("btnRun").addEventListener("click", run);
   $("btnCopy").addEventListener("click", function(){ copyTo(this, JSON.stringify(manifest(null), null, 2), "Copied"); $("foldPayload").open = true; });
   $("btnCopyInv").addEventListener("click", function(){ copyTo(this, invocationText(), "Copied"); });

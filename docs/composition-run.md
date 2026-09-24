@@ -45,9 +45,9 @@ the page summary and the proposal draft. Everything else is scripts.
 | Step | On the page | In the run |
 |---|---|---|
 | 00 LinkedIn request | request text (required), post URL, requester | `request_text` for the composer; the founder note reads it for pricing asks |
-| 01 Precondition | account name / domain / existing CRM id | `find_account` against `data/master/contacts.json`; an unknown account still runs, with a Note |
+| 01 Precondition | account name / domain / existing CRM id, LinkedIn-source tick (`state.account.source`, `crm.pre_qual`) | `find_account` against `data/master/contacts.json`; an unknown account still runs, with a Note |
 | 02 Optional state | include/skip + settings, as before | opt-outs are recorded in the manifest and the founder note |
-| 03 Disposition | apollo / manual | `manual` mints `crm_<date>_<rand>` with `pending_apollo`; `apollo` gets a HOLD while `account_lists` is empty |
+| 03 Disposition | apollo / manual | `manual` mints `crm_<date>_<rand>` with `pending_apollo`; `apollo` gets a HOLD only if `meta/config.account_lists` is empty at run time |
 | 04 Run | **Run composition** | writes `runs/<id>` in the page's database, fires the routine; the sequence lamps follow `steps` live |
 | 05 Result | note to the founder, proposal, CRM ids, run history | rendered from `runs/<id>` via `onSnapshot` |
 | 06 By hand | the old copy-manifest path | only when the connector is not available in that view |
@@ -69,7 +69,8 @@ CRM dump; tested criterion by criterion in `tests/test_founder_note.py`.
 2. A matched CRM contact already carries a `proposal_ref` (a repeat).
 3. A matched contact is flagged `disqualified` or `removed_from_list`.
 4. A matched contact is at stage `meeting`, `proposal` or `won` (open deal).
-5. Disposition `apollo` while `meta/config.account_lists` is empty.
+5. Disposition `apollo` while `meta/config.account_lists` is empty (the routine reads
+   that setting live and passes `--account-lists-present` when it is not).
 6. The run started inside Mon 06:45–08:15 ET (the sync window).
 7. Any judgement call the composer made (`--composer-flag`): request outside
    the advisory practice, unrealistic deadline, conflict of interest, a
