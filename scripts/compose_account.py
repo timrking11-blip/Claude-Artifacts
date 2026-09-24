@@ -59,6 +59,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from crm import config  # noqa: E402
 from crm.crm_sync import load_crm_dump, pinned, system_activity, utcnow_iso  # noqa: E402
 from crm.founder_note import assess  # noqa: E402
+from crm.guardrails import check_run, credit_spend_allowed  # noqa: E402
 from crm.master import load_master  # noqa: E402
 from crm.schema import normalize_domain  # noqa: E402
 
@@ -345,8 +346,19 @@ def write_prepare(run_dir: Path, manifest: dict[str, Any], result: dict[str, Any
     founder = result["founder"].as_dict()
     _write_json(run_dir / "founder.json", founder)
     acct = result["state"]["account"]
+    spend = credit_spend_allowed(manifest)
     (run_dir / "prompts.md").write_text(
         "# Prompts for run " + run_id + "\n\n"
+        "GUARDRAILS (from the intake form; finalize enforces them and refuses the run on a breach):\n"
+        f"- Domain lock: the prospect is the company at {acct.get('domain') or '(no domain given)'} and nothing else. "
+        "A similarly named company at another domain is not the prospect, whatever a search result says: record it "
+        "under Gaps and use nothing from it.\n"
+        + ("- Credit spend: ALLOWED by the intake form, for the intake domain only.\n" if spend else
+           "- Credit spend: NOT allowed by the intake form. Do not call Apollo organization enrich or any Vibe "
+           "Prospecting enrichment; record apollo and prospecting as \"skipped: credit spend not allowed on the "
+           "intake form\". Free lookups (people search, match-business) are fine.\n")
+        + "- Empty means empty: if nothing is found on the intake domain, the proposal is a not-found note that cites "
+        "only that domain and primary macro sources.\n\n"
         "## 0 · Data sources → data_sources.md + coverage.json\n\n"
         f"Account: {acct.get('name')} ({acct.get('domain') or 'no domain'}).\n"
         "Pull every source that can speak to this account, cheapest first, and surface any credit cost before "
@@ -406,6 +418,8 @@ def coverage_status(value: Any) -> str:
         return "done"
     if text.startswith("none"):
         return "empty"
+    if text.startswith("skip"):
+        return "skipped"
     return "failed"
 
 
@@ -443,13 +457,11 @@ def brief(run_dir: Path, web_research: str | None, web_sources: list[str], websi
 # --------------------------------------------------------------- finalize ----
 
 def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str, proposal_md: str,
-                    founder: dict[str, Any], composer_flags: list[str], now: datetime,
-                    revises: str | None = None) -> dict[str, Any]:
+                    founder: dict[str, Any], composer_flags: list[str], now: datetime) -> dict[str, Any]:
     """Same shape as the agent's write_proposal tool, plus founder_note and run.
 
-    `revises` is the id of an earlier proposal from this run that this one
-    corrects. It gets its own id (notes are append-only, so a correction is a
-    new block that names the one it replaces), and the record says so.
+    One proposal per run, one run per intake-form submission. A changed
+    proposal is a new run started on the intake page, never an edit here.
     """
     missing = missing_sections(proposal_md)
     if missing:
@@ -468,11 +480,14 @@ def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str
     slug = slugify(account.get("name") or account.get("domain") or "account")
     # One id per run: a re-run of the same account on the same day with better
     # research is a new proposal, not a silent no-op against yesterday's draft.
-    pid = "prq_" + hashlib.sha256(
-        f"{slug}|{request_text}|{now.date()}|{run_id}{'|revises=' + revises if revises else ''}".encode()
-    ).hexdigest()[:12]
+    pid = "prq_" + hashlib.sha256(f"{slug}|{request_text}|{now.date()}|{run_id}".encode()).hexdigest()[:12]
     holds = list(founder.get("holds") or []) + [f"Composer: {f}" for f in composer_flags if f.strip()]
     notes = list(founder.get("notes") or [])
+    from crm.guardrails import found_on_intake_domain, urls_in  # local: keeps the module's import list honest
+    intake = normalize_domain(((manifest.get("state") or {}).get("account") or {}).get("domain"))
+    if intake and not found_on_intake_domain(state.get("coverage"), urls_in(state.get("web_research")) + cited, intake):
+        holds.append(f"Nothing was found on {intake} by any source; this is a not-found note. Confirm the domain "
+                     "with the prospect before anything goes out.")
     if state.get("web_research_error") or not state.get("web_sources"):
         notes.append("Web research found no sources; the proposal argues from the request and the ledger alone.")
     labels = dict(DATA_SOURCES)
@@ -492,7 +507,6 @@ def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str
     appendix += [f"- {line}" for line in sync_schedule_lines(now)]
     return {
         "proposal_id": pid,
-        "revises": revises,
         "generated_at": _iso(now),
         "model": os.getenv("ACCOUNT_RESEARCH_CLAUDE_MODEL", "session"),
         "run_id": run_id,
@@ -583,11 +597,12 @@ def plan_account_write(record: dict[str, Any], manifest: dict[str, Any], account
 
 def finalize(run_dir: Path, proposal_md: str, website_summary: str | None, composer_flags: list[str],
              master, docs: dict[str, dict[str, Any]], accounts: dict[str, dict[str, Any]],
-             now: datetime, revise: bool = False) -> dict[str, Any]:
+             now: datetime) -> dict[str, Any]:
     """Validate, build the record, plan every CRM write. Pure apart from reading run_dir.
 
-    With `revise`, the proposal this run already filed (run_final.json) is
-    superseded by a new one that names it.
+    Refuses when a proposal is already filed for this run (run_final.json):
+    a changed proposal is a new run from the intake page. Refuses on any
+    guardrail violation (crm/guardrails.py) before anything is written.
     """
     manifest = json.loads((run_dir / "manifest.json").read_text())
     state = json.loads((run_dir / "state.json").read_text())
@@ -595,16 +610,16 @@ def finalize(run_dir: Path, proposal_md: str, website_summary: str | None, compo
     run_id = run_dir.name
     if website_summary:
         state["website_summary"] = website_summary.strip()
-    revises = None
-    if revise:
-        prior = run_dir / "run_final.json"
-        if not prior.exists():
-            raise GateError("--revise needs a proposal this run already filed (no run_final.json)")
-        revises = json.loads(prior.read_text()).get("proposal_id")
-    record = proposal_record(state, manifest, run_id, proposal_md, founder, composer_flags, now, revises=revises)
-    if revises:
-        record["proposal_markdown"] = (f"_Revision of {revises}; that draft stays above for the record._\n\n"
-                                       + record["proposal_markdown"])
+    prior = run_dir / "run_final.json"
+    if prior.exists():
+        raise GateError(f"run {run_id} already filed {json.loads(prior.read_text()).get('proposal_id')}; "
+                        "a changed proposal is a new run started on the intake page")
+    research = (run_dir / "web_research.md").read_text() if (run_dir / "web_research.md").exists() else state.get("web_research") or ""
+    sources_md = (run_dir / "data_sources.md").read_text() if (run_dir / "data_sources.md").exists() else state.get("firmographics") or ""
+    problems = check_run(manifest, state.get("coverage"), research, sources_md, proposal_md, cited_links(proposal_md))
+    if problems:
+        raise GateError("guardrail: " + " | ".join(problems))
+    record = proposal_record(state, manifest, run_id, proposal_md, founder, composer_flags, now)
     writes, log = push_proposals_to_crm.plan([record], master, docs, now=_iso(now))
     contact_ids = [w["doc_id"] for w in writes]
     account_write = plan_account_write(record, manifest, accounts, contact_ids, now)
@@ -689,7 +704,6 @@ def main(argv: list[str] | None = None) -> int:
     f.add_argument("--proposal", type=Path, required=True, help="the drafted Markdown")
     f.add_argument("--website-summary", type=Path, default=None)
     f.add_argument("--composer-flag", action="append", default=[], help="a judgement-call HOLD line; repeatable")
-    f.add_argument("--revise", action="store_true", help="supersede the proposal this run already filed")
     f.add_argument("--crm-dump", type=Path, required=True)
     f.add_argument("--runs-dir", type=Path, default=config.RUNS_DIR)
     f.add_argument("--proposals-dir", type=Path, default=config.PROPOSALS_DIR)
@@ -737,8 +751,7 @@ def main(argv: list[str] | None = None) -> int:
     accounts = load_crm_dump(args.crm_dump, "accounts")
     master = load_master(args.master)
     summary = args.website_summary.read_text() if args.website_summary else None
-    result = finalize(run_dir, args.proposal.read_text(), summary, args.composer_flag, master, docs, accounts, now,
-                      revise=args.revise)
+    result = finalize(run_dir, args.proposal.read_text(), summary, args.composer_flag, master, docs, accounts, now)
     json_path, md_path = write_proposal_files(result["record"], args.proposals_dir, now)
     writes_path = write_finalize(run_dir, result, args.out_dir / f"compose_{args.run_id}", json_path, md_path, now)
     print(json.dumps({"run_id": args.run_id, "proposal_id": result["record"]["proposal_id"],

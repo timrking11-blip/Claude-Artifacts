@@ -44,7 +44,7 @@ You asked for help planning a second location.
 | Hiring techs | [careers](https://example.com/careers) | Capacity is the constraint. [supported] |
 
 ## Why now: the market and the economy
-Service demand in the region grew in 2026 ([bls](https://bls.example/ces)) [needs stipulation].
+Service demand in the region grew in 2026 ([bls](https://www.bls.gov/ces)) [needs stipulation].
 
 ## The problem in front of Example Co
 1. Service radius caps growth ([site](https://example.com/about)) [needs stipulation]
@@ -219,7 +219,7 @@ def test_finalize_refuses_missing_section_and_money(ledger, dump, tmp_path):
         compose.finalize(run_dir, PROPOSAL + ("word " * 1000), None, [], master, docs, {}, NOW)
     compose.brief(run_dir, "memo", ["https://example.com/careers"], None)
     uncited = PROPOSAL.replace("[careers](https://example.com/careers)", "careers").replace(
-        "([site](https://example.com/about)) ", "").replace("([bls](https://bls.example/ces)) ", "").replace(
+        "([site](https://example.com/about)) ", "").replace("([bls](https://www.bls.gov/ces)) ", "").replace(
         "- https://example.com/careers", "- none")
     with pytest.raises(SystemExit):
         compose.finalize(run_dir, uncited, None, [], master, docs, {}, NOW)
@@ -249,7 +249,7 @@ def test_finalize_plans_contact_note_and_mints_account(ledger, dump, tmp_path):
     assert d["origin"] == "crm" and d["flags"] == ["pending_apollo"] and d["stage"] == "cold"
     assert rec["proposal_id"] in d["notes"] and d["activity"][0]["type"] == "system"
     assert d["proposal_ref"] == rec["proposal_id"] and "source" not in d, "not a LinkedIn lead"
-    assert rec["sources"] == ["https://example.com/careers", "https://bls.example/ces", "https://example.com/about"]
+    assert rec["sources"] == ["https://example.com/careers", "https://www.bls.gov/ces", "https://example.com/about"]
     assert "see contact notes" in d["notes"], "contacts matched -> account gets a pointer, not the text"
     assert set(compose.ACCOUNT_DEFAULTS) <= set(d)
 
@@ -299,7 +299,7 @@ def test_cli_prepare_then_finalize(ledger, dump, tmp_path):
     memo = tmp_path / "memo.md"
     memo.write_text("## Company\nExamples ([site](https://example.com/about)) [supported]")
     cov = tmp_path / "coverage.json"
-    cov.write_text(json.dumps({"apollo": "none: plan", "prospecting": "ok: matched"}))
+    cov.write_text(json.dumps({"apollo": "none: plan", "prospecting": "skipped: credit spend not allowed on the intake form"}))
     rc = compose.main(["brief", "run_t", "--web-research", str(memo), "--coverage", str(cov),
                        "--runs-dir", str(tmp_path / "runs")])
     assert rc == 0 and (tmp_path / "runs" / "run_t" / "proposal_prompt.md").exists()
@@ -311,7 +311,7 @@ def test_cli_prepare_then_finalize(ledger, dump, tmp_path):
     assert rc == 0
     assert (tmp_path / "batch" / "compose_run_t" / "writes.json").exists()
     final = json.loads((tmp_path / "runs" / "run_t" / "run_final.json").read_text())
-    assert final["steps"]["apollo"] == "empty" and final["steps"]["prospecting"] == "done"
+    assert final["steps"]["apollo"] == "empty" and final["steps"]["prospecting"] == "skipped"
     assert final["coverage"]["apollo"] == "none: plan" and len(final["sync_schedule"]) == 4
     rec = json.loads(next((tmp_path / "proposals").glob("*.json")).read_text())
     assert "Sync schedule" in rec["notes_appendix"] and "Mon 28 Sep 2026 11:00 UTC" in rec["notes_appendix"]
@@ -327,10 +327,14 @@ def test_linkedin_prospect_gets_the_proposal_on_its_account(ledger, dump, tmp_pa
     compose.write_prepare(run_dir, m, r, "run_p", NOW)
     compose.brief(run_dir, "", [], None)
     draft = PROPOSAL.replace("Example Co", "Brand New LLC")
+    for u in ("https://example.com/careers", "https://example.com/about"):
+        draft = draft.replace(u, "https://www.fdic.gov/qbp")
+    draft = draft.replace("You asked for help planning a second location.", "What the company does: not found.")
     res = compose.finalize(run_dir, draft, None, [], load_master(ledger), compose.load_crm_dump(dump), {}, NOW)
     rec = res["record"]
     assert rec["lead_source"] == "linkedin" and rec["account"]["prospect"] is True
     assert any("no sources" in n for n in rec["founder_note"]["notes"])
+    assert any("not-found note" in h for h in rec["founder_note"]["holds"])
     assert [w["collection"] for w in res["writes"]] == ["accounts"], "no contacts -> the account only"
     d = res["writes"][0]["data"]
     assert d["source"] == "linkedin" and d["pre_qual"] is True and d["proposal_ref"] == rec["proposal_id"]
@@ -352,23 +356,63 @@ def test_accounts_dump_reads_its_own_versions_file(tmp_path):
     assert accs["acc_1"]["_version"] == 5
 
 
-def test_revise_supersedes_the_runs_filed_proposal(ledger, dump, tmp_path):
+
+def test_second_finalize_of_a_run_is_refused(ledger, dump, tmp_path):
     run_dir = _prepared(ledger, dump, tmp_path)
     docs, master = compose.load_crm_dump(dump), load_master(ledger)
-    with pytest.raises(SystemExit):  # nothing filed yet, nothing to revise
-        compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW, revise=True)
-    first = compose.finalize(run_dir, PROPOSAL, None, ["Identity unconfirmed"], master, docs, {}, NOW)
+    first = compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW)
     jp, mp = compose.write_proposal_files(first["record"], tmp_path / "proposals", NOW)
     compose.write_finalize(run_dir, first, tmp_path / "batch", jp, mp, NOW)
-    # the CRM now carries the first proposal; a plain re-run would write nothing
-    docs["ap_ada"]["notes"] += first["writes"][0]["data"]["notes"]
-    docs["ap_ada"]["proposal_ref"] = first["record"]["proposal_id"]
-    again = compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW)
-    assert [w for w in again["writes"] if w["collection"] == "contacts"] == []
-    rev = compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW, revise=True)
-    r = rev["record"]
-    assert r["revises"] == first["record"]["proposal_id"] and r["proposal_id"] != r["revises"]
-    assert r["proposal_markdown"].startswith("_Revision of " + r["revises"])
-    assert r["founder_note"]["holds"] == [], "the identity hold is gone once the founder confirms"
-    contact = [w for w in rev["writes"] if w["collection"] == "contacts"][0]
-    assert contact["data"]["proposal_ref"] == r["proposal_id"]
+    with pytest.raises(SystemExit):  # a changed proposal is a new run from the intake page
+        compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW)
+
+
+def test_lookalike_domain_in_research_or_citations_is_refused(ledger, dump, tmp_path):
+    run_dir = _prepared(ledger, dump, tmp_path)
+    docs, master = compose.load_crm_dump(dump), load_master(ledger)
+    compose.brief(run_dir, "## Company\nExamples ([site](https://www.exampl.com/about)) [supported]", [], None)
+    with pytest.raises(SystemExit):
+        compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW)
+    compose.brief(run_dir, "## Company\nExamples ([site](https://example.com/about)) [supported]", [], None)
+    bad = PROPOSAL.replace("https://example.com/careers", "https://examplle.com/careers")
+    with pytest.raises(SystemExit):
+        compose.finalize(run_dir, bad, None, [], master, docs, {}, NOW)
+
+
+def test_empty_means_empty(ledger, dump, tmp_path):
+    m = manifest(account={"name": "Brand New LLC", "domain": "brandnew.example", "crm_account_id": None})
+    r = compose.prepare(m, "run_e", compose.load_crm_dump(dump), NOW, fetch=False)
+    run_dir = tmp_path / "runs" / "run_e"
+    compose.write_prepare(run_dir, m, r, "run_e", NOW)
+    compose.brief(run_dir, "## Gaps\nnothing on brandnew.example", [], None,
+                  coverage={"apollo": "none: not in Apollo", "prospecting": "none: no match"})
+    docs, master = compose.load_crm_dump(dump), load_master(ledger)
+    draft = PROPOSAL.replace("Example Co", "Brand New LLC")
+    with pytest.raises(SystemExit):  # cites example.com etc. about a company nothing was found on
+        compose.finalize(run_dir, draft, None, [], master, docs, {}, NOW)
+    ok = draft
+    for u in ("https://example.com/careers", "https://example.com/about"):
+        ok = ok.replace(u, "https://www.fdic.gov/qbp")
+    ok = ok.replace("## What we heard\nYou asked for help planning a second location.",
+                    "## What we heard\nWhat the company does: not found.")
+    res = compose.finalize(run_dir, ok, None, [], master, docs, {}, NOW)
+    assert any("not-found note" in h for h in res["record"]["founder_note"]["holds"])
+    assert res["record"]["founder_note"]["status"] == "needs_founder"
+
+
+def test_credit_spend_needs_the_intake_tick(ledger, dump, tmp_path):
+    run_dir = _prepared(ledger, dump, tmp_path)
+    docs, master = compose.load_crm_dump(dump), load_master(ledger)
+    compose.brief(run_dir, "## Company\nExamples ([site](https://example.com/about)) [supported]", [], None,
+                  coverage={"apollo": "ok: enriched (1 credit)"})
+    with pytest.raises(SystemExit):
+        compose.finalize(run_dir, PROPOSAL, None, [], master, docs, {}, NOW)
+    m = manifest(); m["data_sources"] = {"allow_credit_spend": True}
+    r = compose.prepare(m, "run_c", compose.load_crm_dump(dump), NOW, fetch=False)
+    rd = tmp_path / "runs" / "run_c"
+    compose.write_prepare(rd, m, r, "run_c", NOW)
+    assert "Credit spend: ALLOWED" in (rd / "prompts.md").read_text()
+    assert "NOT allowed" in (run_dir / "prompts.md").read_text()
+    compose.brief(rd, "## Company\nExamples ([site](https://example.com/about)) [supported]", [], None,
+                  coverage={"apollo": "ok: enriched (1 credit)"})
+    assert compose.finalize(rd, PROPOSAL, None, [], master, docs, {}, NOW)["record"]["proposal_id"]

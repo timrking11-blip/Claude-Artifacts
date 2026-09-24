@@ -302,7 +302,7 @@
       <!-- 01 -->
       <section class="step" id="s1">
         <div class="step-head"><span class="step-num">01</span><h3>Precondition</h3></div>
-        <p class="step-desc">Resolved by <code>find_account</code> against the enriched data layer. An account that is not there still runs — the founder note says so — but nothing runs without a name or domain.</p>
+        <p class="step-desc">Resolved by <code>find_account</code> against the enriched data layer. An account that is not there still runs — the founder note says so — but nothing runs without a name or domain. <b>The domain is the specification:</b> the run researches the company at this domain only; a similarly named company at another domain is never used, and when nothing is found here the proposal is a not-found note.</p>
         <div class="card required" id="cardAccount" data-filled="no">
           <div class="card-top">
             <div class="card-id">
@@ -399,6 +399,19 @@
               </select>
             </div>
           </div>
+        </div>
+
+        <div class="card" id="cardSpend" data-on="yes">
+          <div class="card-top">
+            <div class="card-id"><div class="kname">data_sources</div><div class="kmeta">Apollo organization enrich and Vibe Prospecting enrichment cost credits · the run spends none unless this is ticked, and then only on the domain above</div></div>
+          </div>
+          <label class="check" id="spendRow" data-on="no" for="allowSpend">
+            <input type="checkbox" id="allowSpend">
+            <span>
+              <span class="t">Allow credit spend on this account</span>
+              <span class="d">Unticked: free lookups only (Apollo people search, Vibe match). Ticked: enrich the intake domain in Apollo (1 credit if found) and Vibe Prospecting (cost shown first).</span>
+            </span>
+          </label>
         </div>
 
         <div class="card" id="cardWh" data-on="yes">
@@ -578,6 +591,7 @@
       var r = document.querySelector('input[name="disp"]:checked');
       d.disp = r ? r.value : null;
       d.linkedin = linkedin();
+      d.spend = !!($("allowSpend") && $("allowSpend").checked);
       localStorage.setItem(STORE, JSON.stringify(d));
     }catch(e){}
   }
@@ -589,6 +603,7 @@
       if(d && d.on) KEYS.forEach(function(k){ if(typeof d.on[k]==="boolean") on[k]=d.on[k]; });
       FIELDS.forEach(function(f){ var e=$(f); if(e && typeof d[f]==="string") e.value=d[f]; });
       if(d && typeof d.linkedin==="boolean"){ var li=$("accLinkedin"); if(li) li.checked=d.linkedin; }
+      if(d && typeof d.spend==="boolean"){ var sp=$("allowSpend"); if(sp) sp.checked=d.spend; }
       if(d && d.disp){ var r=$(d.disp==="apollo"?"rApollo":"rManual"); if(r) r.checked=true; }
       return d && d.lastRun || null;
     }catch(e){ return null; }
@@ -616,6 +631,8 @@
                                          on_fetch_error: val("fetchFallback"), note:"page_contents and page_url are not read by analysis" } : { include:false, opted_out:true };
     m.state.warehouse_findings = on.wh ? { include:true, written_by:"store_state sentinel", scope: val("whQuery") || null,
                                            sentinel: val("whSentinel") || "not available" } : { include:false, opted_out:true };
+    var sp = $("allowSpend");
+    m.data_sources = { allow_credit_spend: !!(sp && sp.checked) };
     var r = document.querySelector('input[name="disp"]:checked');
     m.crm = { disposition: r ? r.value : null, pre_qual: linkedin() };
     return m;
@@ -631,6 +648,7 @@
     $("cardAccount").setAttribute("data-filled", hasAccount ? "yes":"no");
     $("cardRequest").setAttribute("data-filled", hasRequest ? "yes":"no");
     $("liRow").setAttribute("data-on", linkedin() ? "yes":"no");
+    $("spendRow").setAttribute("data-on", ($("allowSpend") && $("allowSpend").checked) ? "yes":"no");
     [["c-account",hasAccount],["c-account-2",hasAccount],["c-request",hasRequest],["c-request-2",hasRequest]].forEach(function(p){
       var el=$(p[0]); if(!el) return;
       el.textContent = p[1] ? "resolved" : "required";
@@ -895,6 +913,7 @@
   FIELDS.forEach(function(f){ var e=$(f); if(e) e.addEventListener(e.tagName === "SELECT" ? "change" : "input", render); });
   document.querySelectorAll('input[name="disp"]').forEach(function(r){ r.addEventListener("change", render); });
   $("accLinkedin").addEventListener("change", render);
+  $("allowSpend").addEventListener("change", render);
   var liTouched = false;
   $("accLinkedin").addEventListener("click", function(){ liTouched = true; });
   $("reqText").addEventListener("input", function(){ if(!liTouched && val("reqText")){ $("accLinkedin").checked = true; render(); } });

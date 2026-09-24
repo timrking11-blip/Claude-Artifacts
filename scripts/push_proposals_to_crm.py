@@ -52,6 +52,8 @@ def load_proposals(proposals_dir: Path) -> list[dict[str, Any]]:
     out = []
     for path in sorted(proposals_dir.glob("*.json")):
         p = json.loads(path.read_text() or "{}")
+        if p.get("void"):
+            continue  # voided by the founder; never re-applied
         if p.get("proposal_id") and p.get("proposal_markdown"):
             p["_path"] = str(path)
             out.append(p)

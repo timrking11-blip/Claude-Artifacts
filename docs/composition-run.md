@@ -53,6 +53,32 @@ scripts. The research runs on the session's own web tools, so no Anthropic API
 key is needed (the agent package's `web_research` tool, which calls the API
 directly, is the same brief for `adk web` development only).
 
+## Guardrails (the intake form is the specification)
+
+Enforced in code by `crm/guardrails.py` at `finalize`; a breach refuses the
+run before anything is written, and the routine may not loosen a rule to get
+past it.
+
+- **Domain lock.** The prospect is the company at the intake form's domain.
+  A similarly named company at another domain (edit distance of two or less,
+  or one label containing the other, e.g. clarid.ai for claridi.ai) is never
+  used: if one appears in the research, the data-source findings or the
+  proposal's citations, the run is refused.
+- **No credit spend off-form.** Apollo organization enrich and Vibe
+  Prospecting enrichment run only when the intake form's "Allow credit spend"
+  box is ticked, and only for the intake domain. A source that reports data
+  without the tick refuses the run.
+- **Empty means empty.** When no source finds anything on the intake domain,
+  the proposal is a not-found note: it must say "not found", may cite only
+  that domain and primary macro sources (.gov, Federal Reserve banks,
+  BIS/IMF/OECD), and the founder note carries a HOLD to confirm the domain.
+- **One proposal per run.** A filed run cannot be re-finalized; a changed
+  proposal is a new run started on the intake page, so every CRM note traces
+  to one form submission.
+- **Void, never delete.** A proposal found to be wrong is voided with an
+  appended note and `"void": true` on its file; the Monday catch-up never
+  re-applies a void proposal.
+
 ## Order of operations
 
 1. **Intake** — request, account, options, disposition; press Run.
