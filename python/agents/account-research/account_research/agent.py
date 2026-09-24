@@ -11,7 +11,7 @@ from .shared_libraries.callbacks import rate_limit_callback
 from .sub_agents.analysis_agent import AnalysisAgent
 from .sub_agents.prequal_agent import PrequalAgent
 from .sub_agents.research_agent import ResearchAgent
-from .tools.ledger import find_account_tool
+from .tools.ledger import find_account_tool, register_prospect_tool
 from .tools.store_state import store_state_tool
 
 warnings.filterwarnings("ignore", category=UserWarning, module=".*pydantic.*")
@@ -28,7 +28,7 @@ root_agent = Agent(
         "prequalification proposal."
     ),
     instruction=root_agent_prompt.PROMPT,
-    tools=[find_account_tool, store_state_tool],
+    tools=[find_account_tool, register_prospect_tool, store_state_tool],
     sub_agents=[
         ResearchAgent,
         AnalysisAgent,

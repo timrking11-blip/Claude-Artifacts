@@ -18,6 +18,7 @@ mirrored in this repo.
 
   Monday 11:30 UTC   ─── Claude routine:  dump CRM ▶ validate_sync ▶ push_enrichment_to_crm ▶ push_proposals_to_crm
   On demand          ─── adk web: "prequal <account>: <request>"  ──▶  data/proposals/<account>-<date>.{json,md}
+  On push            ─── data/prequal/requests/*.json  ──▶  Actions: prequal-proposal.yml  ──▶  data/proposals/ (committed)
 ```
 
 | Step | Script | Reads | Writes |
@@ -28,7 +29,8 @@ mirrored in this repo.
 | Writeback (opt-in) | `scripts/push_apollo.py` | master | Apollo API |
 | Validate | `scripts/validate_sync.py` | master (+ a CRM dump) | nothing -- exit 1 on an unknown source, duplicate id, bad proposal field, or low join coverage. Runs in CI after every merge. |
 | Enrichment → CRM | `scripts/push_enrichment_to_crm.py` | master + a CRM dump | `data/artifact/crm/enrich_*.json`: fills empty enrichment fields and sets the `proposal_ready` flag; never stage, notes or Apollo-owned fields |
-| Proposal → CRM | `scripts/push_proposals_to_crm.py` | `data/proposals/*.json` + a CRM dump | `data/artifact/crm/proposal_*.json`: appends the proposal to the contact's notes, status `drafted`, idempotent by `proposal_ref` |
+| Prequal proposal | `python/agents/account-research/scripts/run_prequal.py` (Actions: `prequal-proposal.yml`) | a queued request + ledger + the account's site + the open web | `data/proposals/<account>-<date>.{json,md}`: short SMI-format proposal, cited, no prices |
+| Proposal → CRM | `scripts/push_proposals_to_crm.py` | `data/proposals/*.json` + a CRM dump (contacts, and `accounts/` for prospects) | `data/artifact/crm/proposal_*.json`: appends the proposal to the contact's notes, status `drafted`, idempotent by `proposal_ref`; a prospect with no contacts gets it on its account (LinkedIn leads: `source` + `pre_qual` when unset) |
 | Artifact → repo *(retired ledger)* | `scripts/import_artifact_edits.py` | a db dump | master |
 | Repo → artifact *(retired ledger)* | `scripts/export_artifact_batch.py` | master | `data/artifact/batch_*.json` |
 

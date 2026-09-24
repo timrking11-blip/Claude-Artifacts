@@ -17,6 +17,12 @@ Contacts are found by the Apollo ids the proposal file carries, then by the
 master contact ids it carries, then -- for a request that named a company
 but no person -- by company domain against the CRM's website field.
 
+A proposal for a prospect with no CRM contacts at all (a LinkedIn lead the
+agents researched from the open web) goes on the matching CRM *account*
+instead, found by domain in <dump>/accounts/. The same append-only notes rule
+applies; a LinkedIn-sourced account also gets source "linkedin" and its
+pre-qual box ticked when neither is set yet. Account stage is never touched.
+
 Dry-run by default. `--write` emits data/artifact/crm/proposal_*.json.
 """
 
@@ -79,6 +85,31 @@ def targets_for(proposal: dict[str, Any], master: list[Contact], docs: dict[str,
     return found
 
 
+def load_accounts_dump(dump_dir: Path) -> dict[str, dict[str, Any]]:
+    """<dump>/accounts/<doc_id>.json, pinned from <dump>/versions.json like contacts."""
+    acc_dir = dump_dir / "accounts"
+    if not acc_dir.is_dir():
+        return {}
+    vpath = dump_dir / "versions.json"
+    versions = json.loads(vpath.read_text() or "{}") if vpath.exists() else {}
+    docs: dict[str, dict[str, Any]] = {}
+    for path in sorted(acc_dir.glob("*.json")):
+        doc = json.loads(path.read_text() or "{}")
+        doc = doc.get("data", doc) if isinstance(doc.get("data"), dict) else doc
+        if isinstance(versions.get(path.stem), int):
+            doc["_version"] = versions[path.stem]
+        docs[path.stem] = doc
+    return docs
+
+
+def account_targets(proposal: dict[str, Any], accounts: dict[str, dict]) -> list[str]:
+    domain = normalize_domain((proposal.get("account") or {}).get("domain"))
+    if not domain:
+        return []
+    return [doc_id for doc_id, a in accounts.items()
+            if normalize_domain(a.get("domain")) == domain or normalize_domain(a.get("website")) == domain]
+
+
 def first_line(text: str | None, limit: int = 120) -> str:
     for line in (text or "").splitlines():
         line = line.strip()
@@ -88,7 +119,8 @@ def first_line(text: str | None, limit: int = 120) -> str:
 
 
 def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str, dict],
-         now: str | None = None) -> tuple[list[dict[str, Any]], list[str]]:
+         now: str | None = None, accounts: dict[str, dict] | None = None,
+         ) -> tuple[list[dict[str, Any]], list[str]]:
     """Updates to make, plus a line per proposal saying what happened. Pure."""
     now = now or utcnow_iso()
     date = now[:10]
@@ -98,7 +130,31 @@ def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str,
         pid = p["proposal_id"]
         ids = targets_for(p, master, docs)
         if not ids:
-            log.append(f"{pid}: no CRM contact matched (account {p.get('account', {}).get('name')!r}) -- nothing written")
+            acc_ids = account_targets(p, accounts or {})
+            if not acc_ids:
+                log.append(f"{pid}: no CRM contact or account matched (account {p.get('account', {}).get('name')!r}) -- nothing written")
+                continue
+            done = 0
+            for acc_id in acc_ids:
+                acc = (accounts or {})[acc_id]
+                if acc.get("proposal_ref") == pid:
+                    continue
+                block = NOTES_HEADER.format(date=date, pid=pid) + "\n" + p["proposal_markdown"].strip()
+                existing = (acc.get("notes") or "").rstrip()
+                data = {
+                    "notes": (existing + "\n\n" + block) if existing else block,
+                    "proposal_ref": pid,
+                    "updated_at": now,
+                    "activity": system_activity(acc.get("activity"), f"Prequalification proposal drafted ({pid})", ts=now),
+                }
+                if (p.get("lead_source") or "").lower() == "linkedin":
+                    if not acc.get("source"):
+                        data["source"] = "linkedin"
+                    if "pre_qual" not in acc:
+                        data["pre_qual"] = True
+                writes.append(pinned(acc, {"op": "update", "collection": "accounts", "doc_id": acc_id, "data": data}))
+                done += 1
+            log.append(f"{pid}: no CRM contact; {done} account(s) updated, {len(acc_ids) - done} already carried it")
             continue
         applied = skipped = 0
         for doc_id in ids:
@@ -142,7 +198,8 @@ def main() -> int:
         return 0
     master = load_master(args.master)
     docs = load_crm_dump(args.crm_dump)
-    writes, log = plan(proposals, master, docs)
+    accounts = load_accounts_dump(args.crm_dump)
+    writes, log = plan(proposals, master, docs, accounts=accounts)
     for line in log:
         print(f"  {line}")
     if not writes:

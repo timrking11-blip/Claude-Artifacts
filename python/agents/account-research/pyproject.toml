@@ -5,7 +5,7 @@ description = "Account Research agent: account briefs from the CRM master ledger
 requires-python = ">=3.11"
 dependencies = [
     "absl-py>=2.2.1",
-    "anthropic[vertex]>=1.6",
+    "anthropic[vertex]>=1.8",
     "google-adk>=1.31.0",
     "mcp>=1.0",
     "google-cloud-bigquery>=3.30.0",

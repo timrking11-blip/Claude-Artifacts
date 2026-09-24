@@ -9,6 +9,7 @@ from ..tools.fetch_page import fetch_page_tool
 from ..tools.ledger import assess_ledger_quality_tool, list_account_contacts_tool
 from ..tools.mcp_toolsets import google_cloud_toolsets
 from ..tools.store_state import store_state_tool
+from ..tools.web_research import web_research_tool
 from . import research_agent_prompt
 from .summarize_page_agent import SummarizePageAgent
 
@@ -26,6 +27,9 @@ ResearchAgent = Agent(
         assess_ledger_quality_tool,
         fetch_page_tool,
         AgentTool(SummarizePageAgent),
+        # Outward research: Claude's server-side web search + fetch, starting
+        # from the account's own site. Needs ANTHROPIC_API_KEY (or an ant profile).
+        web_research_tool,
         # Google Cloud MCP servers (BigQuery, Agent Registry). Empty unless
         # ACCOUNT_RESEARCH_ENABLE_MCP=1 and credentials are available.
         *google_cloud_toolsets(),
