@@ -45,6 +45,8 @@ CHANGELOG = DATA_DIR / "CHANGELOG.md"
 
 APOLLO_STAGING = STAGING_DIR / "apollo.json"
 EXPLORIUM_STAGING = STAGING_DIR / "explorium.json"
+#: Optional and hand-staged. No pull script writes this -- see merge_master.py.
+LINKEDIN_STAGING = STAGING_DIR / "linkedin.json"
 
 # --- Sync tunables ---------------------------------------------------------
 

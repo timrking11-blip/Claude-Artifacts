@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from crm import config
 from crm.master import load_master, save_master, merge_all, MergeReport
-from crm.schema import Contact, SOURCE_APOLLO, SOURCE_EXPLORIUM, utcnow
+from crm.schema import Contact, SOURCE_APOLLO, SOURCE_EXPLORIUM, SOURCE_LINKEDIN, utcnow
 
 log = logging.getLogger("merge_master")
 
@@ -84,10 +84,17 @@ def main() -> int:
     reports: list[tuple[str, MergeReport]] = []
     # Apollo first: it is the system of record for who is in the CRM at all.
     # Explorium second: it enriches whatever Apollo established.
-    for source, path in (
-        (SOURCE_APOLLO, config.APOLLO_STAGING),
-        (SOURCE_EXPLORIUM, config.EXPLORIUM_STAGING),
+    # LinkedIn last and OPTIONAL: there is no automated LinkedIn pull (scraping
+    # it breaches their terms), so this file only exists when someone has
+    # staged an export by hand. Absent is the normal case, so it is skipped
+    # without the "does not exist" warning the required sources earn.
+    for source, path, optional in (
+        (SOURCE_APOLLO, config.APOLLO_STAGING, False),
+        (SOURCE_EXPLORIUM, config.EXPLORIUM_STAGING, False),
+        (SOURCE_LINKEDIN, config.LINKEDIN_STAGING, True),
     ):
+        if optional and not path.exists():
+            continue
         incoming, observed_at = load_staging(path)
         if not incoming:
             continue
@@ -97,7 +104,7 @@ def main() -> int:
 
     if not reports:
         log.error(
-            "no staged data from either source -- both pulls must have failed. "
+            "no staged data from any required source -- both pulls must have failed. "
             "Refusing to rewrite master from nothing."
         )
         return 1
