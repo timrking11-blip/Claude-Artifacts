@@ -257,6 +257,7 @@ data/runs/<id>/               what each Intake-page composition run saw and prod
 docs/composition-run.md       the one-button flow: page → routine → scripts → CRM
 artifact/intake.html          source of the Account Composition Intake page (v2, one button)
 artifact/crm.html             the published ledger page
-artifact/crm-system.html      the CRM System page (Leads Pipeline, Last runs strip), https://claude.ai/artifact/8GigYGeoefKqxEptmeCHWG
+artifact/crm-system.html      the CRM System page (pipeline board, Last runs strip, archetype and segment pickers), https://claude.ai/artifact/8GigYGeoefKqxEptmeCHWG
+artifact/governance-contract.html  the Governance Contract C1-C8 page, https://claude.ai/artifact/RwVUhasaiPKMKd8BN2FaDB
 .github/workflows/            weekly schedule
 ```
