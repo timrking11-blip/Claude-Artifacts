@@ -21,6 +21,10 @@ on:
         default: master
         type: choice
         options: [master, apollo]
+      allow_created:
+        description: "Apply a held run: the exact created count from the CRM page's Last runs line"
+        required: false
+        type: string
       writeback:
         description: "Push master-resolved fields back to Apollo"
         required: false
@@ -165,6 +169,10 @@ jobs:
       - name: Run tests
         run: pip install -q pytest && python -m pytest tests -q
       - name: Merge
+        # Holds instead of writing master when a run would create more than
+        # crm.runlog.HOLD_OVER contacts; allow_created applies exactly that count.
+        env:
+          ALLOW_CREATED: ${{ inputs.allow_created }}
         run: python scripts/merge_master.py
       # Refuse to commit a master that names an unknown source or carries a
       # duplicate identity. Master-only here (no CRM dump in CI); the Monday
@@ -175,7 +183,7 @@ jobs:
         run: |
           git config user.name "crm-sync[bot]"
           git config user.email "crm-sync[bot]@users.noreply.github.com"
-          git add data/master data/CHANGELOG.md
+          git add data/master data/CHANGELOG.md data/runlog
           if git diff --cached --quiet; then
             echo "No changes to master this week."
           else
@@ -208,3 +216,13 @@ jobs:
         with:
           python-version: "3.11"
       - run: python scripts/push_apollo.py --apply
+      - name: Commit the run line
+        if: ${{ always() }}
+        run: |
+          git config user.name "crm-sync[bot]"
+          git config user.email "crm-sync[bot]@users.noreply.github.com"
+          git add data/runlog
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(crm): Apollo writeback run line $(date -u +%Y-%m-%d)"
+            git push
+          fi

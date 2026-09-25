@@ -58,7 +58,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from crm import config  # noqa: E402
+from crm import config, runlog  # noqa: E402
 from crm.crm_sync import load_crm_dump, pinned, system_activity, utcnow_iso  # noqa: E402
 from crm.guardrails import check_run, credit_spend_allowed, found_on_intake_domain, urls_in  # noqa: E402
 from crm.master import load_master  # noqa: E402
@@ -668,7 +668,25 @@ def finalize(run_dir: Path, proposal_md: str, website_summary: str | None, compo
     if account_write:
         writes.append(account_write)
     return {"record": record, "state": state, "writes": writes, "log": log, "contact_ids": contact_ids,
-            "account_id": account_write["doc_id"] if account_write else None}
+            "account_id": account_write["doc_id"] if account_write else None,
+            "runlog": run_line(record, contact_ids, account_write, now)}
+
+
+def run_line(record: dict[str, Any], contact_ids: list[str], account_write: dict[str, Any] | None,
+             now: datetime) -> dict[str, Any]:
+    """The run's one line for the CRM page's Last runs strip (crm/runlog.py)."""
+    created = 1 if account_write and account_write["op"] == "set" else 0
+    updated = len(contact_ids) + (1 if account_write and account_write["op"] == "update" else 0)
+    review = record["review"]
+    parts = [f"{record['account'].get('name') or record['account'].get('domain')}: proposal {record['proposal_id']}"]
+    if created:
+        parts.append("account created")
+    if updated:
+        parts.append(f"{updated} record(s) got the note")
+    parts.append(f"review {review['status'].replace('_', ' ')}"
+                 + (f" ({len(review['holds'])} HOLD)" if review.get("holds") else ""))
+    names = [record["account"].get("name") or ""] if created else []
+    return runlog.entry("Composition run", ", ".join(parts), created, updated, now, created_names=names)
 
 
 def write_finalize(run_dir: Path, result: dict[str, Any], batch_dir: Path, json_path: Path, md_path: Path,
@@ -685,6 +703,12 @@ def write_finalize(run_dir: Path, result: dict[str, Any], batch_dir: Path, json_
         if "if_version" in w:
             entry["if_version"] = w["if_version"]
         entries.append(entry)
+    line = result.get("runlog")
+    if line and entries:
+        # Only a run that writes records gets a line; it rides in the same batch.
+        doc_path = batch_dir / f"{runlog.COLLECTION}__{line['id']}.json"
+        _write_json(doc_path, line)
+        entries.append({"op": "set", "collection": runlog.COLLECTION, "doc_id": line["id"], "file_path": str(doc_path)})
     writes_path = batch_dir / "writes.json"
     _write_json(writes_path, entries)
     record = result["record"]
@@ -708,6 +732,7 @@ def write_finalize(run_dir: Path, result: dict[str, Any], batch_dir: Path, json_
         "sync_schedule": sync_schedule_lines(now),
         "proposal_markdown": record["proposal_markdown"],
         "proposal_path": str(json_path.relative_to(ROOT)) if json_path.is_relative_to(ROOT) else str(json_path),
+        "run_line": (result.get("runlog") or {}).get("line"),
         "crm": {"contact_ids": result["contact_ids"], "account_id": result["account_id"],
                 "writes_planned": len(entries)},
         "log": result["log"],

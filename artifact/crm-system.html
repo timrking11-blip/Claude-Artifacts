@@ -1,0 +1,782 @@
+<title>CRM System</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#F2F4F6;--surface:#FFFFFF;--surface2:#E9EDF1;--surface3:#DFE5EB;--ink:#182028;--muted:#5C6B78;--line:#D5DCE3;--line2:#E6EBF0;
+  --accent:#1E5AA0;--accent-ink:#FFFFFF;--accent-soft:#E3ECF7;
+  --ok:#1D7A55;--ok-soft:#DFF2E8;--warn:#9A6A12;--warn-soft:#F8ECCF;--bad:#A83A3A;--bad-soft:#F6DFDF;--pend:#6B7682;--pend-soft:#E6EAEE;
+  --s-new:#6B7682;--s-contacted:#1E5AA0;--s-replied:#0E7C86;--s-meeting:#7A4EA6;--s-proposal:#B7791F;--s-won:#1D7A55;--s-lost:#A83A3A;
+  --a-cold:#6B7682;--a-warm:#B7791F;--a-engaged:#1E5AA0;--a-customer:#1D7A55;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;--body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;--mono:"IBM Plex Mono",Menlo,Consolas,monospace;
+  --shadow:0 6px 24px rgba(20,30,40,.14);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ground:#0F1418;--surface:#171D24;--surface2:#1F272F;--surface3:#28323C;--ink:#E4EAF0;--muted:#94A1AE;--line:#2A343E;--line2:#232C35;
+  --accent:#6CA3E8;--accent-ink:#0F1418;--accent-soft:#1A2A3E;
+  --ok:#5CC493;--ok-soft:#173225;--warn:#E0B24E;--warn-soft:#3A2E12;--bad:#E07A7A;--bad-soft:#3B1D1D;--pend:#8B96A2;--pend-soft:#242C34;
+  --s-new:#8B96A2;--s-contacted:#6CA3E8;--s-replied:#4FB8C2;--s-meeting:#B48BE0;--s-proposal:#E0B24E;--s-won:#5CC493;--s-lost:#E07A7A;
+  --a-cold:#8B96A2;--a-warm:#E0B24E;--a-engaged:#6CA3E8;--a-customer:#5CC493;
+  --shadow:0 8px 28px rgba(0,0,0,.5);
+}}
+:root[data-theme="dark"]{
+  --ground:#0F1418;--surface:#171D24;--surface2:#1F272F;--surface3:#28323C;--ink:#E4EAF0;--muted:#94A1AE;--line:#2A343E;--line2:#232C35;
+  --accent:#6CA3E8;--accent-ink:#0F1418;--accent-soft:#1A2A3E;
+  --ok:#5CC493;--ok-soft:#173225;--warn:#E0B24E;--warn-soft:#3A2E12;--bad:#E07A7A;--bad-soft:#3B1D1D;--pend:#8B96A2;--pend-soft:#242C34;
+  --s-new:#8B96A2;--s-contacted:#6CA3E8;--s-replied:#4FB8C2;--s-meeting:#B48BE0;--s-proposal:#E0B24E;--s-won:#5CC493;--s-lost:#E07A7A;
+  --a-cold:#8B96A2;--a-warm:#E0B24E;--a-engaged:#6CA3E8;--a-customer:#5CC493;
+  --shadow:0 8px 28px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.45;margin:0}
+.wrap{max-width:1400px;margin:0 auto;padding-inline:20px;padding-block:18px 40px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 24px;margin-bottom:14px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:28px;line-height:1.05;margin:4px 0 0;letter-spacing:-.01em;text-wrap:balance}
+.sync{font-size:12px;color:var(--muted);margin-top:6px}
+.sync b{color:var(--ink);font-weight:500}
+.sync button{background:none;border:0;color:var(--accent);font:inherit;cursor:pointer;padding:0;text-decoration:underline dotted}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:14px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 12px}
+.tile .n{font-family:var(--display);font-size:24px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.tile .l{font-size:11.5px;color:var(--muted);margin-top:3px}
+.tile.due .n{color:var(--bad)} .tile.pipe .n{color:var(--accent)} .tile.won .n{color:var(--ok)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-weight:500;padding:7px 14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+input,select,textarea,button{font:inherit;color:inherit}
+input[type=search],input[type=text],input[type=date],input[type=number],select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 10px;color:var(--ink);width:100%}
+input[type=search]{flex:1 1 220px;min-width:160px;width:auto}
+.bar select{width:auto}
+:where(button,input,select,textarea,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.count{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:auto}
+.banner{background:var(--warn-soft);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);border-radius:6px;padding:8px 12px;font-size:13px;margin-bottom:12px}
+/* board */
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,1fr);gap:10px;overflow-x:auto;padding-bottom:8px}
+.col{background:var(--surface2);border-radius:8px;min-height:200px;display:flex;flex-direction:column}
+.col.over{outline:2px dashed var(--accent);outline-offset:-2px}
+.colhead{display:flex;align-items:center;gap:8px;padding:10px 12px 8px;border-bottom:2px solid var(--stage,var(--line))}
+.colhead .dot{width:9px;height:9px;border-radius:50%;background:var(--stage)}
+.colhead h2{font-family:var(--display);font-size:15px;font-weight:600;margin:0;flex:1}
+.colhead .cnt{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.colhead .sum{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.cards{display:flex;flex-direction:column;gap:8px;padding:10px;flex:1}
+.card{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--stage);border-radius:6px;padding:9px 10px;cursor:pointer;transition:box-shadow .12s}
+.card:hover{box-shadow:0 2px 10px rgba(20,30,40,.12)}
+.card.dragging{opacity:.5}
+.card .cn{font-weight:600;line-height:1.2}
+.card .cc{font-family:var(--display);font-size:13.5px;color:var(--muted);margin-top:1px}
+.card .ct{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .meta{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;margin-top:7px;font-size:11.5px;color:var(--muted)}
+.card .meta .mono{font-family:var(--mono)}
+.pill{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:.03em;padding:1px 6px;border-radius:999px;white-space:nowrap;line-height:1.5}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.pend{background:var(--pend-soft);color:var(--pend)} .pill.acc{background:var(--accent-soft);color:var(--accent)}
+.pill.stage{color:#fff;background:var(--stage)}
+/* table */
+.tblwrap{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:1000px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line2);vertical-align:top}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--surface2);position:sticky;top:0;white-space:nowrap;cursor:pointer;user-select:none}
+th .dir{opacity:.45;font-family:var(--mono);margin-left:4px} th[aria-sort] .dir{opacity:1;color:var(--accent)}
+tbody tr{cursor:pointer} tbody tr:hover td{background:color-mix(in srgb,var(--accent-soft) 45%,transparent)}
+td.name{font-weight:600;min-width:150px} td.name small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+td.co{font-family:var(--display);font-weight:600;font-size:14.5px;min-width:150px}
+td.mono{font-family:var(--mono);font-size:12px;overflow-wrap:anywhere}
+td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.dash{color:var(--muted)}
+.due{color:var(--bad);font-weight:600}
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(10,15,20,.35);z-index:20}
+.drawer{position:fixed;top:env(safe-area-inset-top,0px);right:0;bottom:0;width:min(560px,100%);background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow);z-index:21;display:flex;flex-direction:column}
+.dhead{padding:16px 18px 12px;border-bottom:1px solid var(--line2);display:flex;gap:12px;align-items:flex-start}
+.dhead h2{font-family:var(--display);font-size:22px;font-weight:700;margin:0;line-height:1.1}
+.dhead .sub{color:var(--muted);font-size:13px;margin-top:3px}
+.dhead .x{margin-left:auto;background:var(--surface2);border:0;border-radius:6px;width:32px;height:32px;cursor:pointer;font-size:18px;line-height:1;color:var(--muted)}
+.dbody{padding:14px 18px 24px;overflow-y:auto;flex:1;display:grid;gap:14px}
+.sec{display:grid;gap:8px}
+.sec h3{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:600}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid2 .full{grid-column:1/-1}
+.field label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px}
+.contact{display:grid;gap:4px;font-size:13px}
+.contact a{color:var(--accent);text-decoration:none} .contact a:hover{text-decoration:underline}
+.contact .k{color:var(--muted);display:inline-block;width:72px;font-size:12px}
+.kv{font-size:12.5px;color:var(--muted)}
+.log{display:grid;gap:6px}
+.logrow{display:grid;grid-template-columns:auto 1fr;gap:8px;font-size:12.5px;padding:6px 8px;background:var(--surface2);border-radius:5px}
+.logrow .ts{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.logrow .ty{font-weight:600;text-transform:capitalize}
+.addlog{display:grid;grid-template-columns:auto 1fr auto;gap:6px}
+.addlog select{width:auto}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:6px;padding:7px 12px;font-weight:600;cursor:pointer}
+.btn.ghost{background:var(--surface2);color:var(--ink)}
+.saved{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
+.acclist{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:10px}
+.acard{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--astage);border-radius:6px;padding:12px 14px;display:grid;gap:8px;cursor:pointer}
+.acard:hover{box-shadow:0 2px 10px rgba(20,30,40,.12)}
+.ahead{display:flex;gap:10px;align-items:flex-start}
+.alogo{width:34px;height:34px;border-radius:5px;background:var(--accent-soft);color:var(--accent);flex:none;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.02em}
+.aname{font-family:var(--display);font-size:17px;font-weight:600;line-height:1.15;flex:1;min-width:0}
+.aname small{display:block;font-family:var(--mono);font-size:11px;font-weight:400;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.afacts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.afact{background:var(--surface2);border-radius:5px;padding:5px 7px}
+.afact .k{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block}
+.afact .v{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.adesc{font-size:12.5px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.apeople{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:11px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.chip.none{background:var(--pend-soft);color:var(--pend)}
+.kwrap{display:flex;flex-wrap:wrap;gap:4px}
+.kw{font-size:10.5px;background:var(--surface2);color:var(--muted);border-radius:3px;padding:1px 6px}
+.form3{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form3 .full{grid-column:1/-1}
+.actions{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.btn.danger{background:var(--bad-soft);color:var(--bad)}
+.btn.danger:hover{background:var(--bad);color:#fff}
+.dangerzone{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line2);padding-top:12px}
+.dangerzone .kv{flex:1;min-width:160px}
+.err{color:var(--bad);font-size:12.5px}
+.pq{display:flex;gap:9px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface2);cursor:pointer;font-size:13px;font-weight:600}
+.pq input{width:16px;height:16px;margin:0;accent-color:var(--accent);flex:none}
+.pq .kv{font-weight:400;margin-left:auto}
+.stagepick{display:flex;flex-wrap:wrap;gap:5px}
+.stagepick button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--muted)}
+.stagepick button[aria-pressed="true"]{background:var(--stage);border-color:var(--stage);color:#fff}
+/* changelog modal */
+.clog{max-width:640px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:14px}
+.clog h3{margin:0 0 8px;font-family:var(--display);font-size:16px}
+.clog .row{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:12.5px;padding:5px 0;border-top:1px solid var(--line2)}
+.clog .ts{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+/* last runs: one line per run that created or changed records */
+.runs{background:var(--surface);border:1px solid var(--line);border-radius:6px;margin-bottom:14px;overflow:hidden}
+.runs-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:8px 12px;border-bottom:1px solid var(--line2)}
+.runs-h h2{font-family:var(--display);font-size:15px;font-weight:600;margin:0}
+.runs-h .kv{margin-left:auto}
+.rl{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:start;padding:7px 12px;border-top:1px solid var(--line2);font-size:13px}
+.rl:first-child{border-top:0}
+.rl .ts{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap;padding-top:2px}
+.rl .txt{min-width:0;overflow-wrap:anywhere}
+.rl.held{background:var(--warn-soft);box-shadow:inset 3px 0 0 var(--warn)}
+.rl .more{grid-column:2/-1;display:grid;gap:6px;padding-bottom:3px}
+.rl .names{font-size:12.5px}
+.rl .chk{font-size:12.5px;color:var(--muted)}
+.rl .chk b{color:var(--warn);font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.06em;margin-right:6px}
+.rl .confirm{display:grid;grid-template-columns:1fr auto auto;gap:6px}
+.rl .confirm .btn:disabled{opacity:.5;cursor:not-allowed}
+@media (max-width:720px){.rl{grid-template-columns:1fr auto}.rl .ts{grid-column:1/-1}.rl .more{grid-column:1/-1}.rl .confirm{grid-template-columns:1fr}}
+footer{margin-top:22px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+footer a{color:var(--accent)}
+.empty{padding:24px;text-align:center;color:var(--muted);font-size:13px}
+@media (max-width:720px){ .grid2{grid-template-columns:1fr} h1{font-size:24px} .board{grid-auto-columns:minmax(210px,1fr)} }
+@media (prefers-reduced-motion:reduce){ .card{transition:none} }
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div>
+    <div class="eyebrow">CRM · synced from Apollo.io every Monday</div>
+    <h1>Leads Pipeline</h1>
+    <div class="sync" id="syncline">Loading…</div>
+  </div>
+  <div class="seg" role="group" aria-label="View">
+    <button id="v-board" aria-pressed="true">Board</button>
+    <button id="v-table" aria-pressed="false">Table</button>
+    <button id="v-accounts" aria-pressed="false">Accounts</button>
+  </div>
+</header>
+
+<section id="runs" class="runs" aria-label="Last runs" hidden>
+  <div class="runs-h"><h2>Last runs</h2><span class="kv" id="runs-sub"></span></div>
+  <div id="runs-list"></div>
+</section>
+
+<div id="banner" class="banner" hidden></div>
+<div class="tiles" id="tiles"></div>
+
+<div class="bar">
+  <input type="search" id="q" placeholder="Search name, company, title, notes…" aria-label="Search">
+  <select id="f-seg" aria-label="Filter by list"><option value="">All lists</option></select>
+  <select id="f-stage" aria-label="Filter by stage"><option value="">All stages</option></select>
+  <select id="f-due" aria-label="Filter by follow-up"><option value="">Any follow-up</option><option value="overdue">Overdue</option><option value="week">Due this week</option><option value="none">No next step</option></select>
+  <button class="btn" id="btn-new" type="button">+ New contact</button>
+  <button class="btn" id="btn-newacct" type="button" hidden>+ New account</button>
+  <span class="count" id="count"></span>
+</div>
+
+<div id="clog" class="clog" hidden></div>
+
+<section id="board" class="board" aria-label="Pipeline board"></section>
+
+<section id="table" hidden>
+  <div class="tblwrap"><table>
+    <thead><tr>
+      <th data-k="name">Contact<span class="dir">↕</span></th>
+      <th data-k="company">Company<span class="dir">↕</span></th>
+      <th data-k="stage">Stage<span class="dir">↕</span></th>
+      <th data-k="email">Email<span class="dir">↕</span></th>
+      <th data-k="mobile">Mobile<span class="dir">↕</span></th>
+      <th data-k="next_date">Next step<span class="dir">↕</span></th>
+      <th data-k="deal_value">Value<span class="dir">↕</span></th>
+      <th data-k="product">Product<span class="dir">↕</span></th>
+      <th data-k="updated_at">Updated<span class="dir">↕</span></th>
+    </tr></thead>
+    <tbody id="tb"></tbody>
+  </table></div>
+</section>
+
+<section id="accounts" hidden aria-label="Accounts">
+  <div class="acclist" id="al"></div>
+</section>
+
+<footer>
+  Records are owned by this page. The Monday sync pulls every Apollo list registered for this CRM and updates names, titles, emails, phones and list membership; stage, notes, next steps, deal value and activity are never overwritten by the sync. Contacts and accounts dropped from Apollo are flagged, not deleted.
+</footer>
+</div>
+
+<div id="drawer-root"></div>
+
+<script>
+(function(){
+const STAGES=[
+ ["new","New"],["contacted","Contacted"],["replied","Replied"],["meeting","Meeting"],["proposal","Proposal"],["won","Won"],["lost","Lost"]];
+const SLABEL=Object.fromEntries(STAGES);
+const PRODUCTS=["Yearbook — full page","Yearbook — half page","Yearbook — spread","Hospitality / suite","Digital / social","Bundle","Other"];
+const LOGTYPES=["call","email","linkedin","meeting","note"];
+const PSTATUS=[["none","—"],["drafted","Drafted"],["sent","Sent"],["in_discussion","In discussion"],["accepted","Accepted"],["declined","Declined"]];
+const PSLABEL=Object.fromEntries(PSTATUS);
+
+let db=null, docs=new Map(), accts=new Map(), view="board", sortK="updated_at", sortDir=-1, openId=null, unsub=null, readOnly=false;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money=n=>n?('$'+Number(n).toLocaleString('en-US')):'';
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtTs=ts=>{if(!ts)return '';const d=new Date(ts);return isNaN(d)?ts:d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})};
+const fmtD=s=>{if(!s)return '';const d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString('en-US',{month:'short',day:'numeric'})};
+const isLi=r=>String(r.source||'').toLowerCase()==='linkedin';
+const preQual=r=>typeof r.pre_qual==='boolean'?r.pre_qual:isLi(r);
+function pqBox(id,r){return `<label class="pq" for="${id}"><input type="checkbox" id="${id}"${preQual(r)?' checked':''}${readOnly?' disabled':''}> Pre-qual<span class="kv">${isLi(r)?'LinkedIn source · on by default':'Proposal phase'}</span></label>`}
+function dueState(r){if(!r.next_date)return '';const t=today();if(r.next_date<t)return 'overdue';const wk=new Date(Date.now()+7*864e5).toISOString().slice(0,10);return r.next_date<=wk?'week':'later'}
+
+// ---------- rendering ----------
+function all(){return [...docs.values()]}
+function filtered(){
+  const s=$('q').value.trim().toLowerCase(), st=$('f-stage').value, du=$('f-due').value, sg=$('f-seg').value;
+  return all().filter(r=>{
+    if(st&&r.stage!==st)return false;
+    if(sg&&(r.segment||'')!==sg)return false;
+    if(du==='none'){if(r.next_step||r.next_date)return false}else if(du){if(dueState(r)!==du)return false}
+    if(s){const hay=[r.name,r.company,r.title,r.notes,r.next_step,r.product,r.email].join(' ').toLowerCase();if(!hay.includes(s))return false}
+    return true;
+  });
+}
+function renderTiles(){
+  const rs=all();
+  const open=rs.filter(r=>!['won','lost'].includes(r.stage));
+  const pipe=open.reduce((a,r)=>a+(+r.deal_value||0),0);
+  const won=rs.filter(r=>r.stage==='won').reduce((a,r)=>a+(+r.deal_value||0),0);
+  const overdue=rs.filter(r=>dueState(r)==='overdue').length;
+  const week=rs.filter(r=>dueState(r)==='week').length;
+  const touched=rs.filter(r=>(r.activity||[]).some(a=>a.type!=='system')).length;
+  const t=[[rs.length,'Contacts',''],[accts.size,'Accounts',''],[open.length,'Open',''],[money(pipe)||'$0','Open pipeline','pipe'],[money(won)||'$0','Won','won'],[overdue,'Overdue','due'],[week,'Due this week',''],[touched,'Touched','']];
+  $('tiles').innerHTML=t.map(x=>`<div class="tile ${x[2]}"><div class="n">${x[0]}</div><div class="l">${x[1]}</div></div>`).join('');
+}
+function cardHtml(r){
+  const ds=dueState(r);
+  return `<div class="card" draggable="${readOnly?'false':'true'}" data-id="${r._id}" style="--stage:var(--s-${r.stage})" tabindex="0" role="button" aria-label="Open ${esc(r.name)}">
+    <div class="cn">${esc(r.name)}</div>
+    <div class="cc">${esc(r.company)}</div>
+    <div class="ct" title="${esc(r.title)}">${esc(r.title)}</div>
+    <div class="meta">
+      ${r.deal_value?`<span class="mono">${money(r.deal_value)}</span>`:''}
+      ${r.next_date?`<span class="${ds==='overdue'?'due':''}">${ds==='overdue'?'⚠ ':''}${fmtD(r.next_date)}${r.next_step?' · '+esc(r.next_step):''}</span>`:(r.next_step?`<span>${esc(r.next_step)}</span>`:'')}
+      ${r.segment?`<span class="pill pend">${esc(r.segment)}</span>`:''}
+      ${(r.flags||[]).includes('verify')?'<span class="pill warn">Verify</span>':''}
+      ${(r.flags||[]).includes('removed_from_list')?'<span class="pill bad">Off list</span>':''}
+      ${(r.flags||[]).includes('pending_apollo')?'<span class="pill acc">→ Apollo Mon</span>':''}
+      ${isLi(r)?'<span class="pill acc">LinkedIn</span>':''}${preQual(r)?'<span class="pill warn">Pre-qual</span>':''}
+      ${r.email?'<span class="pill ok">✉</span>':''}${r.mobile?'<span class="pill ok">☎</span>':''}
+    </div></div>`;
+}
+function renderBoard(){
+  const rs=filtered();
+  $('board').innerHTML=STAGES.map(([k,l])=>{
+    const cs=rs.filter(r=>r.stage===k);
+    const sum=cs.reduce((a,r)=>a+(+r.deal_value||0),0);
+    return `<div class="col" data-stage="${k}" style="--stage:var(--s-${k})">
+      <div class="colhead"><span class="dot"></span><h2>${l}</h2>${sum?`<span class="sum">${money(sum)}</span>`:''}<span class="cnt">${cs.length}</span></div>
+      <div class="cards">${cs.length?cs.map(cardHtml).join(''):'<div class="empty">—</div>'}</div></div>`}).join('');
+  $('count').textContent=`${rs.length} of ${docs.size}`;
+}
+function renderTable(){
+  const rs=filtered().sort((a,b)=>{let x=a[sortK]??'',y=b[sortK]??'';if(sortK==='deal_value'){x=+x||0;y=+y||0}if(x===''&&y!=='')return 1;if(y===''&&x!=='')return -1;return (x>y?1:x<y?-1:0)*sortDir||a.name.localeCompare(b.name)});
+  $('tb').innerHTML=rs.length?rs.map(r=>{const ds=dueState(r);return `<tr data-id="${r._id}" tabindex="0">
+    <td class="name">${esc(r.name)}<small>${esc(r.title)}</small></td>
+    <td class="co">${esc(r.company)}<div class="kv">${esc([r.segment,[r.city,r.state].filter(Boolean).join(', ')].filter(Boolean).join(' · '))}</div></td>
+    <td><span class="pill stage" style="--stage:var(--s-${r.stage})">${SLABEL[r.stage]||r.stage}</span>${(r.flags||[]).includes('verify')?' <span class="pill warn">Verify</span>':''}${(r.flags||[]).includes('pending_apollo')?' <span class="pill acc">→ Apollo Mon</span>':''}</td>
+    <td class="mono">${r.email?esc(r.email):'<span class="dash">—</span>'}</td>
+    <td class="mono">${r.mobile?esc(r.mobile):'<span class="dash">—</span>'}</td>
+    <td>${r.next_date?`<span class="${ds==='overdue'?'due':''}">${fmtD(r.next_date)}</span>`:''}${r.next_step?`<div class="kv">${esc(r.next_step)}</div>`:''}</td>
+    <td class="num">${money(r.deal_value)||'<span class="dash">—</span>'}</td>
+    <td>${esc(r.product)||'<span class="dash">—</span>'}</td>
+    <td class="mono">${fmtTs(r.updated_at)}</td></tr>`}).join(''):'<tr><td colspan="9" class="empty">No contacts match.</td></tr>';
+  $('count').textContent=`${rs.length} of ${docs.size}`;
+  document.querySelectorAll('th[data-k]').forEach(th=>{th.removeAttribute('aria-sort');th.querySelector('.dir').textContent='↕';if(th.dataset.k===sortK){th.setAttribute('aria-sort',sortDir>0?'ascending':'descending');th.querySelector('.dir').textContent=sortDir>0?'↑':'↓'}});
+}
+function syncSegOptions(){const sel=$('f-seg');const cur=sel.value;const segs=[...new Set(all().map(r=>r.segment).filter(Boolean))].sort();const want=['',...segs];if([...sel.options].map(o=>o.value).join('|')!==want.join('|')){sel.innerHTML='<option value="">All lists</option>'+segs.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');sel.value=segs.includes(cur)?cur:''}}
+function render(){syncSegOptions();renderTiles();if(view==='board')renderBoard();else if(view==='table')renderTable();else renderAccounts();if(openId&&docs.has(openId))renderDrawer(docs.get(openId),true)}
+function setView(v){view=v;
+  $('board').hidden=v!=='board';$('table').hidden=v!=='table';$('accounts').hidden=v!=='accounts';
+  $('v-board').setAttribute('aria-pressed',v==='board');$('v-table').setAttribute('aria-pressed',v==='table');$('v-accounts').setAttribute('aria-pressed',v==='accounts');
+  $('f-stage').disabled=v==='accounts';$('f-due').disabled=v==='accounts';
+  $('btn-new').hidden=v==='accounts';$('btn-newacct').hidden=v!=='accounts';
+  try{localStorage.setItem('crm-view',v)}catch(e){}render()}
+
+// ---------- writes ----------
+const inflight=new Map();
+async function patch(id,fields,logText){
+  if(!db||readOnly)return;
+  const cur=docs.get(id);if(!cur)return;
+  const changed={};for(const k in fields){if(JSON.stringify(cur[k])!==JSON.stringify(fields[k]))changed[k]=fields[k]}
+  if(!Object.keys(changed).length&&!logText)return;
+  const now=new Date().toISOString();
+  changed.updated_at=now;
+  if(logText){changed.activity=[...(cur.activity||[]),{ts:now,type:'system',text:logText}]}
+  // optimistic
+  Object.assign(cur,changed);render();
+  const prev=inflight.get(id)||Promise.resolve();
+  const p=prev.then(()=>db.doc('contacts/'+id).update(changed)).catch(e=>{
+    if(e&&e.code==='invalid_argument'){readOnly=true;showBanner('This view can’t save changes — you have read-only access to the pipeline data.')}
+    else showBanner('Couldn’t save the last change ('+(e&&e.code||'error')+'). It will retry on your next edit.');
+  });
+  inflight.set(id,p);await p;
+}
+function showBanner(t){const b=$('banner');b.textContent=t;b.hidden=false}
+
+// ---------- drawer ----------
+let saveTimer=null;
+function renderDrawer(r,keepFocus){
+  const root=$('drawer-root');
+  const active=document.activeElement&&document.activeElement.id;
+  const sel=document.activeElement&&document.activeElement.selectionStart;
+  root.innerHTML=`<div class="scrim" id="scrim"></div>
+  <aside class="drawer" role="dialog" aria-label="${esc(r.name)}">
+    <div class="dhead"><div><h2>${esc(r.name)}</h2><div class="sub">${esc(r.title)} · ${esc(r.company)}${r.segment?' · '+esc(r.segment):''}</div></div><button class="x" id="dx" aria-label="Close">×</button></div>
+    <div class="dbody">
+      <div class="sec"><h3>Stage</h3><div class="stagepick" id="stagepick">${STAGES.map(([k,l])=>`<button data-s="${k}" style="--stage:var(--s-${k})" aria-pressed="${r.stage===k}"${readOnly?' disabled':''}>${l}</button>`).join('')}</div></div>
+      <div class="sec"><h3>Contact</h3><div class="contact">
+        <div><span class="k">Email</span>${r.email?`<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`:'<span class="dash">not on file</span>'}</div>
+        <div><span class="k">Mobile</span>${r.mobile?`<a href="tel:${esc(r.mobile)}">${esc(r.mobile)}</a>`:'<span class="dash">not on file</span>'}</div>
+        <div><span class="k">Location</span>${esc([r.city,r.state].filter(Boolean).join(', '))||'<span class="dash">—</span>'}</div>
+        <div><span class="k">Links</span>${r.linkedin?`<a href="${esc(r.linkedin)}" target="_blank" rel="noopener">LinkedIn</a> · `:''}${r.website?`<a href="https://${esc(r.website)}" target="_blank" rel="noopener">Website</a> · `:''}${r.apollo_url?`<a href="${esc(r.apollo_url)}" target="_blank" rel="noopener">Apollo</a>`:'<span class="dash">not in Apollo yet — uploads on the Monday sync</span>'}</div>
+        ${r.employees||r.revenue||r.industry?`<div class="kv">${esc([r.industry,r.employees&&r.employees+' employees',r.revenue&&r.revenue+' revenue',r.hq_city&&'HQ '+r.hq_city+', '+r.hq_state].filter(Boolean).join(' · '))}</div>`:''}
+        ${r.source_note?`<div class="kv">${esc(r.source_note)}</div>`:''}
+      </div></div>
+      <div class="sec"><h3>Next step</h3><div class="grid2">
+        <div class="field"><label for="f-next">Action</label><input type="text" id="f-next" value="${esc(r.next_step)}" placeholder="e.g. Follow-up call"${readOnly?' disabled':''}></div>
+        <div class="field"><label for="f-date">By</label><input type="date" id="f-date" value="${esc(r.next_date)}"${readOnly?' disabled':''}></div>
+      </div></div>
+      <div class="sec"><h3>Deal</h3><div class="grid2">
+        <div class="field"><label for="f-val">Value (USD)</label><input type="number" id="f-val" min="0" step="100" value="${r.deal_value||''}"${readOnly?' disabled':''}></div>
+        <div class="field"><label for="f-prod">Product</label><input type="text" id="f-prod" list="prods" value="${esc(r.product)}"${readOnly?' disabled':''}><datalist id="prods">${PRODUCTS.map(p=>`<option value="${esc(p)}">`).join('')}</datalist></div>
+      </div></div>
+      <div class="sec"><h3>Proposal</h3>${pqBox('f-pq',r)}<div class="grid2">
+        <div class="field"><label for="f-pstat">Status</label><select id="f-pstat"${readOnly?' disabled':''}>${PSTATUS.map(([k,l])=>`<option value="${k}"${(r.proposal_status||'none')===k?' selected':''}>${l}</option>`).join('')}</select></div>
+        <div class="field"><label for="f-pamt">Amount (USD)</label><input type="number" id="f-pamt" min="0" step="100" value="${r.proposal_amount||''}"${readOnly?' disabled':''}></div>
+        <div class="field"><label for="f-psent">Sent</label><input type="date" id="f-psent" value="${esc(r.proposal_sent||'')}"${readOnly?' disabled':''}></div>
+        <div class="field"><label for="f-pexp">Valid until</label><input type="date" id="f-pexp" value="${esc(r.proposal_expires||'')}"${readOnly?' disabled':''}></div>
+        <div class="field full"><label for="f-pscope">Scope</label><input type="text" id="f-pscope" value="${esc(r.proposal_scope||'')}" placeholder="What this proposal covers"${readOnly?' disabled':''}></div>
+      </div>
+      ${(r.proposal_status==='sent'&&r.proposal_expires&&r.proposal_expires<today())?`<div class="kv"><span class="due">Expired ${fmtD(r.proposal_expires)}</span> — re-date it or mark the outcome.</div>`:''}
+      ${(['sent','accepted'].includes(r.proposal_status||'')&&!['proposal','won','lost'].includes(r.stage)&&!readOnly)?`<div class="kv">Pipeline stage is still ${esc(SLABEL[r.stage]||r.stage)}. <button class="btn ghost" id="f-pstage" type="button">Move to Proposal</button></div>`:''}
+      ${readOnly?'':`<div class="field"><label for="f-preply">Reply received${r.proposal_replied?' · last '+fmtD(r.proposal_replied):''}</label><textarea id="f-preply" rows="3" placeholder="Paste the LinkedIn reply. It goes into Notes with today's date, sets the outcome, and logs a linkedin activity."></textarea></div>
+      <div class="addlog"><select id="f-preply-out" aria-label="Outcome"><option value="in_discussion">In discussion</option><option value="accepted">Accepted</option><option value="declined">Declined</option></select><span class="kv">Outcome</span><button class="btn" id="f-preply-btn" type="button">Log reply</button></div>`}
+      </div>
+      <div class="sec"><h3>Notes</h3><textarea id="f-notes" rows="4" placeholder="Context, objections, who introduced you…"${readOnly?' disabled':''}>${esc(r.notes)}</textarea><div class="saved" id="savedline"></div></div>
+      <div class="sec"><h3>Activity</h3>
+        ${readOnly?'':`<div class="addlog"><select id="l-type">${LOGTYPES.map(t=>`<option>${t}</option>`).join('')}</select><input type="text" id="l-text" placeholder="What happened?"><button class="btn" id="l-add">Log</button></div>`}
+        <div class="log">${[...(r.activity||[])].reverse().map(a=>`<div class="logrow"><span class="ts">${fmtTs(a.ts)}</span><span><span class="ty">${esc(a.type)}</span> — ${esc(a.text)}</span></div>`).join('')||'<div class="empty">No activity yet.</div>'}</div>
+      </div>
+    </div>
+  </aside>`;
+  $('scrim').onclick=closeDrawer;$('dx').onclick=closeDrawer;
+  $('stagepick').onclick=e=>{const b=e.target.closest('button[data-s]');if(!b)return;const s=b.dataset.s;if(s!==r.stage)patch(r._id,{stage:s},`Stage → ${SLABEL[s]}`)};
+  const fields={'f-next':'next_step','f-date':'next_date','f-val':'deal_value','f-prod':'product','f-notes':'notes',
+    'f-pamt':'proposal_amount','f-psent':'proposal_sent','f-pexp':'proposal_expires','f-pscope':'proposal_scope'};
+  const NUMFIELDS=['f-val','f-pamt'];
+  for(const id in fields){const el=$(id);if(!el)continue;
+    const commit=()=>{const v=NUMFIELDS.includes(id)?(+el.value||0):el.value;patch(r._id,{[fields[id]]:v}).then(()=>{const s=$('savedline');if(s)s.textContent='Saved '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})})};
+    el.addEventListener('change',commit);
+    if(id==='f-notes'||id==='f-next')el.addEventListener('input',()=>{clearTimeout(saveTimer);saveTimer=setTimeout(commit,900)});
+  }
+  const fpq=$('f-pq');
+  if(fpq)fpq.addEventListener('change',()=>patch(r._id,{pre_qual:fpq.checked},`Pre-qual ${fpq.checked?'ticked':'cleared'}`));
+  const pstat=$('f-pstat');
+  if(pstat)pstat.addEventListener('change',()=>{
+    const v=pstat.value, upd={proposal_status:v};
+    // A proposal marked sent with no date can never age into "expired".
+    if(v==='sent'&&!r.proposal_sent)upd.proposal_sent=today();
+    patch(r._id,upd,`Proposal → ${PSLABEL[v]||v}`);
+  });
+  // Stage stays the human's to set -- the Apollo sync is forbidden from
+  // touching it, so this section offers the move instead of making it.
+  const pstage=$('f-pstage');
+  if(pstage)pstage.onclick=()=>patch(r._id,{stage:'proposal'},'Stage → Proposal');
+  // A LinkedIn reply has no API to arrive through, so this is the one hand
+  // step: paste, pick the outcome, one click. Notes are appended, never
+  // replaced -- the same rule push_proposals_to_crm.py follows.
+  const preply=$('f-preply-btn');
+  if(preply)preply.onclick=()=>{
+    const t=($('f-preply').value||'').trim();if(!t)return;
+    const out=$('f-preply-out').value, d=today(), now=new Date().toISOString();
+    const block=`--- LinkedIn reply · ${d} ---\n${t}`;
+    const notes=(r.notes||'').trim()?r.notes.trim()+'\n\n'+block:block;
+    const act=[...(r.activity||[]),{ts:now,type:'linkedin',text:'Reply ('+(PSLABEL[out]||out)+'): '+t.slice(0,120)+(t.length>120?'…':'')}];
+    $('f-preply').value='';
+    patch(r._id,{notes,proposal_replied:d,proposal_status:out,activity:act});
+  };
+  const add=$('l-add');if(add){const go=()=>{const t=$('l-text').value.trim();if(!t)return;const now=new Date().toISOString();const act=[...(r.activity||[]),{ts:now,type:$('l-type').value,text:t}];$('l-text').value='';patch(r._id,{activity:act})};add.onclick=go;$('l-text').addEventListener('keydown',e=>{if(e.key==='Enter')go()})}
+  if(keepFocus&&active&&$(active)){const el=$(active);el.focus();try{if(sel!=null&&el.setSelectionRange)el.setSelectionRange(sel,sel)}catch(e){}}
+  else{const f=$('dx');if(f&&!keepFocus)f.focus()}
+  document.addEventListener('keydown',escClose);
+}
+function escClose(e){if(e.key==='Escape')closeDrawer()}
+function openDrawer(id){openId=id;renderDrawer(docs.get(id),false)}
+function closeDrawer(){openId=null;$('drawer-root').innerHTML='';document.removeEventListener('keydown',escClose)}
+
+// ---------- accounts ----------
+const ASTAGES=[["cold","Cold"],["warm","Warm"],["engaged","Engaged"],["customer","Customer"]];
+const ALABEL=Object.fromEntries(ASTAGES);
+const compact=n=>{n=+n||0;if(!n)return '';if(n>=1e9)return '$'+(n/1e9).toFixed(n>=1e10?0:1)+'B';if(n>=1e6)return '$'+(n/1e6).toFixed(n>=1e7?0:1)+'M';if(n>=1e3)return '$'+Math.round(n/1e3)+'K';return '$'+n};
+const num=n=>(+n||0)?Number(n).toLocaleString('en-US'):'';
+const mono=s=>String(s||'?').replace(/[^A-Za-z0-9 ]/g,' ').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'?';
+function contactsFor(a){
+  const nm=(a.name||'').toLowerCase(), dom=(a.domain||'').toLowerCase();
+  return all().filter(c=>{
+    const cc=(c.company||'').toLowerCase(), cw=(c.website||'').toLowerCase();
+    return (dom&&cw&&(cw===dom||cw.endsWith('.'+dom)))||(nm&&cc&&(cc===nm||cc.includes(nm)||nm.includes(cc)));
+  });
+}
+function filteredAccts(){
+  const s=$('q').value.trim().toLowerCase(), sg=$('f-seg').value;
+  return [...accts.values()].filter(a=>{
+    if(sg&&(a.segment||'')!==sg)return false;
+    if(s){const hay=[a.name,a.domain,a.industry,a.city,a.state,a.notes,a.description,a.parent_company,(a.keywords||[]).join(' ')].join(' ').toLowerCase();if(!hay.includes(s))return false}
+    return true;
+  }).sort((x,y)=>(+y.revenue||0)-(+x.revenue||0)||String(x.name).localeCompare(String(y.name)));
+}
+function renderAccounts(){
+  const list=filteredAccts();
+  $('al').innerHTML=list.length?list.map(a=>{
+    const ppl=contactsFor(a);
+    return `<div class="acard" data-aid="${a._id}" style="--astage:var(--a-${a.stage||'cold'})" tabindex="0" role="button" aria-label="Open ${esc(a.name)}">
+      <div class="ahead">
+        <div class="alogo" aria-hidden="true">${esc(mono(a.name))}</div>
+        <div class="aname">${esc(a.name)}<small>${esc(a.domain)}</small></div>
+        <span class="pill stage" style="--stage:var(--a-${a.stage||'cold'})">${ALABEL[a.stage]||a.stage||'Cold'}</span>${(a.flags||[]).includes('pending_apollo')?'<span class="pill acc">→ Apollo Mon</span>':''}${(a.flags||[]).includes('removed_from_list')?'<span class="pill bad">Off list</span>':''}${isLi(a)?'<span class="pill acc">LinkedIn</span>':''}${preQual(a)?'<span class="pill warn">Pre-qual</span>':''}
+      </div>
+      <div class="afacts">
+        <div class="afact"><span class="k">Revenue</span><span class="v">${compact(a.revenue)||'—'}</span></div>
+        <div class="afact"><span class="k">Employees</span><span class="v">${num(a.employees)||'—'}</span></div>
+        <div class="afact"><span class="k">HQ</span><span class="v">${esc([a.city,a.state].filter(Boolean).join(', '))||'—'}</span></div>
+      </div>
+      ${a.description?`<div class="adesc">${esc(a.description)}</div>`:''}
+      <div class="apeople">${ppl.length?ppl.slice(0,5).map(c=>`<span class="chip">${esc(c.name)}</span>`).join('')+(ppl.length>5?`<span class="chip">+${ppl.length-5}</span>`:''):'<span class="chip none">No contacts yet</span>'}</div>
+    </div>`}).join(''):(accts.size?'<div class="empty">No accounts match these filters.</div>':'<div class="empty">No accounts yet. Use “+ New account”, or add an Apollo account list to the sync config.</div>');
+  $('count').textContent=`${list.length} of ${accts.size} accounts`;
+}
+async function patchAcct(id,fields,logText){
+  if(!db||readOnly)return;
+  const cur=accts.get(id);if(!cur)return;
+  const changed={};for(const k in fields){if(JSON.stringify(cur[k])!==JSON.stringify(fields[k]))changed[k]=fields[k]}
+  if(!Object.keys(changed).length&&!logText)return;
+  const now=new Date().toISOString();changed.updated_at=now;
+  if(logText)changed.activity=[...(cur.activity||[]),{ts:now,type:'system',text:logText}];
+  Object.assign(cur,changed);render();
+  try{await db.doc('accounts/'+id).update(changed)}
+  catch(e){if(e&&e.code==='invalid_argument'){readOnly=true;showBanner('This view can’t save changes — you have read-only access.')}else showBanner('Couldn’t save ('+(e&&e.code||'error')+').')}
+}
+function openAcct(id){
+  const a=accts.get(id);if(!a)return;openId=null;
+  const ppl=contactsFor(a);
+  $('drawer-root').innerHTML=`<div class="scrim" id="scrim"></div>
+  <aside class="drawer" role="dialog" aria-label="${esc(a.name)}">
+    <div class="dhead">
+      <div class="alogo" style="width:40px;height:40px;font-size:17px" aria-hidden="true">${esc(mono(a.name))}</div>
+      <div><h2>${esc(a.name)}</h2><div class="sub">${esc(a.industry||'')}${a.segment?' · '+esc(a.segment):''}</div></div>
+      <button class="x" id="dx" aria-label="Close">×</button>
+    </div>
+    <div class="dbody">
+      <div class="sec"><h3>Account stage</h3><div class="stagepick" id="astagepick">${ASTAGES.map(([k,l])=>`<button data-s="${k}" style="--stage:var(--a-${k})" aria-pressed="${(a.stage||'cold')===k}"${readOnly?' disabled':''}>${l}</button>`).join('')}</div></div>
+      <div class="sec"><h3>Firmographics</h3><div class="afacts" style="grid-template-columns:repeat(2,1fr)">
+        <div class="afact"><span class="k">Annual revenue</span><span class="v">${compact(a.revenue)||'—'}</span></div>
+        <div class="afact"><span class="k">Employees</span><span class="v">${num(a.employees)||'—'}</span></div>
+        <div class="afact"><span class="k">Founded</span><span class="v">${a.founded||'—'}</span></div>
+        <div class="afact"><span class="k">Total funding</span><span class="v">${compact(a.total_funding)||'—'}</span></div>
+      </div>
+      ${a.latest_funding?`<div class="kv">Latest: ${esc(a.latest_funding)}${a.latest_funding_amount?' · '+compact(a.latest_funding_amount):''}${a.last_raised_at?' · '+esc(a.last_raised_at):''}</div>`:''}
+      ${a.parent_company?`<div class="kv">Parent: ${a.parent_website?`<a class="li" href="${esc(a.parent_website)}" target="_blank" rel="noopener">${esc(a.parent_company)}</a>`:esc(a.parent_company)}${a.suborg_count?` · ${a.suborg_count} suborganizations`:''}</div>`:''}
+      ${(a.suborgs||[]).length?`<div class="kv">${esc(a.suborgs.join(', '))}</div>`:''}
+      </div>
+      <div class="sec"><h3>Company</h3><div class="contact">
+        <div><span class="k">Website</span>${a.website?`<a href="${esc(a.website)}" target="_blank" rel="noopener">${esc(a.domain)}</a>`:'<span class="dash">—</span>'}</div>
+        <div><span class="k">Phone</span>${a.phone?`<a href="tel:${esc(a.phone.replace(/[^+\d]/g,''))}">${esc(a.phone)}</a>`:'<span class="dash">—</span>'}</div>
+        <div><span class="k">Address</span>${esc(a.address||'')||'<span class="dash">—</span>'}</div>
+        <div><span class="k">Links</span>${a.linkedin?`<a href="${esc(a.linkedin)}" target="_blank" rel="noopener">LinkedIn</a> · `:''}${a.apollo_url?`<a href="${esc(a.apollo_url)}" target="_blank" rel="noopener">Apollo</a>`:'<span class="dash">not in Apollo yet — uploads on the Monday sync</span>'}</div>
+        ${a.owner?`<div><span class="k">Owner</span>${esc(a.owner)}</div>`:''}
+      </div>
+      ${a.description?`<div class="kv">${esc(a.description)}</div>`:''}
+      ${(a.keywords||[]).length?`<div class="kwrap">${a.keywords.slice(0,14).map(k=>`<span class="kw">${esc(k)}</span>`).join('')}</div>`:''}
+      </div>
+      <div class="sec"><h3>Contacts at this account (${ppl.length})</h3>
+        ${ppl.length?`<div class="clist" id="a-people">${ppl.map(c=>`<div class="crow" data-cid="${c._id}" tabindex="0" role="button" style="cursor:pointer">
+          <div><div class="cn">${esc(c.name)}</div><div class="ct">${esc(c.title)}</div></div>
+          <div class="mono">${c.email?esc(c.email):'<span class="dash">no email</span>'}</div>
+          <div><span class="pill stage" style="--stage:var(--s-${c.stage})">${SLABEL[c.stage]||c.stage}</span></div>
+        </div>`).join('')}</div>`:'<div class="empty">No pipeline contacts matched to this company yet.</div>'}
+      </div>
+      <div class="sec"><h3>Next step</h3><div class="grid2">
+        <div class="field"><label for="a-next">Action</label><input type="text" id="a-next" value="${esc(a.next_step||'')}"${readOnly?' disabled':''}></div>
+        <div class="field"><label for="a-date">By</label><input type="date" id="a-date" value="${esc(a.next_date||'')}"${readOnly?' disabled':''}></div>
+      </div></div>
+      <div class="sec"><h3>Proposal phase</h3>${pqBox('a-pq',a)}</div>
+      <div class="sec"><h3>Notes</h3><textarea id="a-notes" rows="4"${readOnly?' disabled':''}>${esc(a.notes||'')}</textarea><div class="saved" id="a-saved"></div></div>
+      <div class="sec"><h3>Activity</h3>
+        ${readOnly?'':`<div class="addlog"><select id="a-ltype">${LOGTYPES.map(t=>`<option>${t}</option>`).join('')}</select><input type="text" id="a-ltext" placeholder="What happened?"><button class="btn" id="a-ladd">Log</button></div>`}
+        <div class="log">${[...(a.activity||[])].reverse().map(x=>`<div class="logrow"><span class="ts">${fmtTs(x.ts)}</span><span><span class="ty">${esc(x.type)}</span> — ${esc(x.text)}</span></div>`).join('')||'<div class="empty">No activity yet.</div>'}</div>
+      </div>
+      ${readOnly?'':`<div class="dangerzone">
+        <div class="kv" id="a-delmsg">Removing this account leaves its contacts in the pipeline.${a.apollo_account_id?' It stays in Apollo and the Monday sync will add it back unless you untrack its list.':''}</div>
+        <button class="btn danger" id="a-del" type="button">Delete account</button>
+      </div>`}
+    </div>
+  </aside>`;
+  $('scrim').onclick=closeDrawer;$('dx').onclick=closeDrawer;
+  $('astagepick').onclick=e=>{const b=e.target.closest('button[data-s]');if(!b)return;const s=b.dataset.s;if(s!==(a.stage||'cold')){patchAcct(id,{stage:s},`Account stage → ${ALABEL[s]}`);closeDrawer();setTimeout(()=>openAcct(id),0)}};
+  const apq=$('a-pq');
+  if(apq)apq.addEventListener('change',()=>patchAcct(id,{pre_qual:apq.checked},`Pre-qual ${apq.checked?'ticked':'cleared'}`));
+  const af={'a-next':'next_step','a-date':'next_date','a-notes':'notes'};
+  for(const eid in af){const el=$(eid);if(!el)continue;
+    const commit=()=>patchAcct(id,{[af[eid]]:el.value}).then(()=>{const s=$('a-saved');if(s)s.textContent='Saved '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})});
+    el.addEventListener('change',commit);
+    if(eid!=='a-date')el.addEventListener('input',()=>{clearTimeout(saveTimer);saveTimer=setTimeout(commit,900)});
+  }
+  const aadd=$('a-ladd');if(aadd){const go=()=>{const t=$('a-ltext').value.trim();if(!t)return;const now=new Date().toISOString();$('a-ltext').value='';patchAcct(id,{activity:[...(a.activity||[]),{ts:now,type:$('a-ltype').value,text:t}]}).then(()=>{closeDrawer();openAcct(id)})};aadd.onclick=go;$('a-ltext').addEventListener('keydown',e=>{if(e.key==='Enter')go()})}
+  const pl=$('a-people');if(pl)pl.addEventListener('click',e=>{const row=e.target.closest('[data-cid]');if(row)openDrawer(row.dataset.cid)});
+  const del=$('a-del');if(del){let armed=false;del.onclick=async()=>{
+    if(!armed){armed=true;del.textContent='Click again to confirm';del.setAttribute('aria-live','polite');setTimeout(()=>{if(armed){armed=false;del.textContent='Delete account'}},4000);return}
+    del.disabled=true;
+    try{await db.doc('accounts/'+id).delete();accts.delete(id);closeDrawer();render();}
+    catch(e){del.disabled=false;armed=false;del.textContent='Delete account';showBanner('Couldn’t delete ('+(e&&e.code||'error')+').')}
+  }}
+  $('dx').focus();document.addEventListener('keydown',escClose);
+}
+function openNewAcct(){
+  if(readOnly){showBanner('You have view-only access — accounts can’t be added from this view.');return}
+  openId=null;
+  $('drawer-root').innerHTML=`<div class="scrim" id="scrim"></div>
+  <aside class="drawer" role="dialog" aria-label="New account">
+    <div class="dhead"><div><h2>New account</h2><div class="sub">Saved here now; created in Apollo on the next Monday sync.</div></div><button class="x" id="dx" aria-label="Close">×</button></div>
+    <div class="dbody">
+      <div class="form3">
+        <div class="field full"><label for="na-name">Company name</label><input type="text" id="na-name" autocomplete="off"></div>
+        <div class="field full"><label for="na-domain">Domain</label><input type="text" id="na-domain" placeholder="example.com"></div>
+        <div class="field"><label for="na-stage">Stage</label><select id="na-stage">${ASTAGES.map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select></div>
+        <div class="field"><label for="na-industry">Industry</label><input type="text" id="na-industry"></div>
+        <div class="field"><label for="na-emp">Employees</label><input type="number" id="na-emp" min="0" step="1"></div>
+        <div class="field"><label for="na-rev">Annual revenue (USD)</label><input type="number" id="na-rev" min="0" step="1000"></div>
+        <div class="field"><label for="na-city">City</label><input type="text" id="na-city"></div>
+        <div class="field"><label for="na-state">State</label><input type="text" id="na-state" placeholder="MA"></div>
+        <div class="field full"><label for="na-phone">Phone</label><input type="text" id="na-phone" inputmode="tel"></div>
+        <div class="field full"><label for="na-linkedin">Company LinkedIn URL</label><input type="text" id="na-linkedin"></div>
+        <div class="field full"><label for="na-seg">List / segment</label><input type="text" id="na-seg" list="asegs" value="Added in Claude"><datalist id="asegs">${[...new Set([...accts.values()].map(x=>x.segment).filter(Boolean))].map(s=>`<option value="${esc(s)}">`).join('')}</datalist></div>
+        <div class="field full"><label for="na-desc">Description</label><textarea id="na-desc" rows="3"></textarea></div>
+        <div class="field full"><label for="na-notes">Notes</label><textarea id="na-notes" rows="3"></textarea></div>
+      </div>
+      <div class="err" id="na-err" hidden></div>
+      <div class="actions"><button class="btn ghost" id="na-cancel" type="button">Cancel</button><button class="btn" id="na-save" type="button">Add account</button></div>
+    </div>
+  </aside>`;
+  $('scrim').onclick=closeDrawer;$('dx').onclick=closeDrawer;$('na-cancel').onclick=closeDrawer;
+  $('na-name').focus();document.addEventListener('keydown',escClose);
+  $('na-save').onclick=async()=>{
+    const v=id=>($(id).value||'').trim();
+    const name=v('na-name');const domain=v('na-domain').replace(/^https?:\/\//,'').replace(/\/$/,'').toLowerCase();
+    const err=$('na-err');err.hidden=true;
+    if(!name){err.textContent='Company name is required.';err.hidden=false;return}
+    if(!domain){err.textContent='A domain is required so Apollo can match the company.';err.hidden=false;return}
+    if(!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(domain)){err.textContent='That domain doesn’t look valid.';err.hidden=false;return}
+    const dup=[...accts.values()].find(x=>(x.domain||'').toLowerCase()===domain||(x.name||'').toLowerCase()===name.toLowerCase());
+    if(dup){err.textContent=`${dup.name} is already in the accounts list.`;err.hidden=false;return}
+    const now=new Date().toISOString();
+    const id='crm_'+now.slice(0,10).replace(/-/g,'')+'_'+Math.random().toString(36).slice(2,8);
+    const doc={apollo_account_id:'',name,domain,website:'https://'+domain,stage:$('na-stage').value,
+      apollo_lists:[],apollo_url:'',apollo_synced_at:'',segment:v('na-seg')||'Added in Claude',origin:'crm',
+      owner:'',employees:+v('na-emp')||0,revenue:+v('na-rev')||0,industry:v('na-industry'),founded:0,
+      city:v('na-city'),state:v('na-state').toUpperCase(),country:'',street:'',postal:'',address:'',
+      phone:v('na-phone'),linkedin:v('na-linkedin'),logo:'',description:v('na-desc'),keywords:[],
+      total_funding:0,latest_funding:'',latest_funding_amount:0,last_raised_at:'',
+      parent_company:'',parent_website:'',suborg_count:0,suborgs:[],sic:'',naics:'',qualified:false,
+      notes:v('na-notes'),next_step:'',next_date:'',deal_value:0,
+      activity:[{ts:now,type:'system',text:'Added in the CRM — queued for Apollo upload'}],flags:['pending_apollo'],created_at:now,updated_at:now};
+    $('na-save').disabled=true;
+    try{await db.doc('accounts/'+id).set(doc);closeDrawer();}
+    catch(e){$('na-save').disabled=false;err.textContent=e&&e.code==='quota_exceeded'?'The database is full — remove some records first.':'Couldn’t save ('+(e&&e.code||'error')+'). Try again.';err.hidden=false;}
+  };
+}
+$('btn-newacct').onclick=openNewAcct;
+$('al').addEventListener('click',e=>{const c=e.target.closest('.acard');if(c)openAcct(c.dataset.aid)});
+$('al').addEventListener('keydown',e=>{const c=e.target.closest('.acard');if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openAcct(c.dataset.aid)}});
+
+// ---------- new contact ----------
+function openNewForm(){
+  if(readOnly){showBanner('You have view-only access — contacts can’t be added from this view.');return}
+  openId=null;const root=$('drawer-root');
+  root.innerHTML=`<div class="scrim" id="scrim"></div>
+  <aside class="drawer" role="dialog" aria-label="New contact">
+    <div class="dhead"><div><h2>New contact</h2><div class="sub">Saved here now; pushed to Apollo on the next Monday sync.</div></div><button class="x" id="dx" aria-label="Close">×</button></div>
+    <div class="dbody">
+      <div class="form3">
+        <div class="field"><label for="n-first">First name</label><input type="text" id="n-first" autocomplete="off"></div>
+        <div class="field"><label for="n-last">Last name</label><input type="text" id="n-last" autocomplete="off"></div>
+        <div class="field full"><label for="n-title">Title</label><input type="text" id="n-title"></div>
+        <div class="field full"><label for="n-company">Company</label><input type="text" id="n-company"></div>
+        <div class="field"><label for="n-email">Email</label><input type="text" id="n-email" inputmode="email"></div>
+        <div class="field"><label for="n-mobile">Mobile</label><input type="text" id="n-mobile" inputmode="tel" placeholder="+1…"></div>
+        <div class="field"><label for="n-city">City</label><input type="text" id="n-city"></div>
+        <div class="field"><label for="n-state">State</label><input type="text" id="n-state" placeholder="MA"></div>
+        <div class="field full"><label for="n-linkedin">LinkedIn URL</label><input type="text" id="n-linkedin"></div>
+        <div class="field full"><label for="n-website">Company website</label><input type="text" id="n-website" placeholder="example.com"></div>
+        <div class="field full"><label for="n-seg">List / segment</label><input type="text" id="n-seg" list="segs" value="Added in Claude"><datalist id="segs">${[...new Set(all().map(r=>r.segment).filter(Boolean))].map(s=>`<option value="${esc(s)}">`).join('')}</datalist></div>
+        <div class="field full"><label for="n-notes">Notes</label><textarea id="n-notes" rows="3"></textarea></div>
+      </div>
+      <div class="err" id="n-err" hidden></div>
+      <div class="actions"><button class="btn ghost" id="n-cancel" type="button">Cancel</button><button class="btn" id="n-save" type="button">Add contact</button></div>
+    </div>
+  </aside>`;
+  $('scrim').onclick=closeDrawer;$('dx').onclick=closeDrawer;$('n-cancel').onclick=closeDrawer;
+  $('n-first').focus();document.addEventListener('keydown',escClose);
+  $('n-save').onclick=async()=>{
+    const v=id=>($(id).value||'').trim();
+    const first=v('n-first'),last=v('n-last'),company=v('n-company'),email=v('n-email');
+    const err=$('n-err');err.hidden=true;
+    if(!first||!last){err.textContent='First and last name are required.';err.hidden=false;return}
+    if(!company&&!email){err.textContent='Add a company or an email so Apollo can match the contact.';err.hidden=false;return}
+    if(email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent='That email doesn’t look valid.';err.hidden=false;return}
+    const dup=all().find(r=>(email&&r.email&&r.email.toLowerCase()===email.toLowerCase())||(r.name.toLowerCase()===(first+' '+last).toLowerCase()&&r.company.toLowerCase()===company.toLowerCase()));
+    if(dup){err.textContent=`${dup.name} at ${dup.company} is already in the pipeline.`;err.hidden=false;return}
+    const now=new Date().toISOString();
+    const id='crm_'+now.slice(0,10).replace(/-/g,'')+'_'+Math.random().toString(36).slice(2,8);
+    const doc={apollo_id:'',first_name:first,last_name:last,name:first+' '+last,title:v('n-title'),company,email,mobile:v('n-mobile'),city:v('n-city'),state:v('n-state').toUpperCase(),
+      apollo_lists:[],apollo_url:'',apollo_synced_at:'',segment:v('n-seg')||'Added in Claude',origin:'crm',
+      linkedin:v('n-linkedin'),website:v('n-website').replace(/^https?:\/\//,'').replace(/\/$/,''),hq_city:'',hq_state:'',employees:'',revenue:'',industry:'',source_note:'',
+      stage:'new',notes:v('n-notes'),next_step:'',next_date:'',deal_value:0,product:'',
+      activity:[{ts:now,type:'system',text:'Added in Leads Pipeline — queued for Apollo upload'}],flags:['pending_apollo'],created_at:now,updated_at:now};
+    $('n-save').disabled=true;
+    try{await db.doc('contacts/'+id).set(doc);closeDrawer();}
+    catch(e){$('n-save').disabled=false;err.textContent=e&&e.code==='quota_exceeded'?'The pipeline database is full — archive some contacts first.':'Couldn’t save ('+(e&&e.code||'error')+'). Try again.';err.hidden=false;}
+  };
+}
+$('btn-new').onclick=openNewForm;
+
+// ---------- interactions ----------
+$('board').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openDrawer(c.dataset.id)});
+$('board').addEventListener('keydown',e=>{const c=e.target.closest('.card');if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openDrawer(c.dataset.id)}});
+$('tb').addEventListener('click',e=>{const tr=e.target.closest('tr[data-id]');if(tr)openDrawer(tr.dataset.id)});
+$('tb').addEventListener('keydown',e=>{const tr=e.target.closest('tr[data-id]');if(tr&&e.key==='Enter')openDrawer(tr.dataset.id)});
+// drag & drop between columns
+let dragId=null;
+$('board').addEventListener('dragstart',e=>{const c=e.target.closest('.card');if(!c||readOnly)return;dragId=c.dataset.id;c.classList.add('dragging');e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',dragId)}catch(_){}});
+$('board').addEventListener('dragend',e=>{const c=e.target.closest('.card');if(c)c.classList.remove('dragging');document.querySelectorAll('.col.over').forEach(x=>x.classList.remove('over'));dragId=null});
+$('board').addEventListener('dragover',e=>{const col=e.target.closest('.col');if(!col||!dragId)return;e.preventDefault();e.dataTransfer.dropEffect='move';document.querySelectorAll('.col.over').forEach(x=>{if(x!==col)x.classList.remove('over')});col.classList.add('over')});
+$('board').addEventListener('dragleave',e=>{const col=e.target.closest('.col');if(col&&!col.contains(e.relatedTarget))col.classList.remove('over')});
+$('board').addEventListener('drop',e=>{const col=e.target.closest('.col');if(!col||!dragId)return;e.preventDefault();const s=col.dataset.stage;const r=docs.get(dragId);if(r&&r.stage!==s)patch(dragId,{stage:s},`Stage → ${SLABEL[s]}`);col.classList.remove('over')});
+
+$('v-board').onclick=()=>setView('board');$('v-table').onclick=()=>setView('table');$('v-accounts').onclick=()=>setView('accounts');
+['q','f-stage','f-due','f-seg'].forEach(id=>$(id).addEventListener('input',render));
+document.querySelectorAll('th[data-k]').forEach(th=>th.addEventListener('click',()=>{const k=th.dataset.k;if(sortK===k)sortDir=-sortDir;else{sortK=k;sortDir=k==='updated_at'?-1:1}renderTable()}));
+STAGES.forEach(([k,l])=>{const o=document.createElement('option');o.value=k;o.textContent=l;$('f-stage').appendChild(o)});
+
+// ---------- sync line + changelog ----------
+function renderSync(m){
+  const s=$('syncline');
+  if(!m){s.textContent='No sync record yet.';return}
+  s.innerHTML=`Last Apollo sync <b>${fmtTs(m.last_run)}</b> · ${m.contact_count??docs.size} contacts across ${m.list_count||1} list${(m.list_count||1)>1?'s':''} · <button id="showlog">changelog</button>`;
+  $('showlog').onclick=()=>{const c=$('clog');if(!c.hidden){c.hidden=true;return}
+    c.innerHTML=`<h3>Sync changelog</h3>${[...(m.changelog||[])].reverse().slice(0,20).map(e=>`<div class="row"><span class="ts">${fmtTs(e.ts)}</span><span>${esc(e.summary)} <span class="kv">(+${e.added||0} / ~${e.updated||0} / −${e.removed||0})</span></span></div>`).join('')||'<div class="empty">Empty.</div>'}`;c.hidden=false};
+}
+
+// ---------- last runs ----------
+// Every run that creates or changes records writes one line to `runlog`
+// (crm/runlog.py in the repo). A run that would create more than its
+// threshold holds: it lists the records and the one check that confirms
+// them, and nothing is created until that exact count is confirmed here.
+let runs=[];const runDrafts=new Map();
+const RSTAT={applied:['ok','Applied'],held:['warn','Held'],confirmed:['acc','Confirmed'],rejected:['bad','Rejected']};
+function runRow(r){
+  const st=RSTAT[r.status]||['pend',r.status||'—'];
+  const names=(r.created_names||[]).map(esc).join(', ')+(r.created_more?` and ${r.created_more} more`:'');
+  let more='';
+  if(r.status==='held'){
+    more=`<div class="more">
+      ${names?`<div class="names"><b>Would create:</b> ${names}</div>`:''}
+      <div class="chk"><b>CONFIRM BY</b>${esc(r.check||'')}</div>
+      <div class="kv">${esc(r.on_confirm||'')}</div>
+      ${readOnly?'':`<div class="confirm"><input type="text" id="rc-${esc(r._id)}" placeholder="What you checked, and what it showed" aria-label="What you checked for this run"><button class="btn" type="button" data-act="confirm" data-rid="${esc(r._id)}" disabled>Confirm ${Number(r.created)||0}</button><button class="btn ghost" type="button" data-act="reject" data-rid="${esc(r._id)}">Reject</button></div>`}
+    </div>`;
+  }else if(r.status==='confirmed'||r.status==='rejected'){
+    more=`<div class="more"><div class="chk"><b>CHECKED</b>${esc(r.confirm_check||'')}</div>${r.status==='confirmed'&&r.on_confirm?`<div class="kv">${esc(r.on_confirm)}</div>`:''}</div>`;
+  }
+  return `<div class="rl ${r.status==='held'?'held':''}"><span class="ts">${fmtTs(r.at)}</span><span class="txt">${esc(r.line||r.run)}</span><span class="pill ${st[0]}">${st[1]}</span>${more}</div>`;
+}
+function renderRuns(){
+  const box=$('runs');
+  if(!runs.length){box.hidden=true;return}
+  const held=runs.filter(r=>r.status==='held');
+  const rest=runs.filter(r=>r.status!=='held').slice(0,Math.max(3,5-held.length));
+  $('runs-sub').textContent=held.length?`${held.length} held until you check ${held.length>1?'them':'it'}`:'every run that creates or changes records';
+  $('runs-list').innerHTML=[...held,...rest].map(runRow).join('');
+  runDrafts.forEach((v,k)=>{const el=$('rc-'+k);if(el){el.value=v;const b=el.parentElement.querySelector('[data-act="confirm"]');if(b)b.disabled=v.trim().length<12}});
+  box.hidden=false;
+}
+$('runs-list').addEventListener('input',e=>{const el=e.target.closest('input[id^="rc-"]');if(!el)return;const id=el.id.slice(3);runDrafts.set(id,el.value);
+  const b=el.parentElement.querySelector('[data-act="confirm"]');if(b)b.disabled=el.value.trim().length<12});
+$('runs-list').addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-act]');if(!b||!db||readOnly)return;
+  const id=b.dataset.rid, r=runs.find(x=>x._id===id);if(!r)return;
+  const check=(($('rc-'+id)||{}).value||'').trim();
+  if(b.dataset.act==='confirm'&&check.length<12)return;
+  const now=new Date().toISOString();
+  const upd=b.dataset.act==='confirm'
+    ?{status:'confirmed',confirmed_at:now,confirmed_count:Number(r.created)||0,confirm_check:check}
+    :{status:'rejected',rejected_at:now,confirm_check:check||'rejected without a note'};
+  b.disabled=true;
+  try{await db.doc('runlog/'+id).update(upd);runDrafts.delete(id)}
+  catch(err){b.disabled=false;showBanner('Couldn’t record that ('+(err&&err.code||'error')+'). Try again.')}
+});
+
+// ---------- boot ----------
+let v0='board';try{v0=localStorage.getItem('crm-view')||'board'}catch(e){}
+setView(v0);
+$('syncline').textContent='Connecting to pipeline data…';
+(async()=>{
+  db=await window.claude?.use?.('db');
+  if(!db){$('syncline').textContent='Pipeline data unavailable in this view.';showBanner('This page needs its shared database to show the pipeline. Open it signed in to your organization.');return}
+  const user=await window.claude?.use?.('user');
+  if(user){const w=await user.can('data.write');if(w===false){readOnly=true;showBanner('You have view-only access — changes won’t save.')}}
+  unsub=db.collection('contacts').onSnapshot(snap=>{
+    docs=new Map(snap.docs.filter(d=>d.exists).map(d=>{const b={...d.data()};b._id=d.id;return [d.id,b]}));
+    render();
+  },e=>showBanner('Lost connection to pipeline data ('+e.code+'). Reload to reconnect.'));
+  db.collection('accounts').onSnapshot(snap=>{
+    accts=new Map(snap.docs.filter(d=>d.exists).map(d=>{const b={...d.data()};b._id=d.id;return [d.id,b]}));
+    render();
+  },()=>{});
+  db.doc('meta/sync').onSnapshot(s=>renderSync(s.exists?s.data():null),()=>{});
+  db.collection('runlog').orderBy('at','desc').limit(15).onSnapshot(snap=>{
+    runs=snap.docs.filter(d=>d.exists).map(d=>{const b={...d.data()};b._id=d.id;return b});
+    renderRuns();
+  },()=>{});
+})();
+})();
+</script>

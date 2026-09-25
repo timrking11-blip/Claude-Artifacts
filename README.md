@@ -6,7 +6,7 @@ mirrored in this repo.
 
 **Master database (artifact):** https://claude.ai/artifact/VcbjegQv71QGNveHtt415f
 **Committed mirror:** [`data/master/contacts.json`](data/master/contacts.json)
-**Change history:** [`data/CHANGELOG.md`](data/CHANGELOG.md)
+**Change history:** [`data/CHANGELOG.md`](data/CHANGELOG.md). What to look at is the CRM page's **Last runs** strip: one line per run that created or changed records, with any run that would create more than 5 records held there for your check (`crm/runlog.py`).
 
 ## What runs, and when
 
@@ -34,7 +34,7 @@ development, but it is not a path into the CRM.
 |---|---|---|---|
 | Pull Apollo contacts | `scripts/pull_apollo.py` | Apollo API | `data/staging/apollo.json` |
 | Enrich via Explorium | `scripts/pull_explorium.py` | previous master + Explorium API | `data/staging/explorium.json` |
-| Merge | `scripts/merge_master.py` | both staging files | `data/master/contacts.json`, `data/CHANGELOG.md` |
+| Merge | `scripts/merge_master.py` | both staging files | `data/master/contacts.json`, `data/CHANGELOG.md`, one line in `data/runlog/` (holds instead of writing master when it would create more than 5; re-run with `allow_created`) |
 | Writeback (opt-in) | `scripts/push_apollo.py` | master | Apollo API |
 | Validate | `scripts/validate_sync.py` | master (+ a CRM dump) | nothing -- exit 1 on an unknown source, duplicate id, bad proposal field, or low join coverage. Runs in CI after every merge. |
 | Enrichment → CRM | `scripts/push_enrichment_to_crm.py` | master + a CRM dump | `data/artifact/crm/enrich_*.json`: fills empty enrichment fields and sets the `proposal_ready` flag; never stage, notes or Apollo-owned fields |
@@ -250,10 +250,13 @@ scripts/                      the entrypoints above
 tests/test_merge.py           merge behaviour
 data/master/contacts.json     committed mirror of the artifact database
 data/CHANGELOG.md             per-run record of what changed
+data/runlog/                  one line per Actions run, posted to the CRM's Last runs strip by the Monday 11:30 routine
+crm/runlog.py                 the run line, the created-count hold (HOLD_OVER = 5), and its CLI
 data/proposals/               prequalification proposals the agent wrote (committed)
 data/runs/<id>/               what each Intake-page composition run saw and produced (committed) -- the only proposal path
 docs/composition-run.md       the one-button flow: page → routine → scripts → CRM
 artifact/intake.html          source of the Account Composition Intake page (v2, one button)
 artifact/crm.html             the published ledger page
+artifact/crm-system.html      the CRM System page (Leads Pipeline, Last runs strip), https://claude.ai/artifact/8GigYGeoefKqxEptmeCHWG
 .github/workflows/            weekly schedule
 ```

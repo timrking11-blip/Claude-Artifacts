@@ -1,0 +1,14 @@
+{
+  "id": "rl_20260924T214000_composition-run",
+  "run": "Composition run",
+  "at": "2026-09-24T21:40:00Z",
+  "status": "applied",
+  "created": 0,
+  "updated": 1,
+  "detail": "Claridi.ai: proposal prq_3a883535a0db, 1 record(s) got the note, review needs review (3 HOLD)",
+  "line": "Composition run · Claridi.ai: proposal prq_3a883535a0db, 1 record(s) got the note, review needs review (3 HOLD) · applied",
+  "threshold": 5,
+  "created_names": [],
+  "created_more": 0,
+  "note": "Recorded 25 Sep 2026 from data/runs/run_20260924_fj2c73."
+}
