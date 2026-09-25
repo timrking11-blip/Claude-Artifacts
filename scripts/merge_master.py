@@ -72,6 +72,25 @@ def write_changelog(reports: list[tuple[str, MergeReport]], total: int, held_not
         fh.write("\n".join(lines))
 
 
+def write_review(reports: list[tuple[str, MergeReport]], path: Path | None = None) -> None:
+    """The review queue for the CRM drawer: this run's held conflicts and ambiguous matches.
+
+    Rewritten with master on every applied run, so it is always the queue as of
+    the master it sits beside. A held conflict comes back each week the source
+    keeps sending the rejected value, and drops out once it stops.
+    """
+    # Beside whichever master this run wrote, so a relocated master (or a test's
+    # temporary one) never leaves the real queue describing a different file.
+    path = path or config.MASTER_CONTACTS.with_name(config.MASTER_REVIEW.name)
+    payload = {
+        "generated_at": utcnow(),
+        "conflicts_held": [c for _, r in reports for c in r.conflicts_held],
+        "ambiguous_matches": [a for _, r in reports for a in r.ambiguous_matches],
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False, default=str) + "\n")
+
+
 def created_names(reports: list[tuple[str, MergeReport]], master: list[Contact]) -> list[str]:
     by_id = {c.contact_id: c for c in master}
     names = []
@@ -187,6 +206,7 @@ def main() -> int:
         return 0
 
     save_master(master)
+    write_review(reports)
     write_changelog(reports, len(master))
     log.info("wrote %s contacts to %s", len(master), config.MASTER_CONTACTS)
     doc = runlog.entry("Weekly sync", run_detail(reports), created, updated, now, created_names=names,

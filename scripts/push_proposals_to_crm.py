@@ -43,7 +43,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from crm import config
 from crm.crm_sync import load_crm_dump, pinned, system_activity, utcnow_iso, write_batches
 from crm.master import load_master
-from crm.schema import Contact, normalize_domain, normalize_email
+from crm.schema import Contact, normalize_domain
 
 NOTES_HEADER = "--- Prequalification proposal · {date} · {pid} ---"
 #: Statuses a fresh draft must not overwrite.
@@ -73,14 +73,17 @@ def targets_for(proposal: dict[str, Any], master: list[Contact], docs: dict[str,
     for apollo_id in proposal.get("apollo_contact_ids") or []:
         add(apollo_id)
 
+    # Master rows reach their CRM contact by stored key only: the row's Apollo
+    # id (the CRM document id) or the contact's stored master_id. Never by
+    # email -- see crm.crm_sync.join_master.
     by_id = {c.contact_id: c for c in master}
-    crm_by_email = {normalize_email(d.get("email")): doc_id for doc_id, d in docs.items() if normalize_email(d.get("email"))}
+    crm_by_master = {d.get("master_id"): doc_id for doc_id, d in docs.items() if d.get("master_id")}
     for cid in proposal.get("contact_ids") or []:
         rec = by_id.get(cid)
         if not rec:
             continue
         add(rec.apollo_contact_id)
-        add(crm_by_email.get(normalize_email(rec.email)))
+        add(crm_by_master.get(cid))
 
     if not found:
         domain = normalize_domain((proposal.get("account") or {}).get("domain"))

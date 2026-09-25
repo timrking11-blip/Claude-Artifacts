@@ -22,7 +22,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from crm import config
-from crm.crm_sync import PROPOSAL_STATUSES, index_crm_by_email, load_crm_dump
+from crm.crm_sync import PROPOSAL_STATUSES, join_master, load_crm_dump
 from crm.master import load_master
 from crm.schema import KNOWN_SOURCES, normalize_email
 
@@ -71,6 +71,13 @@ def check_master(report: Report, master_path: Path | None = None) -> list:
     dup_email = [k for k, n in Counter(normalize_email(c.email) for c in contacts if normalize_email(c.email)).items() if n > 1]
     if dup_email:
         report.fail(f"duplicate email in master: {dup_email[:5]}")
+
+    # One CRM document is one person: two master rows keyed to the same CRM
+    # contact would make the stored key a guess again.
+    dup_crm = [k for k, n in Counter(c.crm_id for c in contacts if c.crm_id).items() if n > 1]
+    if dup_crm:
+        report.fail(f"duplicate crm_id in master: {dup_crm[:5]}")
+    report.fact(f"master: {sum(1 for c in contacts if c.crm_id)} record(s) keyed to a CRM contact (crm_id)")
 
     # An unknown source is the trust-0 trap: it loses every conflict and is
     # overwritten by anything. Catch it here as well as in the test suite,
@@ -125,23 +132,44 @@ def check_crm(report: Report, docs: dict) -> None:
 
 
 def check_join(report: Report, contacts: list, docs: dict, min_coverage: float) -> None:
-    by_apollo = {c.apollo_contact_id: c for c in contacts if c.apollo_contact_id}
-    by_email = {normalize_email(c.email): c for c in contacts if normalize_email(c.email)}
-    crm_emails = index_crm_by_email(docs)
+    """The CRM <-> master link, by stored key only (crm.crm_sync.join_master).
 
-    matched_by_id = [d for d in docs if d in by_apollo]
-    matched_by_email = [d for d, doc in docs.items() if d not in by_apollo and normalize_email(doc.get("email")) in by_email]
-    unmatched = [d for d in docs if d not in by_apollo and normalize_email(docs[d].get("email")) not in by_email]
-    coverage = (len(matched_by_id) + len(matched_by_email)) / len(docs) if docs else 0.0
+    A broken key fails: a stored master_id that names no master row, or one
+    that disagrees with the contact's Apollo id. A missing key is only a fact
+    -- a contact the Monday sync added this morning has none until the push
+    writes it. An email-only match is never a join; it is a warning that
+    scripts/backfill_keys.py should key it, once and logged.
+    """
+    j = join_master(contacts, docs)
+    by_master = sum(1 for h in j.how.values() if h == "master_id")
+    by_apollo = sum(1 for h in j.how.values() if h == "apollo_id")
+    unkeyed_docs = [d for d in docs if d not in j.joined and d not in j.email_only
+                    and d not in j.dangling and d not in j.disagree]
+    coverage = len(j.joined) / len(docs) if docs else 0.0
 
-    report.fact(f"join: {len(matched_by_id)} by apollo id, {len(matched_by_email)} by email, "
-                f"{len(unmatched)} CRM doc(s) not in master -> coverage {coverage:.0%}")
-    if unmatched:
-        report.warn(f"CRM docs absent from master (first 5): {unmatched[:5]}")
-    only_master = [c.contact_id for c in contacts
-                   if c.apollo_contact_id not in docs
-                   and normalize_email(c.email) not in crm_emails]
+    report.fact(f"join: {by_master} by stored master_id, {by_apollo} by Apollo id (master_id not stored yet), "
+                f"{len(j.email_only)} by email only (unkeyed), {len(unkeyed_docs)} CRM doc(s) not in master "
+                f"-> coverage {coverage:.0%}")
+    for doc_id, stored in sorted(j.dangling.items()):
+        report.fail(f"crm {doc_id}: stored master_id {stored} names no master row")
+    for doc_id, (stored, via) in sorted(j.disagree.items()):
+        report.fail(f"crm {doc_id}: stored master_id {stored} disagrees with its Apollo id (master row {via})")
+    if j.email_only:
+        report.warn(f"{len(j.email_only)} CRM contact(s) match master by email only, never joined: "
+                    f"{sorted(j.email_only)[:5]} -- key them with scripts/backfill_keys.py")
+    if unkeyed_docs:
+        report.warn(f"CRM docs absent from master (first 5): {unkeyed_docs[:5]}")
+
+    in_crm = {rec.contact_id for rec in j.joined.values()}
+    only_master = [c.contact_id for c in contacts if c.contact_id not in in_crm
+                   and c.contact_id not in {r.contact_id for r in j.email_only.values()}]
     report.fact(f"join: {len(only_master)} master record(s) not in the CRM (expected -- the CRM ingests a subset)")
+    stale = sorted(c.contact_id for c in contacts if c.crm_id and c.crm_id not in docs)
+    if stale:
+        report.warn(f"{len(stale)} master row(s) carry a crm_id naming no CRM contact (re-keyed or removed): {stale[:5]}")
+    missing = sum(1 for rec in j.joined.values() if not rec.crm_id)
+    if missing:
+        report.fact(f"join: {missing} master row(s) in the CRM without crm_id yet (scripts/backfill_keys.py writes it)")
     if coverage < min_coverage:
         report.fail(f"join coverage {coverage:.0%} is below --min-coverage {min_coverage:.0%}")
 
