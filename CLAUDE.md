@@ -130,13 +130,17 @@ entry condition is unmet does not start.
 - BigQuery, Vertex and HCP Terraform are parked (registry status `parked`),
   not blockers, until Phase 5.
 - The Intake artifact is titled "Account Composition Intake". The retired
-  ledger page and the 26 Aug Workbench are unpinned; the 9 Sep Workbench is
-  pinned. The CRM System is the system of record until the SWAT Engine ships.
+  ledger page (archived 25 Sep: a pointer to the CRM's Sources section) and
+  the 26 Aug Workbench are unpinned; the 9 Sep Workbench is pinned. The CRM System is the system of record until the SWAT Engine ships.
 - Decisions D1–D6 are the owner's; none is made for them. Decided 25 Sep
   2026: D1, enrichment is bought from the Vibe Prospecting balance (a
   one-time backfill of the 50 matched prospects, cost estimate first; the
   weekly REST step stays match-only); D6, the Gate 0 booking link is a Google
-  Calendar booking page on the domain mailbox, so Carly is disconnected.
+  Calendar booking page on the domain mailbox, so Carly is disconnected; D2,
+  one session-bound Monday Data Sync replaces the Apollo sync and the
+  enrichment push (step-zero ArtifactData check, heartbeat; shadow on 5 and
+  12 Oct, cutover at the 19 Oct routine; the two old routines are paused,
+  never deleted).
 
 **Phase 0 status, 25 Sep 2026.** Done: steps 1–8 (the unpins and the
 pin, the retitle, GTM Control item 7, CRON_TZ on the three routines, parked
@@ -151,12 +155,13 @@ snapshot and its clock caption refresh at the next atlas refresh (1 Oct).
 Phase 0 is not passed until its gate: the Monday 28 Sep Command Center
 refresh, checked at 10:00 ET by the scheduled gate-check routine.
 
-**Scheduled kickoffs (set 25 Sep 2026).** Seven one-shot routines, bound to
+**Scheduled kickoffs (set 25 Sep 2026).** Eight one-shot routines, bound to
 the Claude Code session that ran Phase 0 (session_01TQKKRom7R4Hg9FsvJNhUs9),
 run the gate checks and phase builds at the blueprint's windows: Phase 0
 gate check Mon 28 Sep 10:00 ET; Phase 1 continuation Thu 1 Oct 11:00 ET;
-Phase 1 close Mon 12 Oct 10:00 ET; Phase 2 kickoff Mon 19 Oct 10:00 ET; 15 Nov kill check + Phase 3 kickoff Mon 16 Nov
-10:00 ET; Phase 4 kickoff Mon 4 Jan 2027 10:00 ET (re-arms fortnightly until
+Phase 2 held pieces Thu 1 Oct 13:00 ET; Phase 1 close Mon 12 Oct 10:00 ET;
+Phase 2 cutover Mon 19 Oct 10:00 ET; 15 Nov kill check + Phase 3 kickoff Mon
+16 Nov 10:00 ET; Phase 4 kickoff Mon 4 Jan 2027 10:00 ET (re-arms fortnightly until
 an engagement exists); Phase 5 trigger check Mon 1 Mar 2027 10:00 ET (then
 quarterly). Each starts only if the previous gate passed, asks the owner's
 decisions in-session, spends no credits without an estimate and a go, and
@@ -193,3 +198,33 @@ cockpit is unpinned after that.
   the CRM page and the Apollo sync never writes them. `segment` (the Apollo
   list a record came from) and `segment_code` (GTM Control's A–D) are
   different fields.
+
+**Phase 2 status (started 25 Sep 2026 on the owner's call, before the Phase 0
+and Phase 1 gates).** Done on 25 Sep: stored keys, so every CRM contact
+carries `master_id` and `provenance` (64 of 64 by Apollo id, 0 by email),
+the master rows in the CRM carry `crm_id`, and `org_id` is set only on an
+exact domain match (`scripts/backfill_keys.py`, the push's `--keys-only`);
+the CRM page's Sources section (CRM System v13), with accounts listing
+contacts by `org_id` only; the retired ledger page archived as a pointer;
+`crm/broker.py` (credit ledger, field owners, enrichment jobs) and
+`crm/activity.py` (captured rows, the scorecard); one activity capture (29
+Gmail sends on 26 contacts); `meta/credits` and one estimated job (Vibe, 240
+credits for 40 prospects, nothing bought; the session's permission check
+blocked the second preview); `pull_explorium.py` match-only. Held: account
+promotion (runlog `rl_20260925T202000_account-promotion`, 34 companies,
+waiting for the owner's check and Confirm); the Monday Data Sync in shadow
+and the Ops refresh scorecard on activity rows (both by the 1 Oct held-pieces
+routine, after the Phase 0 gate); every credit spend (the owner's go and a
+numeric floor in `meta/credits`). Apollo lead and direct-dial credits are used
+up until 11 Oct.
+
+- `master_id`, `org_id`, `provenance`, `held` and the `review_org` flag
+  belong to the data layer and are written only by the enrichment push
+  (`crm.crm_sync.KEY_FIELDS`). They are not CRM-owned, and nothing matches a
+  contact to its master row or its account by email or company name.
+- Captured activity rows carry `channel_ref` (`gmail:`, `apollo:`, `gcal:`)
+  and subject-only text. Gmail is the record for sends; Apollo sequence events
+  add replies and bounces, so a send is never recorded twice.
+- Nothing is bought without a `jobs/` row and the owner's go; an unread
+  balance, an unset floor or a missing estimate fails closed
+  (`crm/broker.budget_check`).
