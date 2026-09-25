@@ -143,8 +143,11 @@ pin, the retitle, GTM Control item 7, CRON_TZ on the three routines, parked
 nodes in registry v1.5 and on the Stack Status page, the orphan "Operations
 Workbench Design System" card removed from the Command Center; D1 and D6
 decided and written to registry v1.5). Open, in the owner's settings:
-disconnect Carly and ZoomInfo, label the Drive mirror "not a source"; the atlas page's embedded fallback snapshot
-and its clock caption refresh at the next atlas refresh. Gate check: the
+disconnect Carly and ZoomInfo. The Drive mirror (My Drive › GitHub ›
+Claude-Artifacts) was labelled "not a source" on 25 Sep 2026 with a marker
+file at the top of the folder; the folder itself was not renamed. The atlas
+page's embedded fallback snapshot and its clock caption refresh at the next
+atlas refresh. Gate check: the
 Monday 28 Sep Command Center refresh.
 
 **Scheduled kickoffs (set 25 Sep 2026).** Six one-shot routines, bound to
