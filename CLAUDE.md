@@ -11,6 +11,12 @@ corrects something new, add it here in the same change.
   append-only, so a wrong name in a filed proposal can't be taken back.
 - The name lives in `BRAND` in `crm/note_to_founder.py`. Use that rather than
   retyping it.
+- The Apollo sequence "Strategic Marketing Insights · First Touch Sequence"
+  (id 6aab7bd92967250020216921) still carries the wrong name on 25 Sep 2026.
+  `apollo_sequences_update` refuses a name-only change (it demands every
+  template body resent into the live sequence) and wrote nothing on two
+  tries. The rename is the owner's, in the Apollo UI (Sequences › the
+  sequence › its name); confirm it with `apollo_emailer_campaigns_search`.
 
 ## The owner works on Windows
 
@@ -133,9 +139,10 @@ entry condition is unmet does not start.
   ledger page (archived 25 Sep: a pointer to the CRM's Sources section) and
   the 26 Aug Workbench are unpinned; the 9 Sep Workbench is pinned. The CRM System is the system of record until the SWAT Engine ships.
 - Decisions D1–D6 are the owner's; none is made for them. Decided 25 Sep
-  2026: D1, enrichment is bought from the Vibe Prospecting balance (a
-  one-time backfill of the 50 matched prospects, cost estimate first; the
-  weekly REST step stays match-only); D6, the Gate 0 booking link is a Google
+  2026: D1, no enrichment backfill (the owner declined it later the same
+  day; alternatives are explored later, and any is a new `jobs/` row with a
+  free estimate first and the owner's go; the weekly REST step stays
+  match-only); D6, the Gate 0 booking link is a Google
   Calendar booking page on the domain mailbox, so Carly is disconnected; D2,
   one session-bound Monday Data Sync replaces the Apollo sync and the
   enrichment push (step-zero ArtifactData check, heartbeat; shadow on 5 and
@@ -208,15 +215,16 @@ the CRM page's Sources section (CRM System v13), with accounts listing
 contacts by `org_id` only; the retired ledger page archived as a pointer;
 `crm/broker.py` (credit ledger, field owners, enrichment jobs) and
 `crm/activity.py` (captured rows, the scorecard); one activity capture (29
-Gmail sends on 26 contacts); `meta/credits` and one estimated job (Vibe, 240
-credits for 40 prospects, nothing bought; the session's permission check
-blocked the second preview); `pull_explorium.py` match-only. Held: account
-promotion (runlog `rl_20260925T202000_account-promotion`, 34 companies,
-waiting for the owner's check and Confirm); the Monday Data Sync in shadow
-and the Ops refresh scorecard on activity rows (both by the 1 Oct held-pieces
-routine, after the Phase 0 gate); every credit spend (the owner's go and a
-numeric floor in `meta/credits`). Apollo lead and direct-dial credits are used
-up until 11 Oct.
+Gmail sends on 26 contacts); `meta/credits` and one job row (Vibe, 240
+credits for 40 prospects, estimated and then refused: the owner declined the
+D1 backfill on 25 Sep, nothing bought); `pull_explorium.py` match-only. The
+account promotion (runlog `rl_20260925T202000_account-promotion`, 34
+companies) was confirmed by the owner on the CRM page on 25 Sep, check
+recorded; the 1 Oct held-pieces routine creates the accounts after the Phase
+0 gate. Held: the Monday Data Sync in shadow and the Ops refresh scorecard on
+activity rows (both by that routine); every credit spend (a `jobs/` row, a
+free estimate and the owner's go; no Vibe spend is planned). Apollo lead and
+direct-dial credits are used up until 11 Oct.
 
 - `master_id`, `org_id`, `provenance`, `held` and the `review_org` flag
   belong to the data layer and are written only by the enrichment push
