@@ -172,3 +172,14 @@ def test_no_founder_named_is_a_note():
     m["request"]["founder"] = {"name": "Ada Lovelace"}
     assert not any("No founder named" in n for n in assess(m, state(), {"ap_ada": doc()}, NOW).notes)
 
+
+def test_every_hold_names_its_independent_check():
+    m = manifest(request_text="What is your hourly rate?", disposition="apollo")
+    d = doc(proposal_ref="prq_old", flags=["disqualified"], stage="meeting")
+    review = assess(m, state(), {"ap_ada": d}, datetime(2026, 9, 21, 11, 30, tzinfo=timezone.utc))
+    assert len(review.holds) == 6, review.holds
+    for hold in review.holds:
+        what, sep, check = hold.partition(" Confirm by: ")
+        assert sep and what.endswith(".") and check.endswith("."), hold
+    assert "read proposal prq_old's status and date" in review.text
+

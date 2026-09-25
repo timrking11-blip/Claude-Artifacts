@@ -176,6 +176,8 @@
   .fnote .ln.n{color:var(--ink-2)}
   .fnote .ln.n b{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.08em;margin-right:8px}
   .fnote .ln.ok{color:var(--go)}
+  .fnote .ln .chk{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line-2);color:var(--ink-2);font-size:12.5px}
+  .fnote .ln .chk span{color:var(--hold);font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.08em;margin-right:8px}
   .ntf{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
   pre.prop.note{max-height:none;background:var(--surface);white-space:pre-wrap}
   .kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;font-size:13px;margin-top:12px}
@@ -484,7 +486,7 @@
       <!-- 05 -->
       <section class="step" id="s5">
         <div class="step-head"><span class="step-num">05</span><h3>Result</h3></div>
-        <p class="step-desc">The review first: it is for you, never the founder. <b>HOLD</b> lines mean the draft is filed but needs your decision before it goes anywhere; <b>Note</b> lines are context. Then the note to the founder that goes with the proposal, and the proposal as drafted, ready to download as a PDF.</p>
+        <p class="step-desc">The review first: it is for you, never the founder. <b>HOLD</b> lines mean the draft is filed but needs your decision before it goes anywhere. Each names the one independent check that clears it (<b>Confirm by</b>); saying "confirmed" does not. <b>Note</b> lines are context. Then the note to the founder that goes with the proposal, and the proposal as drafted, ready to download as a PDF.</p>
         <div class="card" id="resultCard">
           <div id="resultEmpty" class="blocked">No run selected. Press Run composition, or pick a run from the list below.</div>
           <div id="resultBody" hidden>
@@ -1118,7 +1120,16 @@
       if(m){
         d.className = "ln " + (m[1]==="HOLD" ? "h" : "n");
         var b = document.createElement("b"); b.textContent = m[1].toUpperCase();
-        d.appendChild(b); d.appendChild(document.createTextNode(m[2]));
+        /* A HOLD clears only by the independent check after "Confirm by:",
+           never by a verbal "confirmed". */
+        var parts = m[2].split(" Confirm by: ");
+        d.appendChild(b); d.appendChild(document.createTextNode(parts[0]));
+        if(m[1] === "HOLD" && parts.length > 1){
+          var chk = document.createElement("span"); chk.className = "chk";
+          var lab = document.createElement("span"); lab.textContent = "CONFIRM BY";
+          chk.appendChild(lab); chk.appendChild(document.createTextNode(parts.slice(1).join(" Confirm by: ")));
+          d.appendChild(chk);
+        }
       }else{
         d.className = "ln " + (/Nothing extenuating/.test(l) ? "ok" : "n");
         d.textContent = l;

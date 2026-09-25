@@ -16,7 +16,9 @@ Two severities:
   HOLD  -- the proposal is drafted and filed, but the run ends `needs_review`
            and proposal_status stays `drafted`. Something about this account
            needs a decision before sending (pricing was asked for, a proposal
-           already went out, an open deal exists, ...).
+           already went out, an open deal exists, ...). Every HOLD ends with
+           "Confirm by: <check>": the one independent check that clears it.
+           A verbal "confirmed" never does.
   Note  -- for information; the run ends `done`.
 
 Every criterion is deterministic and explainable from the documents alone, so
@@ -57,6 +59,20 @@ EXCLUDED_FLAGS = frozenset({"disqualified", "removed_from_list"})
 SYNC_WINDOW_TZ = ZoneInfo("America/New_York")
 SYNC_WINDOW_START = time(6, 45)
 SYNC_WINDOW_END = time(8, 15)
+
+#: Separates a HOLD from the independent check that clears it.
+CONFIRM_BY = " Confirm by: "
+#: The check for a HOLD nobody named a specific check for.
+ASK_CLAUDE = 'ask Claude "what would confirm this?" and do that check.'
+
+
+def with_check(what: str, check: str | None = None) -> str:
+    """A HOLD line: what is wrong, then the one independent check that clears it."""
+    what = what.strip()
+    if not what.endswith((".", "?", "!")):
+        what += "."
+    return what + CONFIRM_BY + (check or ASK_CLAUDE).strip()
+
 
 #: Ledger-quality floors from the intake page, as a fraction of contacts that
 #: are neither missing an email nor stale. "none" passes everything through.
@@ -135,28 +151,39 @@ def assess(manifest: dict[str, Any], state: dict[str, Any], docs: dict[str, dict
     # ---- HOLD --------------------------------------------------------------
     hit = REQUEST_MONEY.search(request_text)
     if hit:
-        review.holds.append(f"The request talks about money ({hit.group(0).strip()!r}); no market rates are set, "
-                        "so decide what to say about pricing before this goes out.")
+        review.holds.append(with_check(
+            f"The request talks about money ({hit.group(0).strip()!r}); no market rates are set, so decide what to "
+            "say about pricing before this goes out.",
+            "reread the request and write the one pricing sentence you will send (the note to the founder already "
+            "says we scope before we quote)."))
 
     for doc_id in matched:
         doc = docs[doc_id]
         who = _label(doc, doc_id)
         if doc.get("proposal_ref"):
-            review.holds.append(f"{who} already carries proposal {doc['proposal_ref']} "
-                            f"(status {doc.get('proposal_status') or 'drafted'}); this would be a repeat.")
+            review.holds.append(with_check(
+                f"{who} already carries proposal {doc['proposal_ref']} "
+                f"(status {doc.get('proposal_status') or 'drafted'}); this would be a repeat.",
+                f"open {who} in the CRM and read proposal {doc['proposal_ref']}'s status and date."))
         flagged = set(doc.get("flags") or []) & EXCLUDED_FLAGS
         if flagged:
-            review.holds.append(f"{who} is flagged {', '.join(sorted(flagged))} in the CRM.")
+            review.holds.append(with_check(f"{who} is flagged {', '.join(sorted(flagged))} in the CRM.",
+                                           f"read why {who} was flagged on the CRM record."))
         if doc.get("stage") in OPEN_DEAL_STAGES:
-            review.holds.append(f"{who} is at stage '{doc['stage']}' — an open conversation; coordinate before a new prequal.")
+            review.holds.append(with_check(
+                f"{who} is at stage '{doc['stage']}' — an open conversation; coordinate before a new prequal.",
+                f"read {who}'s latest CRM activity, or ask whoever owns that conversation."))
 
     if disposition == "apollo" and account_lists_empty:
-        review.holds.append("Disposition is Apollo but meta/config.account_lists is empty: the account would upload "
-                        "and never read back. Re-add the list id or switch to manual.")
+        review.holds.append(with_check(
+            "Disposition is Apollo but meta/config.account_lists is empty: the account would upload and never read "
+            "back. Re-add the list id or switch to manual.",
+            "read meta/config.account_lists in the CRM."))
 
     if in_sync_window(now):
-        review.holds.append("Run started inside the Monday sync window (06:45–08:15 ET); the sync may have read a "
-                        "half-written record. Check the contact after 08:15 ET.")
+        review.holds.append(with_check(
+            "Run started inside the Monday sync window (06:45–08:15 ET); the sync may have read a half-written record.",
+            "after 08:15 ET, open the contact and check that the proposal block is complete."))
 
     # ---- Note --------------------------------------------------------------
     if not matched:

@@ -184,6 +184,12 @@ Computed by `crm/review.py` from the manifest, the run state and the CRM
 dump; tested criterion by criterion in `tests/test_review.py`. It is for the
 sender, never the founder.
 
+Every HOLD line ends with `Confirm by: <check>`: the one independent check
+that clears it (open the domain, read the CRM record, find a second source).
+A verbal "confirmed" never clears a HOLD. A composer flag carries its own
+check as `--composer-flag "text | check: how to confirm it"`; without one,
+the check is to ask Claude what would confirm it and do that.
+
 **HOLD** — the proposal is drafted and filed, the run ends `needs_review`,
 `proposal_status` stays `drafted`, nothing goes out:
 

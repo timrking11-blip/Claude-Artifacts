@@ -64,7 +64,7 @@ from crm.guardrails import check_run, credit_spend_allowed, found_on_intake_doma
 from crm.master import load_master  # noqa: E402
 from crm.note_to_founder import draft as draft_note_to_founder  # noqa: E402
 from crm.note_to_founder import founder_of  # noqa: E402
-from crm.review import STATUS_DONE, STATUS_NEEDS_REVIEW, assess  # noqa: E402
+from crm.review import STATUS_DONE, STATUS_NEEDS_REVIEW, assess, with_check  # noqa: E402
 from crm.schema import normalize_domain  # noqa: E402
 
 sys.path.insert(0, str(config.AGENT_DIR))
@@ -476,6 +476,12 @@ def brief(run_dir: Path, web_research: str | None, web_sources: list[str], websi
 
 # --------------------------------------------------------------- finalize ----
 
+def composer_hold(flag: str) -> str:
+    """A --composer-flag as a HOLD. "text | check: how to confirm" carries its own check."""
+    what, sep, check = flag.partition("| check:")
+    return with_check("Composer: " + what.strip(), check.strip() if sep and check.strip() else None)
+
+
 def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str, proposal_md: str,
                     review: dict[str, Any], composer_flags: list[str], now: datetime,
                     *, founder_lines: list[str] | tuple[str, ...] = ()) -> dict[str, Any]:
@@ -503,14 +509,17 @@ def proposal_record(state: dict[str, Any], manifest: dict[str, Any], run_id: str
     # One id per run: a re-run of the same account on the same day with better
     # research is a new proposal, not a silent no-op against yesterday's draft.
     pid = "prq_" + hashlib.sha256(f"{slug}|{request_text}|{now.date()}|{run_id}".encode()).hexdigest()[:12]
-    holds = list(review.get("holds") or []) + [f"Composer: {f}" for f in composer_flags if f.strip()]
+    holds = list(review.get("holds") or []) + [composer_hold(f) for f in composer_flags if f.strip()]
     notes = list(review.get("notes") or [])
     intake = normalize_domain(((manifest.get("state") or {}).get("account") or {}).get("domain"))
     nothing_found = bool(intake) and not found_on_intake_domain(
         state.get("coverage"), urls_in(state.get("web_research")) + cited, intake)
     if nothing_found:
-        holds.append(f"Nothing was found on {intake} by any source; this is a not-found note. Confirm the domain "
-                     "with the prospect before anything goes out.")
+        holds.append(with_check(
+            f"Nothing was found on {intake} by any source; this is a not-found note.",
+            f"open https://{intake} yourself, side by side with any similarly named site the research lists under "
+            f"Gaps, and match product, founder name and contact email domain; or find a second source that names "
+            f"the founder at {intake}."))
     if state.get("web_research_error") or not state.get("web_sources"):
         notes.append("Web research found no sources; the proposal argues from the request and the ledger alone.")
     labels = dict(DATA_SOURCES)
@@ -738,7 +747,8 @@ def main(argv: list[str] | None = None) -> int:
     f.add_argument("run_id")
     f.add_argument("--proposal", type=Path, required=True, help="the drafted Markdown")
     f.add_argument("--website-summary", type=Path, default=None)
-    f.add_argument("--composer-flag", action="append", default=[], help="a judgement-call HOLD line; repeatable")
+    f.add_argument("--composer-flag", action="append", default=[],
+                   help='a judgement-call HOLD line, "text | check: how to confirm it"; repeatable')
     f.add_argument("--founder-line", action="append", default=[],
                    help="a sentence for the note to the founder (scope limit, what to send us); repeatable")
     f.add_argument("--crm-dump", type=Path, required=True)

@@ -46,6 +46,20 @@ Don't work around them.
 - **One proposal per run.** A changed proposal is a new run from the Intake
   page, never an edit or revision of one already filed.
 
+## HOLDs and "unconfirmed" flags clear only after an independent check
+
+- A HOLD, or anything Claude called unconfirmed, is never cleared by a verbal
+  "confirmed" alone. On 24 Sep 2026 a verbal confirmation cleared the
+  Claridi.ai flag, the run went ahead on the lookalike clarid.ai, and undoing
+  it took 30 minutes.
+- It clears after one independent check: open the actual domain (side by side
+  with any lookalike), pull a second source, or ask Claude "what would
+  confirm this is the same company?" and do that check.
+- When the owner confirms without a check, reply with the one specific check
+  (about 90 seconds; each HOLD line names it after "Confirm by:") and act only
+  after they report what it showed. Record that result in the run doc or an
+  appended CRM note.
+
 ## "Founder" means the prospect's founder
 
 - The ICP is small startups, so the requester on the intake form is the

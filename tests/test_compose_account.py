@@ -232,7 +232,8 @@ def test_finalize_plans_contact_note_and_mints_account(ledger, dump, tmp_path):
     rec = res["record"]
     assert rec["proposal_id"].startswith("prq_") and rec["run_id"] == "run_t"
     assert rec["review"]["status"] == "needs_review"
-    assert rec["review"]["holds"] == ["Composer: Deadline is unrealistic"]
+    assert rec["review"]["holds"] == ['Composer: Deadline is unrealistic. Confirm by: ask Claude "what would confirm this?" '
+                                      'and do that check.'], "a flag without its own check falls back to asking Claude"
     assert rec["request"]["source_url"] == "https://linkedin.example/post/1"
     assert res["state"]["website_summary"] == "Example Co makes examples."
 
@@ -405,7 +406,9 @@ def test_empty_means_empty(ledger, dump, tmp_path):
     ok = ok.replace("## What we heard\nYou asked for help planning a second location.",
                     "## What we heard\nWhat the company does: not found.")
     res = compose.finalize(run_dir, ok, None, [], master, docs, {}, NOW)
-    assert any("not-found note" in h for h in res["record"]["review"]["holds"])
+    hold = next(h for h in res["record"]["review"]["holds"] if "not-found note" in h)
+    assert "Confirm by: open https://brandnew.example yourself, side by side" in hold, "the check names the intake domain"
+    assert "with the prospect" not in hold, "a verbal confirmation never clears a HOLD"
     assert res["record"]["review"]["status"] == "needs_review"
 
 
@@ -479,4 +482,10 @@ def test_push_reads_records_filed_before_the_rename():
     legacy = {"proposal_id": "prq_x", "proposal_markdown": "# P", "founder_note": {"text": "HOLD — old"}}
     assert "Review before sending:\nHOLD — old" in push.note_block(legacy, "2026-09-24")
     assert "Note to the founder" not in push.note_block(legacy, "2026-09-24")
+
+
+def test_composer_flag_carries_its_own_check():
+    assert compose.composer_hold("Deadline is unrealistic | check: ask the founder for the launch date in writing") == (
+        "Composer: Deadline is unrealistic. Confirm by: ask the founder for the launch date in writing")
+    assert compose.composer_hold("Outside the practice | check:").endswith('ask Claude "what would confirm this?" and do that check.')
 
