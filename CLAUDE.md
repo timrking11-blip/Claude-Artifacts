@@ -142,13 +142,14 @@ entry condition is unmet does not start.
 pin, the retitle, GTM Control item 7, CRON_TZ on the three routines, parked
 nodes in registry v1.5 and on the Stack Status page, the orphan "Operations
 Workbench Design System" card removed from the Command Center; D1 and D6
-decided and written to registry v1.5). Open, in the owner's settings:
-disconnect Carly and ZoomInfo. The Drive mirror (My Drive › GitHub ›
-Claude-Artifacts) was labelled "not a source" on 25 Sep 2026 with a marker
-file at the top of the folder; the folder itself was not renamed. The atlas
-page's embedded fallback snapshot and its clock caption refresh at the next
-atlas refresh. Gate check: the
-Monday 28 Sep Command Center refresh.
+decided and written to registry v1.5). Nothing is left in the owner's
+settings: Carly and ZoomInfo were disconnected on 25 Sep 2026 (ListConnectors:
+Carly disconnected, no ZoomInfo connector installed), and the Drive mirror
+(My Drive › GitHub › Claude-Artifacts) carries a "not a source" marker file
+at its top; the folder was not renamed. The atlas page's embedded fallback
+snapshot and its clock caption refresh at the next atlas refresh (1 Oct).
+Phase 0 is not passed until its gate: the Monday 28 Sep Command Center
+refresh, checked at 10:00 ET by the scheduled gate-check routine.
 
 **Scheduled kickoffs (set 25 Sep 2026).** Six one-shot routines, bound to
 the Claude Code session that ran Phase 0 (session_01TQKKRom7R4Hg9FsvJNhUs9),
