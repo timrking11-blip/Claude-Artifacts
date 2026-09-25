@@ -11,12 +11,12 @@ corrects something new, add it here in the same change.
   append-only, so a wrong name in a filed proposal can't be taken back.
 - The name lives in `BRAND` in `crm/note_to_founder.py`. Use that rather than
   retyping it.
-- The Apollo sequence "Strategic Marketing Insights · First Touch Sequence"
-  (id 6aab7bd92967250020216921) still carries the wrong name on 25 Sep 2026.
+- The Apollo sequence "Strategic Market Insights · First Touch Sequence" (id
+  6aab7bd92967250020216921) carried "Marketing" until the owner renamed it in
+  the Apollo UI on 25 Sep 2026 (confirmed by `apollo_emailer_campaigns_search`).
   `apollo_sequences_update` refuses a name-only change (it demands every
-  template body resent into the live sequence) and wrote nothing on two
-  tries. The rename is the owner's, in the Apollo UI (Sequences › the
-  sequence › its name); confirm it with `apollo_emailer_campaigns_search`.
+  template body resent into the live sequence): rename a sequence in the UI,
+  never through that tool.
 
 ## The owner works on Windows
 
