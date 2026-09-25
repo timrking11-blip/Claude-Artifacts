@@ -27,3 +27,7 @@ Master now holds **67** contacts.
   merge self-heals weekly (crm/master.py:dedupe_by_vendor_id), and validate_sync.py fails
   CI on any recurrence. No field values were lost: each duplicate was folded through the
   field-level merge with its own provenance.
+
+## 2026-09-25T19:47:56+00:00
+
+- **key backfill** (scripts/backfill_keys.py): 64 CRM contact(s) given master_id (64 by Apollo id, 0 by email), 64 master row(s) given crm_id, 0 already keyed, 0 left unkeyed.

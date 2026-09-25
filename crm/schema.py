@@ -142,6 +142,10 @@ class Contact:
     apollo_person_id: str | None = None
     explorium_prospect_id: str | None = None
     explorium_business_id: str | None = None
+    # The CRM System document this person is, stored rather than matched at
+    # read time. Written only by scripts/backfill_keys.py from a CRM dump;
+    # the weekly merge carries it forward untouched.
+    crm_id: str | None = None
 
     sources: list[str] = field(default_factory=list)
     provenance: dict[str, dict[str, Any]] = field(default_factory=dict)

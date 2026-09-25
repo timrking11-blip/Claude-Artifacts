@@ -300,6 +300,7 @@ def dedupe_by_vendor_id(master: list[Contact], report: MergeReport | None = None
             # resolve_field ranks every field by real trust, not by recency.
             src = (dup.sources or ["manual"])[0]
             keep = merge_contact(keep, dup, src, dup.last_updated or utcnow(), report)
+            keep.crm_id = keep.crm_id or dup.crm_id
             keep.sources = sorted(set(keep.sources) | set(dup.sources or []))
             keep.first_seen = min(filter(None, (keep.first_seen, dup.first_seen)), default=keep.first_seen)
             dropped[dup.contact_id] = keep.contact_id

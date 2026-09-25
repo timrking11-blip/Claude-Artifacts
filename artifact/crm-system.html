@@ -7,6 +7,7 @@
   --ok:#1D7A55;--ok-soft:#DFF2E8;--warn:#9A6A12;--warn-soft:#F8ECCF;--bad:#A83A3A;--bad-soft:#F6DFDF;--pend:#6B7682;--pend-soft:#E6EAEE;
   --s-new:#6B7682;--s-contacted:#1E5AA0;--s-replied:#0E7C86;--s-meeting:#7A4EA6;--s-proposal:#B7791F;--s-won:#1D7A55;--s-lost:#A83A3A;
   --a-cold:#6B7682;--a-warm:#B7791F;--a-engaged:#1E5AA0;--a-customer:#1D7A55;
+  --apollo:#3B4FA6;--apollo-soft:#E3E7F6;--explorium:#8A4E9C;--explorium-soft:#EFE3F3;--manual:#0E6B57;--manual-soft:#DDEFE8;--linkedin:#1F6F8B;--linkedin-soft:#DDEEF3;
   --display:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;--body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;--mono:"IBM Plex Mono",Menlo,Consolas,monospace;
   --shadow:0 6px 24px rgba(20,30,40,.14);
 }
@@ -16,6 +17,7 @@
   --ok:#5CC493;--ok-soft:#173225;--warn:#E0B24E;--warn-soft:#3A2E12;--bad:#E07A7A;--bad-soft:#3B1D1D;--pend:#8B96A2;--pend-soft:#242C34;
   --s-new:#8B96A2;--s-contacted:#6CA3E8;--s-replied:#4FB8C2;--s-meeting:#B48BE0;--s-proposal:#E0B24E;--s-won:#5CC493;--s-lost:#E07A7A;
   --a-cold:#8B96A2;--a-warm:#E0B24E;--a-engaged:#6CA3E8;--a-customer:#5CC493;
+  --apollo:#97A6E8;--apollo-soft:#232B4A;--explorium:#CDA3DB;--explorium-soft:#35243C;--manual:#43B597;--manual-soft:#16352D;--linkedin:#6FC0DA;--linkedin-soft:#16303A;
   --shadow:0 8px 28px rgba(0,0,0,.5);
 }}
 :root[data-theme="dark"]{
@@ -24,6 +26,7 @@
   --ok:#5CC493;--ok-soft:#173225;--warn:#E0B24E;--warn-soft:#3A2E12;--bad:#E07A7A;--bad-soft:#3B1D1D;--pend:#8B96A2;--pend-soft:#242C34;
   --s-new:#8B96A2;--s-contacted:#6CA3E8;--s-replied:#4FB8C2;--s-meeting:#B48BE0;--s-proposal:#E0B24E;--s-won:#5CC493;--s-lost:#E07A7A;
   --a-cold:#8B96A2;--a-warm:#E0B24E;--a-engaged:#6CA3E8;--a-customer:#5CC493;
+  --apollo:#97A6E8;--apollo-soft:#232B4A;--explorium:#CDA3DB;--explorium-soft:#35243C;--manual:#43B597;--manual-soft:#16352D;--linkedin:#6FC0DA;--linkedin-soft:#16303A;
   --shadow:0 8px 28px rgba(0,0,0,.5);
 }
 *{box-sizing:border-box}
@@ -74,6 +77,8 @@ input[type=search]{flex:1 1 220px;min-width:160px;width:auto}
 .pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.pend{background:var(--pend-soft);color:var(--pend)} .pill.acc{background:var(--accent-soft);color:var(--accent)}
 .pill.stage{color:#fff;background:var(--stage)}
 .pill.arch{background:var(--surface3);color:var(--ink);font-family:var(--mono);font-weight:500}
+.src{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:.02em;padding:1px 6px;border-radius:4px;white-space:nowrap;background:var(--pend-soft);color:var(--pend)}
+.src.apollo{background:var(--apollo-soft);color:var(--apollo)} .src.explorium{background:var(--explorium-soft);color:var(--explorium)} .src.manual{background:var(--manual-soft);color:var(--manual)} .src.linkedin{background:var(--linkedin-soft);color:var(--linkedin)}
 /* table */
 .tblwrap{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow-x:auto}
 table{border-collapse:collapse;width:100%;min-width:1000px}
@@ -109,6 +114,16 @@ td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 .logrow .ts{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
 .logrow .ty{font-weight:600;text-transform:capitalize}
 .addlog{display:grid;grid-template-columns:auto 1fr auto;gap:6px}
+/* sources: where each value came from, as the data layer holds it */
+.srcs{display:grid;gap:4px}
+.srow{display:grid;grid-template-columns:96px minmax(0,1fr) auto auto;gap:8px;align-items:baseline;font-size:12.5px;padding:5px 8px;background:var(--surface2);border-radius:5px}
+.srow .f{font-size:11.5px;color:var(--muted)}
+.srow .v{overflow-wrap:anywhere}
+.srow .d{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.hold{display:grid;gap:3px;font-size:12.5px;padding:6px 9px;border-radius:5px;background:var(--warn-soft);box-shadow:inset 3px 0 0 var(--warn)}
+.hold b{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.06em;color:var(--warn)}
+.kv .mono{font-family:var(--mono);font-size:11.5px}
+@media (max-width:720px){.srow{grid-template-columns:1fr auto auto}.srow .v{grid-column:1/-1;grid-row:2}}
 .addlog select{width:auto}
 .btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:6px;padding:7px 12px;font-weight:600;cursor:pointer}
 .btn.ghost{background:var(--surface2);color:var(--ink)}
@@ -231,7 +246,7 @@ footer a{color:var(--accent)}
 </section>
 
 <footer>
-  Records are owned by this page. The Monday sync pulls every Apollo list registered for this CRM and updates names, titles, emails, phones and list membership; stage, notes, next steps, deal value and activity are never overwritten by the sync. Contacts and accounts dropped from Apollo are flagged, not deleted.
+  Records are owned by this page. The Monday sync pulls every Apollo list registered for this CRM and updates names, titles, emails, phones and list membership; stage, notes, next steps, deal value and activity are never overwritten by the sync. Contacts and accounts dropped from Apollo are flagged, not deleted. A contact's account and its master record are stored keys the Monday push writes; nothing here matches them by name or email.
 </footer>
 </div>
 
@@ -306,6 +321,7 @@ function cardHtml(r){
       ${r.segment?`<span class="pill pend">${esc(r.segment)}</span>`:''}
       ${r.archetype_code?`<span class="pill arch" title="${esc(archName(r.archetype_code))}">${esc(r.archetype_code)}</span>`:''}
       ${(r.flags||[]).includes('verify')?'<span class="pill warn">Verify</span>':''}
+      ${(r.flags||[]).includes('review_org')?'<span class="pill warn">Check company</span>':''}
       ${(r.flags||[]).includes('removed_from_list')?'<span class="pill bad">Off list</span>':''}
       ${(r.flags||[]).includes('pending_apollo')?'<span class="pill acc">→ Apollo Mon</span>':''}
       ${isLi(r)?'<span class="pill acc">LinkedIn</span>':''}${preQual(r)?'<span class="pill warn">Pre-qual</span>':''}
@@ -367,6 +383,31 @@ async function patch(id,fields,logText){
 }
 function showBanner(t){const b=$('banner');b.textContent=t;b.hidden=false}
 
+// ---------- sources ----------
+// The data layer's view of a contact, written by the Monday push
+// (scripts/push_enrichment_to_crm.py): where each value came from, and any
+// conflict the merge held for a person to settle. Read-only here; it replaces
+// the retired Master Contact Ledger's provenance view.
+const SRC_FIELDS={first_name:'First name',last_name:'Last name',email:'Email',phone:'Phone',title:'Title',seniority:'Seniority',linkedin_url:'LinkedIn',location:'Location',company_name:'Company',company_domain:'Domain',industry:'Industry',employee_count:'Employees',technologies:'Technologies'};
+const SRC_LABEL={apollo:'Apollo',explorium:'Explorium',manual:'Edited',linkedin:'LinkedIn'};
+const fmtVal=v=>Array.isArray(v)?v.join(', '):String(v??'');
+function heldHtml(h){
+  const src=esc(SRC_LABEL[h.source]||h.source||'a source');
+  if(h.kind==='ambiguous')return `<div class="hold"><b>AMBIGUOUS MATCH</b><span>A record from ${src} matched this contact and ${Math.max(0,(h.candidates||[]).length-1)} other record${(h.candidates||[]).length>2?'s':''}; it was left unfused.</span><span class="kv">${esc((h.keys||[]).join(' · '))}</span></div>`;
+  return `<div class="hold"><b>HELD CONFLICT · ${esc((SRC_FIELDS[h.field]||h.field||'').toUpperCase())}</b><span>Kept “${esc(fmtVal(h.kept))}”; ${src} said “${esc(fmtVal(h.rejected))}”.</span></div>`;
+}
+function sourcesHtml(r){
+  if(!r.master_id)return '<div class="kv">Not in the data layer yet. The Monday push keys each contact to its master record, then shows where every value came from.</div>';
+  const p=r.provenance||{};
+  const ks=[...Object.keys(SRC_FIELDS).filter(k=>p[k]),...Object.keys(p).filter(k=>!SRC_FIELDS[k])];
+  const rows=ks.map(k=>{const x=p[k]||{},s=String(x.source||'');
+    return `<div class="srow"><span class="f">${esc(SRC_FIELDS[k]||k)}</span><span class="v">${esc(fmtVal(x.value))}</span><span class="src ${esc(s)}">${esc(SRC_LABEL[s]||s||'—')}</span><span class="d">${x.observed_at?esc(fmtD(String(x.observed_at).slice(0,10))):'—'}</span></div>`}).join('');
+  return `${(r.held||[]).map(heldHtml).join('')}
+    ${rows?`<div class="srcs">${rows}</div>`:'<div class="kv">No attributed values yet.</div>'}
+    ${(r.flags||[]).includes('review_org')?'<div class="kv"><span class="pill warn">Check company</span> Its company name matches an account whose domain differs, so it isn’t linked to that account.</div>':''}
+    <div class="kv">Master record <span class="mono">${esc(r.master_id)}</span>${r.org_id?` · account <span class="mono">${esc(r.org_id)}</span>`:''}. Written by the Monday push; edits on this page don’t change it.</div>`;
+}
+
 // ---------- drawer ----------
 let saveTimer=null;
 function renderDrawer(r,keepFocus){
@@ -385,6 +426,7 @@ function renderDrawer(r,keepFocus){
         <div><span class="k">Links</span>${r.linkedin?`<a href="${esc(r.linkedin)}" target="_blank" rel="noopener">LinkedIn</a> · `:''}${r.website?`<a href="https://${esc(r.website)}" target="_blank" rel="noopener">Website</a> · `:''}${r.apollo_url?`<a href="${esc(r.apollo_url)}" target="_blank" rel="noopener">Apollo</a>`:'<span class="dash">not in Apollo yet — uploads on the Monday sync</span>'}</div>
         ${r.employees||r.revenue||r.industry?`<div class="kv">${esc([r.industry,r.employees&&r.employees+' employees',r.revenue&&r.revenue+' revenue',r.hq_city&&'HQ '+r.hq_city+', '+r.hq_state].filter(Boolean).join(' · '))}</div>`:''}
         ${r.source_note?`<div class="kv">${esc(r.source_note)}</div>`:''}
+        ${(r.held||[]).length?`<div class="kv"><span class="pill warn">${r.held.length} held</span> The data layer is holding ${r.held.length>1?'values':'a value'} for you to settle; see Sources below.</div>`:''}
       </div></div>
       <div class="sec"><h3>Next step</h3><div class="grid2">
         <div class="field"><label for="f-next">Action</label><input type="text" id="f-next" value="${esc(r.next_step)}" placeholder="e.g. Follow-up call"${readOnly?' disabled':''}></div>
@@ -413,6 +455,7 @@ function renderDrawer(r,keepFocus){
         ${readOnly?'':`<div class="addlog"><select id="l-type">${LOGTYPES.map(t=>`<option>${t}</option>`).join('')}</select><input type="text" id="l-text" placeholder="What happened?"><button class="btn" id="l-add">Log</button></div>`}
         <div class="log">${[...(r.activity||[])].reverse().map(a=>`<div class="logrow"><span class="ts">${fmtTs(a.ts)}</span><span><span class="ty">${esc(a.type)}</span> — ${esc(a.text)}</span></div>`).join('')||'<div class="empty">No activity yet.</div>'}</div>
       </div>
+      <div class="sec" id="sources"><h3>Sources</h3>${sourcesHtml(r)}</div>
     </div>
   </aside>`;
   $('scrim').onclick=closeDrawer;$('dx').onclick=closeDrawer;
@@ -466,13 +509,10 @@ const ALABEL=Object.fromEntries(ASTAGES);
 const compact=n=>{n=+n||0;if(!n)return '';if(n>=1e9)return '$'+(n/1e9).toFixed(n>=1e10?0:1)+'B';if(n>=1e6)return '$'+(n/1e6).toFixed(n>=1e7?0:1)+'M';if(n>=1e3)return '$'+Math.round(n/1e3)+'K';return '$'+n};
 const num=n=>(+n||0)?Number(n).toLocaleString('en-US'):'';
 const mono=s=>String(s||'?').replace(/[^A-Za-z0-9 ]/g,' ').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'?';
-function contactsFor(a){
-  const nm=(a.name||'').toLowerCase(), dom=(a.domain||'').toLowerCase();
-  return all().filter(c=>{
-    const cc=(c.company||'').toLowerCase(), cw=(c.website||'').toLowerCase();
-    return (dom&&cw&&(cw===dom||cw.endsWith('.'+dom)))||(nm&&cc&&(cc===nm||cc.includes(nm)||nm.includes(cc)));
-  });
-}
+// A contact belongs to an account only through its stored org_id, which the
+// Monday push sets on an exact domain match. Nothing is matched here by
+// name: "Acme" must not collect "Acme Mechanical" and "Acme Roofing".
+function contactsFor(a){return all().filter(c=>c.org_id===a._id)}
 function filteredAccts(){
   const s=$('q').value.trim().toLowerCase(), sg=$('f-seg').value;
   return [...accts.values()].filter(a=>{
@@ -549,7 +589,7 @@ function openAcct(id){
           <div><div class="cn">${esc(c.name)}</div><div class="ct">${esc(c.title)}</div></div>
           <div class="mono">${c.email?esc(c.email):'<span class="dash">no email</span>'}</div>
           <div><span class="pill stage" style="--stage:var(--s-${c.stage})">${SLABEL[c.stage]||c.stage}</span></div>
-        </div>`).join('')}</div>`:'<div class="empty">No pipeline contacts matched to this company yet.</div>'}
+        </div>`).join('')}</div>`:'<div class="empty">No contacts linked yet. The Monday push links a contact whose website domain is this account’s domain.</div>'}
       </div>
       <div class="sec"><h3>Next step</h3><div class="grid2">
         <div class="field"><label for="a-next">Action</label><input type="text" id="a-next" value="${esc(a.next_step||'')}"${readOnly?' disabled':''}></div>

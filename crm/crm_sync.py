@@ -13,11 +13,12 @@ database itself -- a Claude session applies the batch files with ArtifactData.
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
-from .schema import normalize_email
+from .schema import Contact, normalize_domain, normalize_email, normalize_name
 
 BATCH_LIMIT = 50
 CONTACTS_COLLECTION = "contacts"
@@ -39,6 +40,14 @@ CRM_OWNED_FIELDS = frozenset({
     "segment", "qualified", "origin", "created_at",
 })
 
+#: Stored keys and the data layer's view of a contact. Only the push scripts
+#: write them (Phase 2 of the architecture blueprint): no page or sync
+#: computes a person->organization or CRM->master link at read time.
+KEY_FIELDS = ("master_id", "org_id", "provenance", "held")
+
+#: Flag for a contact whose company name matches an account while its domain
+#: does not. It is never linked by name; the owner decides.
+REVIEW_ORG_FLAG = "review_org"
 
 def utcnow_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
@@ -91,6 +100,116 @@ def index_crm_by_email(docs: dict[str, dict[str, Any]]) -> dict[str, str]:
         email = normalize_email(doc.get("email"))
         if email:
             out.setdefault(email, doc_id)
+    return out
+
+
+@dataclass
+class Join:
+    """How CRM contacts meet master rows, by stored key only.
+
+    `joined` maps doc_id -> master Contact, through the stored `master_id`
+    first and the Apollo id (the doc id) second. An email match is never a
+    join: it is listed in `email_only` for scripts/backfill_keys.py to key
+    once, with a changelog line, so a changed email cannot silently re-point
+    a contact at someone else.
+    """
+
+    joined: dict[str, Contact] = field(default_factory=dict)
+    how: dict[str, str] = field(default_factory=dict)
+    email_only: dict[str, Contact] = field(default_factory=dict)
+    #: doc_id -> master_id stored on the doc that names no master row.
+    dangling: dict[str, str] = field(default_factory=dict)
+    #: doc_id -> (stored master_id, master row the Apollo id points at).
+    disagree: dict[str, tuple[str, str]] = field(default_factory=dict)
+
+
+def join_master(master: list[Contact], docs: dict[str, dict[str, Any]]) -> Join:
+    by_id = {c.contact_id: c for c in master if c.contact_id}
+    by_apollo = {c.apollo_contact_id: c for c in master if c.apollo_contact_id}
+    by_email = {normalize_email(c.email): c for c in master if normalize_email(c.email)}
+    crm_emails = index_crm_by_email(docs)
+    out = Join()
+    for doc_id, doc in docs.items():
+        stored = doc.get("master_id")
+        via_apollo = by_apollo.get(doc_id)
+        if stored:
+            rec = by_id.get(stored)
+            if rec is None:
+                out.dangling[doc_id] = stored
+            elif via_apollo is not None and via_apollo.contact_id != stored:
+                out.disagree[doc_id] = (stored, via_apollo.contact_id)
+            else:
+                out.joined[doc_id], out.how[doc_id] = rec, "master_id"
+            continue
+        if via_apollo is not None:
+            out.joined[doc_id], out.how[doc_id] = via_apollo, "apollo_id"
+            continue
+        email = normalize_email(doc.get("email"))
+        if email and email in by_email and crm_emails.get(email) == doc_id:
+            out.email_only[doc_id] = by_email[email]
+    return out
+
+
+def org_key(doc: dict[str, Any], accounts: dict[str, dict[str, Any]]) -> tuple[str | None, bool]:
+    """(account doc id, needs review) for one contact.
+
+    Linked only on an exact domain match between the contact's website and an
+    account's domain. A company name equal to an account's name with a
+    different or missing domain is flagged for review and never linked --
+    "Acme" must not attach to "Acme Mechanical", and a shared name is not a
+    shared company either.
+    """
+    domain = normalize_domain(doc.get("website"))
+    if domain:
+        hits = sorted(a_id for a_id, a in accounts.items()
+                      if normalize_domain(a.get("domain") or a.get("website")) == domain)
+        if hits:
+            return hits[0], False
+    name = (normalize_name(doc.get("company")) or "").lower()
+    if name and any((normalize_name(a.get("name")) or "").lower() == name for a in accounts.values()):
+        return None, True
+    return None, False
+
+
+def provenance_view(rec: Contact) -> dict[str, dict[str, Any]]:
+    """{field: {value, source, observed_at}} for the CRM drawer's Sources section."""
+    out: dict[str, dict[str, Any]] = {}
+    for name, prov in sorted((rec.provenance or {}).items()):
+        if not isinstance(prov, dict) or not prov.get("source"):
+            continue
+        value = getattr(rec, name, None)
+        if value is None or value == "" or value == []:
+            continue
+        out[name] = {"value": value, "source": prov["source"], "observed_at": prov.get("observed_at") or ""}
+    return out
+
+
+def provenance_changed(current: Any, new: dict[str, dict[str, Any]]) -> bool:
+    """True when a value or source moved. A re-observed date alone is not a change."""
+    def shape(p: Any) -> dict[str, tuple[str, str]]:
+        if not isinstance(p, dict):
+            return {}
+        return {k: (json.dumps(v.get("value"), sort_keys=True), v.get("source"))
+                for k, v in p.items() if isinstance(v, dict)}
+    return shape(current) != shape(new)
+
+
+def load_review(path: Path) -> dict[str, list[dict[str, Any]]] | None:
+    """master contact_id -> held items, from data/master/review.json. None if absent."""
+    if not path.exists():
+        return None
+    raw = json.loads(path.read_text() or "{}")
+    out: dict[str, list[dict[str, Any]]] = {}
+    for c in raw.get("conflicts_held") or []:
+        out.setdefault(c.get("contact_id", ""), []).append(
+            {"kind": "conflict", "field": c.get("field"), "kept": c.get("kept"),
+             "rejected": c.get("rejected"), "source": c.get("source")})
+    for a in raw.get("ambiguous_matches") or []:
+        for cid in a.get("candidates") or []:
+            out.setdefault(cid, []).append(
+                {"kind": "ambiguous", "keys": a.get("keys") or [], "candidates": a.get("candidates") or [],
+                 "source": a.get("source")})
+    out.pop("", None)
     return out
 
 

@@ -118,7 +118,9 @@ def test_enrichment_fills_empty_fields_only_and_flags(master, dump):
     assert ada["activity"][-1]["type"] == "system"
     assert "Enriched" in ada["activity"][-1]["text"] and "proposal-ready" in ada["activity"][-1]["text"]
 
-    assert "ap_bob" not in by_id                          # nothing new, not ready -> no write
+    # bob: no enrichment, not ready -> only his stored key, with no activity
+    # entry and no updated_at (the run's line in the CRM runlog records it).
+    assert by_id["ap_bob"] == {"master_id": "c_bob"}
     assert "ap_zed" not in by_id                          # not in master, disqualified -> no write
 
 

@@ -41,6 +41,9 @@ DATA_DIR = REPO_ROOT / "data"
 STAGING_DIR = DATA_DIR / "staging"
 MASTER_DIR = DATA_DIR / "master"
 MASTER_CONTACTS = MASTER_DIR / "contacts.json"
+#: Held conflicts and ambiguous matches from the latest applied merge. The
+#: push carries them into the CRM drawer's Sources section.
+MASTER_REVIEW = MASTER_DIR / "review.json"
 CHANGELOG = DATA_DIR / "CHANGELOG.md"
 
 APOLLO_STAGING = STAGING_DIR / "apollo.json"

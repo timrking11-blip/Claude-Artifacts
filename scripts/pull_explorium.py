@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Enrich the master roster against Explorium and stage the result.
+"""Match the master roster to Explorium prospect ids and stage the result.
+
+Match-only by decision D1 (25 Sep 2026): enrichment is bought from the Vibe
+Prospecting balance through the Enrichment Broker (crm/broker.py), where
+every paid call is estimated and logged as an enrichment job first. This
+weekly REST step spends nothing: matching is free, and the prospect ids it
+stages are identity keys the broker enriches against. `--enrich` restores
+the paid REST call only with `--job` naming the approved enrichment job
+that pays for it -- the day REST credits are bought.
 
 Runs as the other half of the weekly exchange, in parallel with
 pull_apollo.py. It reads the *previous* master as its input roster rather than
@@ -22,6 +30,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from crm import config
+from crm.broker import map_explorium
 from crm.http import post_json, HttpError
 from crm.master import load_master
 from crm.schema import Contact, SOURCE_EXPLORIUM, utcnow, normalize_email
@@ -130,24 +139,17 @@ def to_contact(original: Contact, prospect_id: str, data: dict) -> Contact:
 
     Sparse on purpose: the merge treats an absent field as 'no opinion', so
     echoing back the Apollo values we sent would fabricate corroboration.
+    The field mapping is the broker's (crm.broker.map_explorium), so a paid
+    REST run and a Vibe Prospecting purchase land the same way.
     """
     return Contact(
         # Carry identity so the merge can match, but claim nothing new about it.
         email=original.email,
-        linkedin_url=data.get("linkedin") or data.get("linkedin_url"),
         first_name=original.first_name,
         last_name=original.last_name,
         company_domain=original.company_domain,
-        phone=data.get("mobile_phone") or data.get("phone"),
-        title=data.get("job_title") or data.get("title"),
-        seniority=data.get("job_seniority_level") or data.get("seniority"),
-        location=data.get("location") or data.get("country_name"),
-        company_name=data.get("company_name"),
-        industry=data.get("industry") or data.get("google_category"),
-        employee_count=data.get("number_of_employees") or data.get("employee_count"),
-        technologies=[t for t in (data.get("technologies") or []) if t],
         explorium_prospect_id=prospect_id,
-        explorium_business_id=data.get("business_id"),
+        **map_explorium(data),
     )
 
 
@@ -160,11 +162,18 @@ def main() -> int:
         help="master (default, runs in parallel) or apollo (serial, needs this "
         "week's Apollo staging to exist first)",
     )
-    parser.add_argument("--limit", type=int, default=0, help="cap records enriched (0 = all)")
+    parser.add_argument("--limit", type=int, default=0, help="cap records matched (0 = all)")
+    parser.add_argument("--enrich", action="store_true",
+                        help="also call the paid REST enrichment (off by decision D1); needs --job")
+    parser.add_argument("--job", default="", help="the approved enrichment job id that pays for --enrich")
     parser.add_argument("--out", type=Path, default=config.EXPLORIUM_STAGING)
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+    if args.enrich and not args.job.strip():
+        log.error("--enrich spends Explorium credits: name the approved enrichment job with --job. "
+                  "Nothing is bought without a ledger entry (crm/broker.py).")
+        return 2
 
     # Validate the credential before doing anything, even on an empty roster:
     # otherwise week one "succeeds" without ever proving the key works.
@@ -182,15 +191,17 @@ def main() -> int:
 
     by_email = {normalize_email(c.email): c for c in roster if normalize_email(c.email)}
     enriched: list[Contact] = []
+    # Match-only unless a paid run was named; a paid run stops paying the
+    # moment the account runs dry and keeps matching.
     credits_exhausted = False
 
     try:
         for batch in chunked(list(by_email.values()), config.EXPLORIUM_BATCH_SIZE):
             resolved = match_prospects(batch)
             log.info("matched %s/%s prospects", len(resolved), len(batch))
-            if credits_exhausted:
-                # Matching still works without credits; keep resolving ids so
-                # the whole roster is linked, and skip the paid step.
+            if not args.enrich or credits_exhausted:
+                # Matching is free; keep resolving ids so the whole roster is
+                # linked, and skip the paid step.
                 enriched.extend(matched_only(by_email[e], pid) for e, pid in resolved.items())
                 continue
             try:
@@ -221,7 +232,9 @@ def main() -> int:
                 "source": SOURCE_EXPLORIUM,
                 "observed_at": utcnow(),
                 "roster": args.roster,
-                "credits_exhausted": credits_exhausted,
+                "mode": "enrich" if args.enrich else "match_only",
+                "job_id": args.job.strip() or None,
+                "credits_exhausted": credits_exhausted if args.enrich else None,
                 "count": len(enriched),
                 "contacts": [c.to_dict() for c in enriched],
             },
@@ -230,7 +243,7 @@ def main() -> int:
         )
         + "\n"
     )
-    log.info("staged %s enriched contacts to %s", len(enriched), args.out)
+    log.info("staged %s %s contacts to %s", len(enriched), "enriched" if args.enrich else "matched", args.out)
     return 0
 
 
