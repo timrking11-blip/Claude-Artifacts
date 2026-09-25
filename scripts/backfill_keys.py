@@ -17,8 +17,14 @@ id, or a master row that two CRM contacts would claim.
 
 Dry run by default. `--write` emits data/artifact/crm/keys_*.json batch files
 (a Claude session applies them with ArtifactData batch, pinned), rewrites
-master with the crm_id values, appends one CHANGELOG entry and writes one
-run line to data/runlog/. Safe to re-run: a keyed pair plans nothing.
+master with the crm_id values and appends one CHANGELOG entry. Safe to
+re-run: a keyed pair plans nothing.
+
+The session that applies the CRM side writes the run's one line to the CRM
+runlog (python3 -m crm.runlog entry), as the Monday push does. When the
+enrichment push runs in the same session, its batches carry the same
+master_id values: apply one set or the other, since both pin the same
+document versions.
 
     python scripts/backfill_keys.py --crm-dump <dump>            # dry run
     python scripts/backfill_keys.py --crm-dump <dump> --write
@@ -29,13 +35,12 @@ from __future__ import annotations
 import argparse
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from crm import config, runlog
+from crm import config
 from crm.crm_sync import join_master, load_crm_dump, pinned, write_batches
 from crm.master import load_master, save_master
 from crm.schema import Contact, utcnow
@@ -146,12 +151,10 @@ def main() -> int:
         changelog.write_text("# CRM master database changelog\n")
     with changelog.open("a") as fh:
         fh.write(changelog_entry(p, utcnow()))
-    doc = runlog.entry("Key backfill", f"{len(p.crm_writes)} CRM contacts keyed to master "
-                       f"({p.by_apollo} by Apollo id, {len(p.by_email)} by email), "
-                       f"{len(p.master_keys)} master rows keyed to the CRM",
-                       0, len(p.crm_writes), datetime.now(timezone.utc))
-    path = runlog.write_file(doc)
-    print(f"run line: {path}")
+    print(f"changelog: {changelog}")
+    print("next: apply the batches pinned, then write the run line, e.g.\n"
+          f"  python3 -m crm.runlog entry --run \"Key backfill\" --updated {len(p.crm_writes)} "
+          f"--detail \"{len(p.crm_writes)} contacts keyed to master, {len(p.master_keys)} master rows keyed to the CRM\"")
     return 0
 
 
