@@ -616,7 +616,9 @@ Each decision names a recommendation; none is made for the owner.
 Decided 25 Sep 2026 (recorded in registry v1.5): D1, the Vibe balance funds a
 one-time backfill of the 50 matched prospects and the REST step stays
 match-only; D6, a Google Calendar booking page on the domain mailbox, so Carly
-is disconnected.
+is disconnected. D1 amended the same day (registry v1.11): no enrichment
+backfill; alternatives are explored later, and the REST step stays match-only.
+D2 decided 25 Sep 2026 (registry v1.10): yes.
 
 Needs stipulation: (1) the Vibe Prospecting balance today (last known 746 on
 17 Sep); (2) where the SWAT Engine's SQL model is hosted, and which artifact
