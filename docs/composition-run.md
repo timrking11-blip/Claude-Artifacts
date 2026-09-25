@@ -224,6 +224,16 @@ Records and runs filed before the rename carry `founder_note` /
 `founder_status` / `needs_founder` and `founder.json`; the page, finalize and
 `push_proposals_to_crm.py` still read those.
 
+## The run line
+
+Every run that writes records adds one line to the CRM's `runlog` collection,
+shown in the CRM page's "Last runs" strip and in the morning brief. A
+composition run's line rides in its own CRM batch (`writes.json`), for
+example "Composition run · Claridi.ai: proposal prq_…, account created,
+review needs review (3 HOLD) · applied". A run that would create more than 5
+records holds instead (`crm/runlog.py`); a composition run creates at most
+one account, so it never does.
+
 ## Files a run leaves behind
 
 ```

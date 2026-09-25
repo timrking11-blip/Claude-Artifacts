@@ -284,16 +284,20 @@ def test_write_finalize_emits_batch_files_and_run_final(ledger, dump, tmp_path):
     assert md.index("**Note to the founder**") < md.index("**Review before sending**")
     writes_path = compose.write_finalize(run_dir, res, tmp_path / "batch", json_path, md_path, NOW)
     entries = json.loads(writes_path.read_text())
-    assert [e["collection"] for e in entries] == ["contacts", "accounts"]
+    assert [e["collection"] for e in entries] == ["contacts", "accounts", "runlog"], "the run line rides in the batch"
     assert entries[0]["if_version"] == 4 and "if_version" not in entries[1]
+    line = json.loads(Path(entries[2]["file_path"]).read_text())
+    assert line["status"] == "applied" and line["created"] == 1 and line["updated"] == 1
+    assert line["line"].startswith("Composition run · Example Co: proposal prq_") and "account created" in line["line"]
     for e in entries:
         assert Path(e["file_path"]).exists() and "data" not in e
     final = json.loads((run_dir / "run_final.json").read_text())
     assert final["status"] == "done" and final["steps"]["compose_proposal"] == "done"
-    assert final["crm"]["contact_ids"] == ["ap_ada"] and final["crm"]["writes_planned"] == 2
+    assert final["crm"]["contact_ids"] == ["ap_ada"] and final["crm"]["writes_planned"] == 3
     assert final["proposal_markdown"].startswith("# Example Co -- Prequalification Proposal")
     assert final["review_status"] == "done" and final["note_to_founder"].startswith("Ada —")
     assert final["founder"]["name"] == "Ada Lovelace" and "founder_note" not in final
+    assert final["run_line"] == line["line"]
 
 
 def test_cli_prepare_then_finalize(ledger, dump, tmp_path):

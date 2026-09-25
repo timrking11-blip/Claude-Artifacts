@@ -60,6 +60,21 @@ Don't work around them.
   after they report what it showed. Record that result in the run doc or an
   appended CRM note.
 
+## Runs that create or change records report where the owner looks, and hold on bulk creation
+
+- Every run that creates or modifies records writes one line to the CRM's
+  `runlog` collection (`crm/runlog.py`). The CRM page's "Last runs" strip and
+  the morning brief show it. A changelog, CI log or chat reply alone does not
+  count: on 21 Sep 2026 the changelog said "apollo: 15 created" in plain text,
+  nobody read it, and all 15 were duplicates.
+- A run that would create more than 5 records (`runlog.HOLD_OVER`) holds
+  instead of committing. It names the records and the check that confirms
+  them, and applies only after the owner confirms that exact count: Confirm on
+  the CRM page, or the weekly sync's `allow_created` workflow input. A
+  different count holds again.
+- A new writer uses `crm.runlog` (scripts) or writes the same document shape
+  (routines without the repo). Don't add a writer without its line.
+
 ## "Founder" means the prospect's founder
 
 - The ICP is small startups, so the requester on the intake form is the
