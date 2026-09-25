@@ -16,7 +16,7 @@ mirrored in this repo.
                           (run in parallel)    │
                                                └──▶  push_apollo.py  (opt-in writeback)
 
-  Monday 11:30 UTC   ─── Claude routine:  dump CRM ▶ validate_sync ▶ push_enrichment_to_crm ▶ push_proposals_to_crm (catch-up)
+  Monday 07:30 ET    ─── Claude routine:  dump CRM ▶ validate_sync ▶ push_enrichment_to_crm ▶ push_proposals_to_crm (catch-up)
 
   On demand — the ONE proposal process:
     Intake page ▶ Run composition ▶ routine wakes the repo session ▶ compose_account.py prepare
@@ -44,7 +44,7 @@ development, but it is not a path into the CRM.
 | Repo → artifact *(retired ledger)* | `scripts/export_artifact_batch.py` | master | `data/artifact/batch_*.json` |
 
 The canonical CRM is the **CRM System** artifact; the three CRM-facing
-scripts above target its schema and are applied by the Monday 11:30 UTC
+scripts above target its schema and are applied by the Monday 07:30 ET
 routine (validate → enrichment → proposals). The routine takes a dump with
 `ArtifactData list … out_dir=<dump>` and writes `<dump>/versions.json` from
 the listing's per-document versions, because the batch tool refuses an

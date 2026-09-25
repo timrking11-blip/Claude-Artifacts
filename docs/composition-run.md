@@ -34,7 +34,7 @@ page renders live: sequence lamps · review · note to the founder · proposal (
 ```
 
 The CRM refresh is unchanged: the Monday chain (06:00 UTC Action merge →
-11:00 Apollo ⇄ CRM sync → 11:30 enrichment push → 12:00 GTM refresh) still
+07:00 ET Apollo ⇄ CRM sync → 07:30 enrichment push → 08:00 GTM refresh) still
 carries enrichment, `proposal_ready` flags, and any proposal file a run left
 unapplied. A button run writes only its own proposal note and account record.
 
@@ -98,8 +98,8 @@ past it.
    review, research coverage per source, and the Apollo / CRM sync schedule for the record.
    `pre_qual` is set on the record; `stage` is never touched.
 7. **Sync** — the Monday chain carries the record on: 06:00 UTC merge into the
-   data layer, 11:00 Apollo ⇄ CRM (uploads `pending_apollo` accounts and
-   re-keys them), 11:30 enrichment push + proposal catch-up, 12:00 GTM refresh.
+   data layer, 07:00 ET Apollo ⇄ CRM (uploads `pending_apollo` accounts and
+   re-keys them), 07:30 enrichment push + proposal catch-up, 08:00 GTM refresh.
 
 ## The research leg ("agent crawlers")
 
@@ -267,7 +267,7 @@ disposition, ambiguous account) or a halt (`on_fetch_error: halt`).
 
 ## Monday
 
-The 11:30 UTC routine dumps contacts **and accounts** (with `versions.json`
+The Monday 07:30 ET routine dumps contacts **and accounts** (with `versions.json`
 and `versions_accounts.json`) so `push_proposals_to_crm.py` can re-apply any
 proposal a run left unapplied, on a contact or on a prospect's account. It is
 idempotent by `proposal_ref`, which every run sets on what it wrote.
