@@ -151,11 +151,11 @@ snapshot and its clock caption refresh at the next atlas refresh (1 Oct).
 Phase 0 is not passed until its gate: the Monday 28 Sep Command Center
 refresh, checked at 10:00 ET by the scheduled gate-check routine.
 
-**Scheduled kickoffs (set 25 Sep 2026).** Six one-shot routines, bound to
+**Scheduled kickoffs (set 25 Sep 2026).** Seven one-shot routines, bound to
 the Claude Code session that ran Phase 0 (session_01TQKKRom7R4Hg9FsvJNhUs9),
 run the gate checks and phase builds at the blueprint's windows: Phase 0
-gate check Mon 28 Sep 10:00 ET; Phase 1 kickoff Thu 1 Oct 11:00 ET; Phase 2
-kickoff Mon 19 Oct 10:00 ET; 15 Nov kill check + Phase 3 kickoff Mon 16 Nov
+gate check Mon 28 Sep 10:00 ET; Phase 1 continuation Thu 1 Oct 11:00 ET;
+Phase 1 close Mon 12 Oct 10:00 ET; Phase 2 kickoff Mon 19 Oct 10:00 ET; 15 Nov kill check + Phase 3 kickoff Mon 16 Nov
 10:00 ET; Phase 4 kickoff Mon 4 Jan 2027 10:00 ET (re-arms fortnightly until
 an engagement exists); Phase 5 trigger check Mon 1 Mar 2027 10:00 ET (then
 quarterly). Each starts only if the previous gate passed, asks the owner's
@@ -163,3 +163,33 @@ decisions in-session, spends no credits without an estimate and a go, and
 writes its result to the registry (trigger ids in the registry's agents
 entry "Blueprint phase kickoffs"). Do not start a phase from another session
 while its routine is pending.
+The routines work on this session's designated branch, restarted from the
+default branch after each merge; a `claude/blueprint-phase-N` branch named in
+an older routine prompt means that designated branch.
+
+**Phase 1 status (started 25 Sep 2026 on the owner's call, before the Phase 0
+gate).** Done on 25 Sep: step 7, the Governance Contract C1–C8 page
+(`artifact/governance-contract.html`), linked from the EOS, the P4 spec and
+the Intake contingencies; step 4, the CRM's `meta/config` reference lists (6
+service lines, 9 archetypes, segments A–D) with archetype and GTM segment
+pickers on the CRM page (`artifact/crm-system.html`), whose heading now matches its
+title; step 1's page part, the Command Center's Stack health section
+(`dashboard/stack`); step 6, its SWAT Engine build section (`build/gates`),
+with the cockpit page read-only. Held: the refresh and Apollo sync prompt
+changes until the Phase 0 gate check passes (it applies them on Mon 28 Sep);
+step 5, the Gate 0 checklist into Launch Check, until after Gate 0 (the 1 Oct
+continuation); the GTM Stack Status pointer until the panel shows the same
+facts two Mondays running (the 12 Oct close, which also writes the Phase 1
+gate). The owner re-enters the SWAT gate states on the Command Center; the
+cockpit is unpinned after that.
+
+- Archetype codes: VIA Viability Test · VSP Validation Sprint · MOB
+  Make-or-Buy Review · GTB GTM Blueprint · FRL Funding Route Lock · LRR Launch
+  Readiness Review · ESS Expansion Siting Study · DRF Diligence Red-Flag
+  Review · FCS Fractional Chief of Strategy. The Service Taxonomy names the
+  archetypes without codes; these were assigned on 25 Sep and are the
+  owner's to rename before records rely on them.
+- `archetype_code` and `segment_code` are CRM-owned: the owner sets them on
+  the CRM page and the Apollo sync never writes them. `segment` (the Apollo
+  list a record came from) and `segment_code` (GTM Control's A–D) are
+  different fields.

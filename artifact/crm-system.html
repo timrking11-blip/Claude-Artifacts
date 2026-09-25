@@ -73,6 +73,7 @@ input[type=search]{flex:1 1 220px;min-width:160px;width:auto}
 .pill{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:.03em;padding:1px 6px;border-radius:999px;white-space:nowrap;line-height:1.5}
 .pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.pend{background:var(--pend-soft);color:var(--pend)} .pill.acc{background:var(--accent-soft);color:var(--accent)}
 .pill.stage{color:#fff;background:var(--stage)}
+.pill.arch{background:var(--surface3);color:var(--ink);font-family:var(--mono);font-weight:500}
 /* table */
 .tblwrap{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow-x:auto}
 table{border-collapse:collapse;width:100%;min-width:1000px}
@@ -175,8 +176,8 @@ footer a{color:var(--accent)}
 <div class="wrap">
 <header class="top">
   <div>
-    <div class="eyebrow">CRM · synced from Apollo.io every Monday</div>
-    <h1>Leads Pipeline</h1>
+    <div class="eyebrow">Leads pipeline · synced from Apollo.io every Monday</div>
+    <h1>CRM System</h1>
     <div class="sync" id="syncline">Loading…</div>
   </div>
   <div class="seg" role="group" aria-label="View">
@@ -241,7 +242,19 @@ footer a{color:var(--accent)}
 const STAGES=[
  ["new","New"],["contacted","Contacted"],["replied","Replied"],["meeting","Meeting"],["proposal","Proposal"],["won","Won"],["lost","Lost"]];
 const SLABEL=Object.fromEntries(STAGES);
-const PRODUCTS=["Yearbook — full page","Yearbook — half page","Yearbook — spread","Hospitality / suite","Digital / social","Bundle","Other"];
+// Archetypes (SMI Service Taxonomy) and GTM segments A–D (SMI Go-to-Market Control) are
+// read from meta/config, the one place they are kept; the page holds no copy. archetype_code
+// and segment_code are CRM-owned: set here, never written by the Apollo sync.
+let ARCH=[], SEGS=[];
+const archName=c=>{const a=ARCH.find(x=>x.code===c);return a?a.name:c};
+function codeSelect(id,list,cur,fmt){
+  cur=cur||'';
+  if(!list.length)return `<select id="${id}" disabled><option value="${esc(cur)}">${cur?esc(cur)+' · list not loaded':'List not loaded'}</option></select>`;
+  const known=list.some(x=>x.code===cur);
+  return `<select id="${id}"${readOnly?' disabled':''}><option value=""${cur?'':' selected'}>— none —</option>${list.map(x=>`<option value="${esc(x.code)}"${x.code===cur?' selected':''}>${esc(fmt(x))}</option>`).join('')}${cur&&!known?`<option value="${esc(cur)}" selected>${esc(cur)} · not in the list</option>`:''}</select>`;
+}
+const archSelect=(id,cur)=>codeSelect(id,ARCH,cur,a=>a.code+' · '+a.name);
+const segSelect=(id,cur)=>codeSelect(id,SEGS,cur,s=>s.code+' · '+s.name);
 const LOGTYPES=["call","email","linkedin","meeting","note"];
 const PSTATUS=[["none","—"],["drafted","Drafted"],["sent","Sent"],["in_discussion","In discussion"],["accepted","Accepted"],["declined","Declined"]];
 const PSLABEL=Object.fromEntries(PSTATUS);
@@ -291,6 +304,7 @@ function cardHtml(r){
       ${r.deal_value?`<span class="mono">${money(r.deal_value)}</span>`:''}
       ${r.next_date?`<span class="${ds==='overdue'?'due':''}">${ds==='overdue'?'⚠ ':''}${fmtD(r.next_date)}${r.next_step?' · '+esc(r.next_step):''}</span>`:(r.next_step?`<span>${esc(r.next_step)}</span>`:'')}
       ${r.segment?`<span class="pill pend">${esc(r.segment)}</span>`:''}
+      ${r.archetype_code?`<span class="pill arch" title="${esc(archName(r.archetype_code))}">${esc(r.archetype_code)}</span>`:''}
       ${(r.flags||[]).includes('verify')?'<span class="pill warn">Verify</span>':''}
       ${(r.flags||[]).includes('removed_from_list')?'<span class="pill bad">Off list</span>':''}
       ${(r.flags||[]).includes('pending_apollo')?'<span class="pill acc">→ Apollo Mon</span>':''}
@@ -318,7 +332,7 @@ function renderTable(){
     <td class="mono">${r.mobile?esc(r.mobile):'<span class="dash">—</span>'}</td>
     <td>${r.next_date?`<span class="${ds==='overdue'?'due':''}">${fmtD(r.next_date)}</span>`:''}${r.next_step?`<div class="kv">${esc(r.next_step)}</div>`:''}</td>
     <td class="num">${money(r.deal_value)||'<span class="dash">—</span>'}</td>
-    <td>${esc(r.product)||'<span class="dash">—</span>'}</td>
+    <td>${esc(r.product)||'<span class="dash">—</span>'}${r.archetype_code?`<div class="kv">${esc(r.archetype_code)} · ${esc(archName(r.archetype_code))}</div>`:''}</td>
     <td class="mono">${fmtTs(r.updated_at)}</td></tr>`}).join(''):'<tr><td colspan="9" class="empty">No contacts match.</td></tr>';
   $('count').textContent=`${rs.length} of ${docs.size}`;
   document.querySelectorAll('th[data-k]').forEach(th=>{th.removeAttribute('aria-sort');th.querySelector('.dir').textContent='↕';if(th.dataset.k===sortK){th.setAttribute('aria-sort',sortDir>0?'ascending':'descending');th.querySelector('.dir').textContent=sortDir>0?'↑':'↓'}});
@@ -378,7 +392,9 @@ function renderDrawer(r,keepFocus){
       </div></div>
       <div class="sec"><h3>Deal</h3><div class="grid2">
         <div class="field"><label for="f-val">Value (USD)</label><input type="number" id="f-val" min="0" step="100" value="${r.deal_value||''}"${readOnly?' disabled':''}></div>
-        <div class="field"><label for="f-prod">Product</label><input type="text" id="f-prod" list="prods" value="${esc(r.product)}"${readOnly?' disabled':''}><datalist id="prods">${PRODUCTS.map(p=>`<option value="${esc(p)}">`).join('')}</datalist></div>
+        <div class="field"><label for="f-prod">Product</label><input type="text" id="f-prod" list="prods" value="${esc(r.product)}"${readOnly?' disabled':''}><datalist id="prods">${ARCH.map(a=>`<option value="${esc(a.name)}">`).join('')}</datalist></div>
+        <div class="field"><label for="f-arch">Archetype</label>${archSelect('f-arch',r.archetype_code)}</div>
+        <div class="field"><label for="f-segc">GTM segment</label>${segSelect('f-segc',r.segment_code)}</div>
       </div></div>
       <div class="sec"><h3>Proposal</h3>${pqBox('f-pq',r)}<div class="grid2">
         <div class="field"><label for="f-pstat">Status</label><select id="f-pstat"${readOnly?' disabled':''}>${PSTATUS.map(([k,l])=>`<option value="${k}"${(r.proposal_status||'none')===k?' selected':''}>${l}</option>`).join('')}</select></div>
@@ -401,7 +417,7 @@ function renderDrawer(r,keepFocus){
   </aside>`;
   $('scrim').onclick=closeDrawer;$('dx').onclick=closeDrawer;
   $('stagepick').onclick=e=>{const b=e.target.closest('button[data-s]');if(!b)return;const s=b.dataset.s;if(s!==r.stage)patch(r._id,{stage:s},`Stage → ${SLABEL[s]}`)};
-  const fields={'f-next':'next_step','f-date':'next_date','f-val':'deal_value','f-prod':'product','f-notes':'notes',
+  const fields={'f-next':'next_step','f-date':'next_date','f-val':'deal_value','f-prod':'product','f-notes':'notes','f-arch':'archetype_code','f-segc':'segment_code',
     'f-pamt':'proposal_amount','f-psent':'proposal_sent','f-pexp':'proposal_expires','f-pscope':'proposal_scope'};
   const NUMFIELDS=['f-val','f-pamt'];
   for(const id in fields){const el=$(id);if(!el)continue;
@@ -539,6 +555,10 @@ function openAcct(id){
         <div class="field"><label for="a-next">Action</label><input type="text" id="a-next" value="${esc(a.next_step||'')}"${readOnly?' disabled':''}></div>
         <div class="field"><label for="a-date">By</label><input type="date" id="a-date" value="${esc(a.next_date||'')}"${readOnly?' disabled':''}></div>
       </div></div>
+      <div class="sec"><h3>Offer</h3><div class="grid2">
+        <div class="field"><label for="a-arch">Archetype</label>${archSelect('a-arch',a.archetype_code)}</div>
+        <div class="field"><label for="a-segc">GTM segment</label>${segSelect('a-segc',a.segment_code)}</div>
+      </div></div>
       <div class="sec"><h3>Proposal phase</h3>${pqBox('a-pq',a)}</div>
       <div class="sec"><h3>Notes</h3><textarea id="a-notes" rows="4"${readOnly?' disabled':''}>${esc(a.notes||'')}</textarea><div class="saved" id="a-saved"></div></div>
       <div class="sec"><h3>Activity</h3>
@@ -555,11 +575,11 @@ function openAcct(id){
   $('astagepick').onclick=e=>{const b=e.target.closest('button[data-s]');if(!b)return;const s=b.dataset.s;if(s!==(a.stage||'cold')){patchAcct(id,{stage:s},`Account stage → ${ALABEL[s]}`);closeDrawer();setTimeout(()=>openAcct(id),0)}};
   const apq=$('a-pq');
   if(apq)apq.addEventListener('change',()=>patchAcct(id,{pre_qual:apq.checked},`Pre-qual ${apq.checked?'ticked':'cleared'}`));
-  const af={'a-next':'next_step','a-date':'next_date','a-notes':'notes'};
+  const af={'a-next':'next_step','a-date':'next_date','a-notes':'notes','a-arch':'archetype_code','a-segc':'segment_code'};
   for(const eid in af){const el=$(eid);if(!el)continue;
     const commit=()=>patchAcct(id,{[af[eid]]:el.value}).then(()=>{const s=$('a-saved');if(s)s.textContent='Saved '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})});
     el.addEventListener('change',commit);
-    if(eid!=='a-date')el.addEventListener('input',()=>{clearTimeout(saveTimer);saveTimer=setTimeout(commit,900)});
+    if(eid!=='a-date'&&el.tagName!=='SELECT')el.addEventListener('input',()=>{clearTimeout(saveTimer);saveTimer=setTimeout(commit,900)});
   }
   const aadd=$('a-ladd');if(aadd){const go=()=>{const t=$('a-ltext').value.trim();if(!t)return;const now=new Date().toISOString();$('a-ltext').value='';patchAcct(id,{activity:[...(a.activity||[]),{ts:now,type:$('a-ltype').value,text:t}]}).then(()=>{closeDrawer();openAcct(id)})};aadd.onclick=go;$('a-ltext').addEventListener('keydown',e=>{if(e.key==='Enter')go()})}
   const pl=$('a-people');if(pl)pl.addEventListener('click',e=>{const row=e.target.closest('[data-cid]');if(row)openDrawer(row.dataset.cid)});
@@ -773,6 +793,7 @@ $('syncline').textContent='Connecting to pipeline data…';
     render();
   },()=>{});
   db.doc('meta/sync').onSnapshot(s=>renderSync(s.exists?s.data():null),()=>{});
+  db.doc('meta/config').onSnapshot(s=>{const c=(s.exists&&s.data())||{};ARCH=Array.isArray(c.archetypes)?c.archetypes:[];SEGS=Array.isArray(c.segments)?[...c.segments].sort((x,y)=>(x.rank||9)-(y.rank||9)):[];render()},()=>{});
   db.collection('runlog').orderBy('at','desc').limit(15).onSnapshot(snap=>{
     runs=snap.docs.filter(d=>d.exists).map(d=>{const b={...d.data()};b._id=d.id;return b});
     renderRuns();

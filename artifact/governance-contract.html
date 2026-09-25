@@ -1,0 +1,191 @@
+<title>Governance Contract C1–C8</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --paper:#f6f4ef; --surface:#fffefb; --surface-2:#efece4;
+    --ink:#111d2f; --ink-2:#4b586c; --ink-3:#7b8697;
+    --rule:#dcd6c9; --rule-2:#c9c2b2;
+    --gate:#8a6a2b; --gate-soft:#f0e6d0;
+    --ok:#2c6149; --ok-soft:#e2ece6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper:#12161d; --surface:#1a1f28; --surface-2:#222833;
+      --ink:#e9e7e1; --ink-2:#a3adbc; --ink-3:#78828f;
+      --rule:#2d343f; --rule-2:#3b434f;
+      --gate:#d6ab55; --gate-soft:#2a2417;
+      --ok:#6fb493; --ok-soft:#1c2a25;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper:#12161d; --surface:#1a1f28; --surface-2:#222833;
+    --ink:#e9e7e1; --ink-2:#a3adbc; --ink-3:#78828f;
+    --rule:#2d343f; --rule-2:#3b434f;
+    --gate:#d6ab55; --gate-soft:#2a2417;
+    --ok:#6fb493; --ok-soft:#1c2a25;
+  }
+  body { background:var(--paper); color:var(--ink); font-family:"IBM Plex Sans", system-ui, -apple-system, sans-serif; font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:880px; margin:0 auto; padding-inline:20px; padding-block:40px 64px; display:flex; flex-direction:column; gap:40px; }
+  h1, h2 { font-family:Spectral, Georgia, serif; text-wrap:balance; margin:0; }
+  h1 { font-size:clamp(30px, 6vw, 44px); font-weight:700; line-height:1.12; letter-spacing:-0.01em; }
+  h2 { font-size:22px; font-weight:600; line-height:1.25; }
+  p { margin:0; }
+  a { color:var(--gate); text-underline-offset:3px; }
+  a:focus-visible { outline:2px solid var(--gate); outline-offset:2px; border-radius:2px; }
+  .mono { font-family:"IBM Plex Mono", ui-monospace, monospace; }
+  .eyebrow { font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:11px; font-weight:500; letter-spacing:.12em; text-transform:uppercase; color:var(--gate); }
+  header { display:flex; flex-direction:column; gap:14px; }
+  .lede { font-size:18px; color:var(--ink-2); max-width:62ch; }
+  .meta { font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:12px; color:var(--ink-3); }
+  .rulebox { background:var(--gate-soft); border:1px solid var(--rule-2); border-radius:6px; padding:14px 16px; font-family:Spectral, Georgia, serif; font-size:18px; line-height:1.45; }
+  .sec-head { display:flex; flex-direction:column; gap:6px; margin-bottom:18px; }
+  .sec-head p { color:var(--ink-2); max-width:65ch; }
+  ol.clauses { list-style:none; margin:0; padding:0; border-top:1px solid var(--rule); }
+  .clause { display:grid; grid-template-columns:72px minmax(0,1fr); gap:6px 20px; padding-block:22px; border-bottom:1px solid var(--rule); }
+  .code { font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:22px; font-weight:600; color:var(--gate); line-height:1.2; }
+  .body { display:flex; flex-direction:column; gap:12px; min-width:0; }
+  .rule { font-family:Spectral, Georgia, serif; font-size:20px; font-weight:600; line-height:1.3; text-wrap:balance; }
+  .facts { display:grid; grid-template-columns:150px minmax(0,1fr); gap:6px 16px; font-size:14px; }
+  .facts dt { font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); padding-top:3px; }
+  .facts dd { margin:0; color:var(--ink-2); }
+  .facts dd ul { margin:0; padding-left:18px; }
+  .anchor { display:inline-flex; gap:8px; align-items:baseline; background:var(--surface-2); border:1px solid var(--rule); border-radius:4px; padding:1px 8px; color:var(--ink); }
+  .anchor b { font-family:"IBM Plex Mono", ui-monospace, monospace; font-weight:600; color:var(--gate); }
+  .code-today { color:var(--ok); }
+  code { font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:13px; background:var(--surface-2); border-radius:3px; padding:0 4px; }
+  .use { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px; }
+  .use article { background:var(--surface); border:1px solid var(--rule); border-radius:6px; padding:16px; display:flex; flex-direction:column; gap:6px; }
+  .use h3 { font-family:"IBM Plex Sans", system-ui, sans-serif; font-size:15px; font-weight:600; margin:0; }
+  .use p { color:var(--ink-2); font-size:14px; }
+  footer { border-top:1px solid var(--rule); padding-top:16px; font-size:13px; color:var(--ink-3); display:flex; flex-direction:column; gap:6px; }
+  @media (max-width:640px) {
+    .clause { grid-template-columns:1fr; }
+    .facts { grid-template-columns:1fr; gap:2px; }
+    .facts dd { margin-bottom:8px; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Library · SMI · governing rules</span>
+    <h1>Governance Contract C1–C8</h1>
+    <p class="lede">One rulebook for every write in the stack. The <a href="https://claude.ai/artifact/7MmgBhoBQBLkR8FjBQjg7A">Engagement Operating System</a> states the invariants; each clause below restates one of them as a rule a routine, a page or a script applies at the moment it writes.</p>
+    <p class="meta">v1.0 · 25 September 2026 · Owner: Timothy King · Source: Unified Architecture Blueprint, 24 Sep 2026</p>
+    <p class="rulebox">Today the same eight rules are written four times: EOS G1–G6, the SWAT cockpit's AI spec, the P3 and P4 specs, and the atlas guardrails. From here on they are written once, on this page, and everything else cites the clause.</p>
+  </header>
+
+  <section aria-labelledby="clauses">
+    <div class="sec-head">
+      <span class="eyebrow">The eight clauses</span>
+      <h2 id="clauses">Each clause, its EOS invariant, and where it already applies</h2>
+      <p>"Where it applies today" lists the places that already state the rule in their own words. "In code" names what the repository enforces now; the rest is enforced by the routine prompts and the pages until the governance library ships in Phase 4.</p>
+    </div>
+    <ol class="clauses">
+      <li class="clause" id="c1">
+        <span class="code">C1</span>
+        <div class="body">
+          <p class="rule">Generated records start as draft; state changes only by a recorded acceptance.</p>
+          <dl class="facts">
+            <dt>EOS invariant</dt><dd><span class="anchor"><b>G1</b> Draft, not final</span> and Stage 5, "no acceptance, no advance"</dd>
+            <dt>Applies today</dt><dd><ul><li>SWAT: nothing silently finalizes</li><li>P4 writes <code>authorship='ai'</code>, <code>status='raw'</code></li><li>Composition review: HOLD lines, <code>needs_founder</code>; agents never write <code>stage</code></li></ul></dd>
+            <dt>In code</dt><dd class="code-today"><code>crm/runlog.py</code> holds any run that would create more than 5 records until the owner confirms that exact count</dd>
+          </dl>
+        </div>
+      </li>
+      <li class="clause" id="c2">
+        <span class="code">C2</span>
+        <div class="body">
+          <p class="rule">A run reads only the scope it was given, recorded in its manifest.</p>
+          <dl class="facts">
+            <dt>EOS invariant</dt><dd><span class="anchor"><b>G2</b> Input-bounded</span></dd>
+            <dt>Applies today</dt><dd><ul><li>P4: the bundle holds only listed assertions; the "no invention" trigger</li><li>The intake-domain guardrail on composition runs</li></ul></dd>
+            <dt>In code</dt><dd class="code-today"><code>crm/guardrails.py</code> domain lock and credit-spend check, applied at <code>scripts/compose_account.py finalize</code></dd>
+          </dl>
+        </div>
+      </li>
+      <li class="clause" id="c3">
+        <span class="code">C3</span>
+        <div class="body">
+          <p class="rule">No claim without a source row or an evidence tag.</p>
+          <dl class="facts">
+            <dt>EOS invariant</dt><dd><span class="anchor"><b>G4</b> Traceable</span> with the tags S supported, U unsupported, N needs stipulation</dd>
+            <dt>Applies today</dt><dd><ul><li>SWAT: a source pointer, or the claim is auto-flagged</li><li>P4: <code>v_ungrounded_swot</code> fails the build</li><li>Composition runs: <code>data/runs</code> sources and coverage files</li></ul></dd>
+          </dl>
+        </div>
+      </li>
+      <li class="clause" id="c4">
+        <span class="code">C4</span>
+        <div class="body">
+          <p class="rule">One call site per provider.</p>
+          <dl class="facts">
+            <dt>EOS invariant</dt><dd><span class="anchor"><b>G3</b> Model-agnostic</span></dd>
+            <dt>Applies today</dt><dd><ul><li>ADK provider switch: anthropic · claude on Vertex · gemini</li></ul></dd>
+          </dl>
+        </div>
+      </li>
+      <li class="clause" id="c5">
+        <span class="code">C5</span>
+        <div class="body">
+          <p class="rule">Criteria are signed off before collection and never enter a synthesis bundle.</p>
+          <dl class="facts">
+            <dt>EOS invariant</dt><dd><span class="anchor"><b>G6</b> Kill/pivot pre-agreed</span></dd>
+            <dt>Applies today</dt><dd><ul><li>P3: decide the DC1 threshold before ST7 runs; thresholds stay hidden from the model</li><li>GTM Control: kill thresholds are "not renegotiable after"</li></ul></dd>
+          </dl>
+        </div>
+      </li>
+      <li class="clause" id="c6">
+        <span class="code">C6</span>
+        <div class="body">
+          <p class="rule">Missing data is a sentinel value, never a blank or a default.</p>
+          <dl class="facts">
+            <dt>EOS invariant</dt><dd><span class="anchor"><b>N</b> Needs stipulation</span> (evidence classification)</dd>
+            <dt>Applies today</dt><dd><ul><li>P3: absent from a website is unknown, never false</li><li>Atlas: sentinel vs unset; write "not available"</li></ul></dd>
+            <dt>In code</dt><dd class="code-today"><code>crm/guardrails.py</code> "empty means empty": nothing on the intake domain makes the proposal a not-found note</dd>
+          </dl>
+        </div>
+      </li>
+      <li class="clause" id="c7">
+        <span class="code">C7</span>
+        <div class="body">
+          <p class="rule">Empty never overwrites; every write is version-pinned; owners are fixed per field.</p>
+          <dl class="facts">
+            <dt>EOS invariant</dt><dd><span class="anchor"><b>S5</b> Human edits recorded</span> (Stage 5, Refresh &amp; Human Governance)</dd>
+            <dt>Applies today</dt><dd><ul><li>SWAT P6 gate: refresh "without wiping accepted human edits"</li><li>P4: the hash check refuses a stale bundle</li><li>Atlas: the empty-value rule, pinned writes (<code>if_version</code>), field ownership (the Apollo sync never writes CRM-owned fields)</li></ul></dd>
+          </dl>
+        </div>
+      </li>
+      <li class="clause" id="c8">
+        <span class="code">C8</span>
+        <div class="body">
+          <p class="rule">Nothing is deleted; every state change is logged with who and when.</p>
+          <dl class="facts">
+            <dt>EOS invariant</dt><dd><span class="anchor"><b>G5</b> Auditable</span> and the decision log</dd>
+            <dt>Applies today</dt><dd><ul><li>P4: bundle manifest and sha256</li><li><code>CHANGELOG</code>, the <code>meta/sync</code> changelog, void proposals kept</li></ul></dd>
+            <dt>In code</dt><dd class="code-today"><code>crm/runlog.py</code> writes one line per run to the CRM's <code>runlog</code>, which the CRM page and the morning brief show</dd>
+          </dl>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="using">
+    <div class="sec-head">
+      <span class="eyebrow">Using the contract</span>
+      <h2 id="using">How the rest of the stack refers to it</h2>
+    </div>
+    <div class="use">
+      <article><h3>Cite the clause</h3><p>A routine prompt, page or script that writes records names the clauses it applies, for example "RULES: contract C1–C8". The scheduled blueprint routines already do.</p></article>
+      <article><h3>Change it here only</h3><p>A clause changes by a new version of this page, recorded in the CRM Systems Atlas registry changelog. The pages that cite it link here instead of restating it.</p></article>
+      <article><h3>Into code in Phase 4</h3><p>The governance library (T5, <code>crm/governance.py</code>) implements C1–C8 with tests and is called by the composition run's finalize step and the P3/P4 collectors.</p></article>
+    </div>
+  </section>
+
+  <footer>
+    <p>Linked from the <a href="https://claude.ai/artifact/7MmgBhoBQBLkR8FjBQjg7A">Engagement Operating System</a>, the <a href="https://claude.ai/artifact/McmKQRvLsJKSmPrz3PJzhJ">P4 Contextualization Spec</a> and the contingencies on the <a href="https://claude.ai/artifact/BtU87XpWsN9VDNTFwidnA3">Account Composition Intake</a>.</p>
+    <p>Source: Unified Architecture Blueprint (24 Sep 2026), "The governance contract C1–C8". Recorded in the <a href="https://claude.ai/artifact/UEDBSUaVKdmf1NU1eVJrt7">CRM Systems Atlas</a> registry.</p>
+  </footer>
+</div>
