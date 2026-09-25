@@ -143,6 +143,22 @@ pin, the retitle, GTM Control item 7, CRON_TZ on the three routines, parked
 nodes in registry v1.5 and on the Stack Status page, the orphan "Operations
 Workbench Design System" card removed from the Command Center; D1 and D6
 decided and written to registry v1.5). Open, in the owner's settings:
-disconnect Carly and ZoomInfo, label the Drive mirror "not a source"; the atlas page's embedded fallback snapshot
-and its clock caption refresh at the next atlas refresh. Gate check: the
+disconnect Carly and ZoomInfo. The Drive mirror (My Drive › GitHub ›
+Claude-Artifacts) was labelled "not a source" on 25 Sep 2026 with a marker
+file at the top of the folder; the folder itself was not renamed. The atlas
+page's embedded fallback snapshot and its clock caption refresh at the next
+atlas refresh. Gate check: the
 Monday 28 Sep Command Center refresh.
+
+**Scheduled kickoffs (set 25 Sep 2026).** Six one-shot routines, bound to
+the Claude Code session that ran Phase 0 (session_01TQKKRom7R4Hg9FsvJNhUs9),
+run the gate checks and phase builds at the blueprint's windows: Phase 0
+gate check Mon 28 Sep 10:00 ET; Phase 1 kickoff Thu 1 Oct 11:00 ET; Phase 2
+kickoff Mon 19 Oct 10:00 ET; 15 Nov kill check + Phase 3 kickoff Mon 16 Nov
+10:00 ET; Phase 4 kickoff Mon 4 Jan 2027 10:00 ET (re-arms fortnightly until
+an engagement exists); Phase 5 trigger check Mon 1 Mar 2027 10:00 ET (then
+quarterly). Each starts only if the previous gate passed, asks the owner's
+decisions in-session, spends no credits without an estimate and a go, and
+writes its result to the registry (trigger ids in the registry's agents
+entry "Blueprint phase kickoffs"). Do not start a phase from another session
+while its routine is pending.
