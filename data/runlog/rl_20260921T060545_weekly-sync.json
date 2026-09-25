@@ -1,0 +1,14 @@
+{
+  "id": "rl_20260921T060545_weekly-sync",
+  "run": "Weekly sync",
+  "at": "2026-09-21T06:05:45Z",
+  "status": "applied",
+  "created": 15,
+  "updated": 50,
+  "detail": "apollo 15 created, 0 updated, 52 unchanged; explorium 0 created, 50 updated (all 15 were duplicates, folded 24 Sep)",
+  "line": "Weekly sync · apollo 15 created, 0 updated, 52 unchanged; explorium 0 created, 50 updated (all 15 were duplicates, folded 24 Sep) · applied",
+  "threshold": 5,
+  "created_names": [],
+  "created_more": 0,
+  "note": "Recorded 25 Sep 2026 from data/CHANGELOG.md; the hold did not exist yet, so this run was applied."
+}

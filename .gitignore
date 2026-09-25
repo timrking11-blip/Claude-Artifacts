@@ -31,3 +31,6 @@ terraform/*.tfstate.*
 terraform/terraform.tfvars
 terraform/*.auto.tfvars
 crash.log
+
+# Fetched page text a composition run saw (up to 20k chars); the summary is the record.
+data/runs/*/page.txt

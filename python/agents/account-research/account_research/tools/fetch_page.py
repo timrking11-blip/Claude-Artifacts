@@ -1,12 +1,20 @@
-"""'fetch_page' tool: retrieve a web page as plain text into state."""
+"""'fetch_page' tool: retrieve a web page as plain text into state.
+
+Pure Python at import time (ADK only under TYPE_CHECKING) so
+scripts/compose_account.py can reuse it without the agent runtime.
+"""
+
+from __future__ import annotations
 
 import html
 import logging
 import re
 import urllib.error
 import urllib.request
+from typing import TYPE_CHECKING
 
-from google.adk.tools import ToolContext
+if TYPE_CHECKING:  # the annotation only; keeps ADK out of the CLI import path
+    from google.adk.tools import ToolContext
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +30,7 @@ def _to_text(markup: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def fetch_page_tool(url: str, tool_context: ToolContext) -> dict[str, str]:
+def fetch_page_tool(url: str, tool_context: "ToolContext") -> dict[str, str]:
     """Retrieves 'url', converts it to plain text, and stores it in state.
 
     Args:

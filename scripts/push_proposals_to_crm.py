@@ -11,7 +11,11 @@ proposal is for, it plans one `update` that:
     status that has moved on (sent / in_discussion / accepted / declined),
   - fills proposal_scope from the request's first line when empty,
   - records proposal_ref = the proposal id, which is what makes a re-run a
-    no-op for contacts that already carry this proposal.
+    no-op for contacts that already carry this proposal,
+  - carries the note to the founder (the requester; crm/note_to_founder.py)
+    and the review before sending (crm/review.py) under the proposal when the
+    record has them, so the cover note and the extenuating criteria travel
+    with the draft.
 
 Contacts are found by the Apollo ids the proposal file carries, then by the
 master contact ids it carries, then -- for a request that named a company
@@ -50,6 +54,8 @@ def load_proposals(proposals_dir: Path) -> list[dict[str, Any]]:
     out = []
     for path in sorted(proposals_dir.glob("*.json")):
         p = json.loads(path.read_text() or "{}")
+        if p.get("void"):
+            continue  # voided by the founder; never re-applied
         if p.get("proposal_id") and p.get("proposal_markdown"):
             p["_path"] = str(path)
             out.append(p)
@@ -86,20 +92,8 @@ def targets_for(proposal: dict[str, Any], master: list[Contact], docs: dict[str,
 
 
 def load_accounts_dump(dump_dir: Path) -> dict[str, dict[str, Any]]:
-    """<dump>/accounts/<doc_id>.json, pinned from <dump>/versions.json like contacts."""
-    acc_dir = dump_dir / "accounts"
-    if not acc_dir.is_dir():
-        return {}
-    vpath = dump_dir / "versions.json"
-    versions = json.loads(vpath.read_text() or "{}") if vpath.exists() else {}
-    docs: dict[str, dict[str, Any]] = {}
-    for path in sorted(acc_dir.glob("*.json")):
-        doc = json.loads(path.read_text() or "{}")
-        doc = doc.get("data", doc) if isinstance(doc.get("data"), dict) else doc
-        if isinstance(versions.get(path.stem), int):
-            doc["_version"] = versions[path.stem]
-        docs[path.stem] = doc
-    return docs
+    """<dump>/accounts/<doc_id>.json, pinned from <dump>/versions_accounts.json."""
+    return load_crm_dump(dump_dir, "accounts")
 
 
 def account_targets(proposal: dict[str, Any], accounts: dict[str, dict]) -> list[str]:
@@ -116,6 +110,20 @@ def first_line(text: str | None, limit: int = 120) -> str:
         if line:
             return line[:limit]
     return ""
+
+
+def note_block(p: dict[str, Any], date: str) -> str:
+    """The merged pre-qual note: proposal, note to the founder, review, coverage and sync schedule."""
+    block = NOTES_HEADER.format(date=date, pid=p["proposal_id"]) + "\n" + p["proposal_markdown"].strip()
+    if p.get("note_to_founder"):
+        block += "\n\nNote to the founder:\n" + str(p["note_to_founder"]).strip()
+    review = p.get("review") or p.get("founder_note")  # founder_note: records filed before the rename
+    text = review.get("text") if isinstance(review, dict) else review
+    if text:
+        block += "\n\nReview before sending:\n" + str(text).strip()
+    if p.get("notes_appendix"):
+        block += "\n\n" + str(p["notes_appendix"]).strip()
+    return block
 
 
 def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str, dict],
@@ -137,9 +145,9 @@ def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str,
             done = 0
             for acc_id in acc_ids:
                 acc = (accounts or {})[acc_id]
-                if acc.get("proposal_ref") == pid:
+                if acc.get("proposal_ref") == pid or pid in (acc.get("notes") or ""):
                     continue
-                block = NOTES_HEADER.format(date=date, pid=pid) + "\n" + p["proposal_markdown"].strip()
+                block = note_block(p, date)
                 existing = (acc.get("notes") or "").rstrip()
                 data = {
                     "notes": (existing + "\n\n" + block) if existing else block,
@@ -159,10 +167,10 @@ def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str,
         applied = skipped = 0
         for doc_id in ids:
             doc = docs[doc_id]
-            if doc.get("proposal_ref") == pid:
+            if doc.get("proposal_ref") == pid or pid in (doc.get("notes") or ""):
                 skipped += 1
                 continue
-            block = NOTES_HEADER.format(date=date, pid=pid) + "\n" + p["proposal_markdown"].strip()
+            block = note_block(p, date)
             existing = (doc.get("notes") or "").rstrip()
             data: dict[str, Any] = {
                 "notes": (existing + "\n\n" + block) if existing else block,
@@ -173,6 +181,8 @@ def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str,
             status = doc.get("proposal_status") or "none"
             if status not in ADVANCED:
                 data["proposal_status"] = "drafted"
+            if not isinstance(doc.get("pre_qual"), bool):
+                data["pre_qual"] = True  # a drafted proposal puts the contact in the pre-qual phase
             if not doc.get("proposal_scope"):
                 scope = first_line(p.get("request_text")) or first_line(p["proposal_markdown"].replace("#", ""))
                 if scope:

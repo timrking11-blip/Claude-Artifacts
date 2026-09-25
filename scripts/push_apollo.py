@@ -16,11 +16,12 @@ import argparse
 import json
 import logging
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from crm import config
+from crm import config, runlog
 from crm.http import post_json, HttpError
 from crm.master import load_master
 from crm.schema import Contact, SOURCE_APOLLO
@@ -113,6 +114,11 @@ def main() -> int:
             log.error("failed to update %s: %s", contact.apollo_contact_id, exc)
 
     log.info("wrote %s contacts, %s failures", len(updates) - failed, failed)
+    # One line for the CRM page's Last runs strip. Writeback only updates
+    # existing Apollo contacts, so it never creates and never holds.
+    runlog.write_file(runlog.entry(
+        "Apollo writeback", f"{len(updates) - failed} Apollo contacts updated, {failed} failed",
+        0, len(updates) - failed, datetime.now(timezone.utc)))
     return 1 if failed else 0
 
 

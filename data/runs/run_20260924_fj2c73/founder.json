@@ -1,0 +1,12 @@
+{
+  "status": "done",
+  "holds": [],
+  "notes": [
+    "No CRM contact matched this account; the proposal is filed on the account record only, with nobody to attach it to.",
+    "Account is not in the enriched data layer; the proposal leans on the website and the request alone.",
+    "Website fetch failed (Failed to fetch page https://claridi.ai: <urlopen error Tunnel connection failed: 403 Forbidden>); no website summary.",
+    "Warehouse findings are the 'not available' sentinel; no BigQuery in this run."
+  ],
+  "text": "Note — No CRM contact matched this account; the proposal is filed on the account record only, with nobody to attach it to.\nNote — Account is not in the enriched data layer; the proposal leans on the website and the request alone.\nNote — Website fetch failed (Failed to fetch page https://claridi.ai: <urlopen error Tunnel connection failed: 403 Forbidden>); no website summary.\nNote — Warehouse findings are the 'not available' sentinel; no BigQuery in this run.",
+  "matched_doc_ids": []
+}

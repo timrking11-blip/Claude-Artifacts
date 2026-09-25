@@ -108,11 +108,11 @@ its stage, its buyer and market, competitors and conversation-worthy signals.
 A company the ledger has never heard of is registered as a prospect
 (`register_prospect`) for a prequal, instead of stopping at NOT_FOUND.
 
-**Headless / GitHub Actions:** `scripts/run_prequal.py --pending` runs every
-request queued under `data/prequal/requests/` (see its README), and the
-**Prequalification proposal** workflow runs it whenever a request file is
-pushed, then commits the proposal. It needs the `ANTHROPIC_API_KEY`
-repository secret.
+**Where proposals come from:** one process -- the Account Composition Intake
+page's Run button (see `docs/composition-run.md` at the repo root). That run
+reuses this package's prompts and tools (`web_research.SYSTEM` as the crawler
+brief, `prequal_agent_prompt.PROMPT`, `write_proposal`'s checks) without the
+ADK runtime or an API key. `adk web` here is for development only.
 
 ### Claude on Vertex AI
 
