@@ -78,6 +78,32 @@ from account_research.tools.write_proposal import MAX_WORDS, _MONEY, cited_links
 import push_proposals_to_crm  # noqa: E402
 
 WAREHOUSE_SENTINEL = "not available"
+#: Committed by the Site snapshot workflow (scripts/snapshot_site.py) from a
+#: GitHub runner, for intake domains this container's network policy blocks.
+SNAPSHOT_DIR = ROOT / "data" / "site_snapshots"
+SNAPSHOT_MAX_AGE = timedelta(days=30)
+
+
+def site_snapshot(domain: str | None, now: datetime) -> dict[str, Any] | None:
+    """The committed snapshot of exactly this domain, if its home page loaded and it is fresh."""
+    dom = normalize_domain(domain)
+    path = SNAPSHOT_DIR / dom / "snapshot.json" if dom else None
+    if not path or not path.exists():
+        return None
+    snap = json.loads(path.read_text() or "{}")
+    if not snap.get("ok") or normalize_domain(snap.get("domain")) != dom:
+        return None
+    try:
+        at = datetime.fromisoformat(str(snap.get("fetched_at")).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if now - at > SNAPSHOT_MAX_AGE:
+        return None
+    parts = [f"[{p['url']}] {p.get('title') or ''}\n{p.get('text') or ''}" for p in snap.get("pages") or []
+             if p.get("status") == 200 and p.get("text")]
+    return {"url": snap["pages"][0]["url"], "fetched_at": snap["fetched_at"],
+            "urls": [p["url"] for p in snap["pages"] if p.get("status") == 200],
+            "text": "\n\n".join(parts)[:20_000]}
 STEP_ORDER = ("find_account", "list_account_contacts", "assess_ledger_quality", "fetch_page",
               "apollo", "prospecting", "web_research", "summarize_page", "warehouse_findings",
               "compose_proposal", "crm_write")
@@ -269,7 +295,15 @@ def prepare(manifest: dict[str, Any], run_id: str, docs: dict[str, dict[str, Any
             res = fetch_page.fetch_page_tool(url, ctx)
             if res["status"] != "OK":
                 state["page_error"] = res["message"]
-        if state.get("page_error"):
+        snap = site_snapshot(state["account"].get("domain"), now) if state.get("page_error") else None
+        if snap:
+            # Our live fetch was blocked or failed, but a runner with open
+            # internet snapshotted this exact domain: use that, and say so.
+            state.update(page_contents=snap["text"], page_url=snap["url"], site_snapshot_urls=snap["urls"],
+                         page_source=f"site snapshot fetched {snap['fetched_at']} (live fetch: {state.pop('page_error')})")
+            steps["fetch_page"] = "done:snapshot"
+            steps["summarize_page"] = "pending"
+        elif state.get("page_error"):
             mode = web.get("on_fetch_error") or "store_state"
             steps["fetch_page"] = f"failed:{mode}"
             if mode == "store_state":
@@ -453,7 +487,9 @@ def brief(run_dir: Path, web_research: str | None, web_sources: list[str], websi
     cov.setdefault("ledger", "ok: {} contact(s)".format((state.get("account") or {}).get("contact_count") or 0)
                    if (state.get("account") or {}).get("in_ledger") else "none: not in the enriched data layer")
     if "site" not in cov:
-        cov["site"] = f"error: {state['page_error']}" if state.get("page_error") else ("ok: fetched" if state.get("page_url") else "")
+        cov["site"] = (f"error: {state['page_error']}" if state.get("page_error")
+                       else f"ok: {state['page_source']}" if state.get("page_source")
+                       else ("ok: fetched" if state.get("page_url") else ""))
     state["coverage"] = cov
     memo = (web_research or "").strip()
     if memo:

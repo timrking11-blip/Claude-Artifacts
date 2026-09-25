@@ -1,0 +1,65 @@
+name: Site snapshot
+
+# Fetches a prospect's own website from a GitHub runner (open internet) and
+# commits the text, for intake domains the Claude session's network policy
+# blocks. scripts/compose_account.py prepare falls back to the committed
+# snapshot when its live fetch fails. Only the intake domain is crawled.
+# No secrets, no model calls.
+#
+# Start it by pushing a change to data/site_snapshots/requests.txt on any
+# branch, or (once this file is on the default branch) from the Actions tab.
+# Commits made with GITHUB_TOKEN do not start new workflow runs.
+
+on:
+  push:
+    paths:
+      - "data/site_snapshots/requests.txt"
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: "Intake domain to snapshot, e.g. example.com (blank = every line of requests.txt)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: site-snapshot-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Snapshot
+        id: snap
+        # The input reaches the script through the environment, never spliced
+        # into the shell.
+        env:
+          IN_DOMAIN: ${{ inputs.domain }}
+        run: |
+          if [ -n "$IN_DOMAIN" ]; then
+            python scripts/snapshot_site.py "$IN_DOMAIN"
+          else
+            python scripts/snapshot_site.py --from-file data/site_snapshots/requests.txt
+          fi
+      - name: Commit the snapshots
+        if: ${{ !cancelled() && steps.snap.outcome != 'skipped' }}
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name "site-snapshot[bot]"
+          git config user.email "site-snapshot[bot]@users.noreply.github.com"
+          git add data/site_snapshots
+          if git diff --cached --quiet; then
+            echo "No snapshot changes."
+          else
+            git commit -m "site snapshot: $(date -u +%Y-%m-%d)"
+            git push origin "HEAD:$BRANCH"
+          fi

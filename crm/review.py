@@ -205,6 +205,8 @@ def assess(manifest: dict[str, Any], state: dict[str, Any], docs: dict[str, dict
 
     if state.get("page_error"):
         review.notes.append(f"Website fetch failed ({state['page_error']}); no website summary.")
+    elif state.get("page_source"):
+        review.notes.append(f"Website read from a {state['page_source']}; check it is still current before sending.")
     if state.get("warehouse_findings") and state.get("warehouse_sentinel"):
         review.notes.append("Warehouse findings are the 'not available' sentinel; no BigQuery in this run.")
 

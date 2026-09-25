@@ -493,3 +493,60 @@ def test_composer_flag_carries_its_own_check():
         "Composer: Deadline is unrealistic. Confirm by: ask the founder for the launch date in writing")
     assert compose.composer_hold("Outside the practice | check:").endswith('ask Claude "what would confirm this?" and do that check.')
 
+
+
+# ---------- site snapshot fallback -------------------------------------------------
+
+def _snap(tmp_path, domain="example.com", ok=True, fetched_at="2026-09-24T19:00:00+00:00"):
+    d = tmp_path / "snaps" / domain
+    d.mkdir(parents=True)
+    (d / "snapshot.json").write_text(json.dumps({
+        "domain": domain, "fetched_at": fetched_at, "ok": ok,
+        "pages": [{"url": f"https://{domain}/", "status": 200, "title": "Home", "text": "We build decision engines."},
+                  {"url": f"https://{domain}/about", "status": 200, "title": "About", "text": "Founded by Ada."},
+                  {"url": f"https://{domain}/gone", "status": 404, "title": "", "text": ""}]}))
+    return tmp_path / "snaps"
+
+
+def test_prepare_falls_back_to_a_fresh_snapshot_of_the_intake_domain(ledger, dump, tmp_path, monkeypatch):
+    monkeypatch.setattr(compose, "SNAPSHOT_DIR", _snap(tmp_path))
+    r = compose.prepare(manifest(), "run_s", compose.load_crm_dump(dump), NOW, fetch=False)
+    st = r["state"]
+    assert r["steps"]["fetch_page"] == "done:snapshot" and r["steps"]["summarize_page"] == "pending"
+    assert "decision engines" in st["page_contents"] and "Founded by Ada" in st["page_contents"]
+    assert st["site_snapshot_urls"] == ["https://example.com/", "https://example.com/about"]
+    assert "page_error" not in st and st["page_source"].startswith("site snapshot fetched")
+
+
+def test_prepare_ignores_stale_failed_or_lookalike_snapshots(ledger, dump, tmp_path, monkeypatch):
+    for kw in ({"fetched_at": "2026-07-01T00:00:00+00:00"}, {"ok": False}, {"domain": "examples.com"}):
+        base = tmp_path / str(len(list(tmp_path.iterdir())))
+        base.mkdir()
+        snaps = _snap(base, **kw)
+        if kw.get("domain"):  # a lookalike's snapshot filed under the intake domain's folder
+            (snaps / "examples.com").rename(snaps / "example.com")
+        monkeypatch.setattr(compose, "SNAPSHOT_DIR", snaps)
+        r = compose.prepare(manifest(), "run_s", compose.load_crm_dump(dump), NOW, fetch=False)
+        assert r["steps"]["fetch_page"].startswith("failed"), kw
+
+
+def test_snapshot_crawl_stays_on_the_intake_domain():
+    snapshot_site = _load_script("snapshot_site")
+    site = {
+        "https://claridi.ai/": (200, "https://claridi.ai/",
+                                '<title>Claridi</title><a href="/about">About</a><a href="https://clarid.ai/about">x</a>'
+                                '<a href="/terms">Terms</a><a href="/product">Product</a>'),
+        "https://claridi.ai/about": (200, "https://claridi.ai/about", "<p>Founder story</p>"),
+        "https://claridi.ai/product": (301, "https://elsewhere.example/product", "<p>offsite</p>"),
+    }
+    fetched = []
+
+    def fake(url):
+        fetched.append(url)
+        return site.get(url, (404, url, ""))
+
+    snap = snapshot_site.snapshot("www.claridi.ai", fetcher=fake)
+    assert snap["ok"] and snap["domain"] == "claridi.ai"
+    assert [p["url"] for p in snap["pages"]] == ["https://claridi.ai/", "https://claridi.ai/about"]
+    assert not any("clarid.ai" in u for u in fetched)  # the lookalike link is never followed
+    assert "https://claridi.ai/terms" not in fetched   # not a company page

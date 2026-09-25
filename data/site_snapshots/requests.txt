@@ -1,0 +1,5 @@
+# One intake domain per line. Pushing a change to this file runs the
+# Site snapshot workflow, which fetches each domain from a GitHub runner and
+# commits data/site_snapshots/<domain>/snapshot.{json,md}. A composition run's
+# prepare step reads the snapshot when its own fetch of the domain is blocked.
+claridi.ai

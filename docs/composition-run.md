@@ -118,6 +118,19 @@ empty or errored (no credits, plan refusal, host blocked by the environment's
 network policy) also becomes a Note, so the sender sees what the proposal
 was and was not built on.
 
+## When the session can't reach the prospect's site
+
+The session's network policy can block an intake domain (claridi.ai on
+24 Sep 2026). The **Site snapshot** workflow (`site-snapshot.yml`,
+`scripts/snapshot_site.py`) fetches that domain from a GitHub runner, which has
+open internet, and commits `data/site_snapshots/<domain>/snapshot.{json,md}`.
+Only the intake domain is crawled: off-site links and redirects are dropped,
+so the domain lock holds. To start it, add the domain to
+`data/site_snapshots/requests.txt` and push. When `prepare`'s live fetch fails
+and a snapshot of exactly that domain loaded and is under 30 days old, it uses
+the snapshot. The step reads `done:snapshot`, coverage says so, and the review
+carries a Note to check the site is still current.
+
 ## The proposal
 
 The SMI short form, from `prequal_agent_prompt.py`: a title line, "Prepared by
