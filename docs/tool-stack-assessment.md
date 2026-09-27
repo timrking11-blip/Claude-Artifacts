@@ -8,6 +8,9 @@ CRM Systems Atlas registry (v1.12), the Command Center database, the Launch
 Check's daily crawl (26 Sep), the routine list, Apollo credit usage and
 sequence stats, the connector list, and this repo (143 tests passing).
 
+Published as a page: https://claude.ai/artifact/X1AmTcpR9ZYBZuzeJ74bQP
+(pinned 27 Sep 2026; the page and this file carry the same content).
+
 Claims carry the blueprint's tags: **S** supported (primary source read) ·
 **N** needs stipulation (the owner confirms) · **E** estimate or judgment.
 
@@ -102,7 +105,7 @@ to one of the three or removed.
 |---|---|---|---|
 | Mail, calendar, docs, files, video | Google Workspace, one seat, on strategicmarketinsights.services | Domain address exists on paper; never used; no SPF/DKIM/DMARC evidence N | **THE MISSING FOUNDATION.** One Business Starter seat (about 7–8 USD a month E). SPF, DKIM and DMARC (p=none, then quarantine). Every outbound system (Apollo, booking page, contact form, invoices) sends from it. Remove the Microsoft 365 connector. |
 | Contracts and signature | Google Docs SOW and MSA templates from the EOS stages; e-sign | None | **ADD BEFORE THE FIRST CALL CONVERTS.** Any e-sign tool that returns a PDF and needs no contact database: PandaDoc's free e-sign tier or Dropbox Sign (Drive-native) fit. E. The signed PDF is filed to the engagement folder; ENGAGEMENT holds the link. |
-| Invoicing, payments, books | Wave (free invoicing and accounting) now; QuickBooks Online at roughly three engagements E | None | **ADD.** Open the account on the domain mailbox. One invoice template that names the archetype code. |
+| Invoicing, payments, books | QuickBooks Online (first-party connector); see section 4, which revised an earlier Wave pick | None | **ADD** at the first signed engagement. Open the account on the domain mailbox. One invoice template that names the archetype code. |
 | Time, expenses, credits | Operations Workbench (9 Sep) | Sample data | **KEEP.** Do not buy Harvest or Toggl. Replace the sample data at the first engagement; it becomes LEDGER_ENTRY in Phase 4. |
 | Engagement workspace | Drive folder template per engagement (intake, contract, evidence, deliverables) + P3/P4 runbooks | None | **ADD** as a template now; wire "won → engagement" to create it in Phase 3 (T6). |
 | Client intake | SMI Engagement Intake page (mailto today) | 22 questions; ends in an email to a personal inbox | **REROUTE.** Point the mailto at the domain mailbox and label it. The Phase 3 Intake handler reads that Gmail label and writes INTAKE_SUBMISSION. This settles stipulation N5: no public write to a page is needed. |
@@ -114,11 +117,112 @@ to one of the three or removed.
 | Everything else | Brand24, Windsor.ai, FactSet, S&P, Oxford Economics, Monte Carlo, Hugging Face, api.agi.tech, Caffeine | Half-connected or unused | **REMOVE**, or write the one job each does into the registry. A connector with no registry node is not part of the stack. |
 
 Monthly cost of the recommended stack at today's volume: Google Workspace
-one seat, Apollo (plan tier unread N), Squarespace (existing), Wave free,
-e-sign free tier, Vibe one-time packages as approved. Nothing new above about
+one seat, Apollo (plan tier unread N), Squarespace (existing), e-sign free
+tier, QuickBooks only once an engagement is signed, Vibe one-time packages
+as approved. Nothing new above about
 10 USD a month until the first engagement is signed. E
 
-## 4 · The largest gaps now, ranked
+## 4 · Connectors by GTM function
+
+The seven functions are the Command Center's own (`dashboard/main`
+`functions`), with the number of artifact cards each holds today. Registry
+states were read on 27 Sep 2026 (SearchMcpRegistry, ListConnectors). Value is
+a judgment (E) of what each connector adds to a record the plan already
+needs. The test for any connector: it feeds a record that exists or is
+scheduled (ACTIVITY, SIGNAL, PROPOSAL, ASSERTION, LEDGER_ENTRY,
+INTAKE_SUBMISSION), it brings no contact table of its own, and it gets a
+registry node the day it is wired.
+
+### Pipeline Generation (2 cards · Apollo, Vibe Prospecting connected)
+
+| Connector | State | Job | Feeds | Value | Call |
+|---|---|---|---|---|---|
+| Apollo.io | connected | Identity, lists, sequences, events, visitors | PERSON · ACTIVITY · SIGNAL | In use | Use more of it: visitor tracker, open tracking, one sequence per segment |
+| Vibe Prospecting | connected | Firmographics, technographics, events | ORGANIZATION · FIELD_PROVENANCE · SIGNAL | In use | The one enrichment vendor; needs a funded balance and a floor |
+| Lusha · Crustdata · ZoomInfo | not installed | Third data vendor | PERSON (duplicate) | None | Not now; Lusha only if phone coverage blocks Segment C calls (trial ≤ 20, TCPA) |
+| HubSpot · Pipedrive · Close · Attio | not installed | Hosted CRM | a seventh contact store | None | Not before Phase 5 |
+
+### Market Intelligence (3 cards · Vibe; Bright Data plugin; five healthcare connectors engagement-scoped)
+
+| Connector | State | Job | Feeds | Value | Call |
+|---|---|---|---|---|---|
+| Parallel Search | not installed · free · no sign-in | Web search and fetch for the composition run's research leg | ASSERTION (raw) · run coverage | Medium | Add: one call site for web research (C4), citable in coverage files |
+| Crunchbase MCP | not installed · paid | Funding rounds, company signals | SIGNAL (funding → Segment A → FRL, first touch A1) | Medium | Only when Segment A starts, only through the broker; never overwrites Vibe |
+| Similarweb · Semrush · Ahrefs | not installed · paid | Traffic, audience, competitor maps | ASSERTION for the MKT line | Low now | Engagement-funded only |
+| FactSet · S&P · Oxford Economics · Monte Carlo | connect_incomplete | Institutional data | none | None | Remove; reconnect one when a client scope names it |
+| Firecrawl | not installed | Scraping for P3 | ASSERTION | None | Bright Data already does this |
+
+### Messaging & Content (7 cards · Gmail, Canva, Gamma connected; Brand24, Profound incomplete)
+
+| Connector | State | Job | Feeds | Value | Call |
+|---|---|---|---|---|---|
+| Gmail | connected | Sends and replies | ACTIVITY | In use | Repoint to the domain mailbox |
+| Typefully | not installed · paid | Scheduled LinkedIn posts | ACTIVITY (subject-only) | Medium | Add after Gate 0; LinkedIn is where intake requests come from and two of seven sequence steps happen |
+| Ahrefs Brand Radar · OpenRush | not installed · paid | AI-answer citations | the 42-prompt log (G5) | Low now | Run the prompt bank by routine first; buy at three months if it moves |
+| Brand24 · Profound | connect_incomplete | Listening; AI visibility | none | None | Remove |
+| Canva · Gamma | connected | Brand assets; client decks | files | In use | Keep, one job each; remove SlidesGPT |
+
+### Strategy & Positioning (5 cards · the owner's own documents)
+
+| Connector | State | Job | Feeds | Value | Call |
+|---|---|---|---|---|---|
+| Anthropic Economic Index | not installed · free | Public data on AI use by occupation | evidence for the SYS line and the case study (G6) | Low | Optional, when the SYS positioning page is written |
+| Consensus | not installed | Scientific literature | none | None | PubMed already serves the Liminal work |
+| Nothing else | | This function is thinking, not tooling | | None | No connector improves a positioning decision |
+
+### Revenue Operations (5 cards · Google Calendar, Gmail connected; the CRM System page is the store)
+
+| Connector | State | Job | Feeds | Value | Call |
+|---|---|---|---|---|---|
+| PandaDoc | not installed · free e-sign tier | Create from markdown, send, sign, read status | PROPOSAL (drafted → sent → signed) · ENGAGEMENT (signed PDF) | **High** | Add at the first accepted proposal or Phase 3. The run already writes the proposal as markdown. Docusign heavier; Jotform Sign, Signeasy fallbacks |
+| Intuit QuickBooks | not installed · first-party connector | Invoices, payments, P&L | LEDGER_ENTRY · proof loop (G4) | **High** at first engagement | **Revises the Wave pick above:** Wave has no connector, so its invoices never reach a record. QuickBooks Online does (Meridian connector writes). FreshBooks is the alternative with a connector |
+| Calendly | not installed | Booking | ACTIVITY | None | D6 chose a Google Calendar booking page; no second booking tool |
+| Stripe | not installed | Card payments | LEDGER_ENTRY | Low | Only if a fixed-fee Viability Test is sold from the site |
+| Google Calendar | connected | Meetings | ACTIVITY (gcal:) | In use | Capture runs weekly from 19 Oct |
+
+### Engagement Delivery (4 cards · Google Drive connected; Workbench holds sample data)
+
+| Connector | State | Job | Feeds | Value | Call |
+|---|---|---|---|---|---|
+| Tally | not installed · free tier | Forms with logic; fetch submissions | ASSERTION (VSP screeners, surveys) · INTAKE_SUBMISSION | **High** | Add at the first Validation Sprint or Phase 3. The Tally survey skill writes the specs; the connector builds and pulls. Gives client intake a direct submissions path |
+| tldv · Fireflies · Read AI | not installed · free tiers | Transcripts from Meet, Zoom, Teams | ASSERTION with source pointer (C3) for 30–40 VSP interviews; ACTIVITY | **High** for VSP and DRF | One, chosen by the client's meeting tool, at the first interview-based engagement; consent per interview; transcripts in the engagement's Drive folder |
+| Slack · Notion · Asana | not installed | Client workspace | none | Low | Not until a client asks |
+| Productive | not installed | Projects, time, invoicing in one | replaces Workbench + QuickBooks | None | Phase 4 buy-versus-build question; the Workbench is a proof asset |
+| Google Drive | connected | Engagement folders | ENGAGEMENT files | In use | Folder template per engagement; created by the won → engagement handoff |
+
+### Governance (4 cards · GitHub, Claude Code Remote, Google Drive connected; Supabase incomplete)
+
+| Connector | State | Job | Feeds | Value | Call |
+|---|---|---|---|---|---|
+| GitHub · Claude Code Remote | connected | Evidence ledger, routines | runs, proposals, CHANGELOG, runlog | In use | The heartbeat is the one addition needed |
+| Supabase | connect_incomplete | Managed Postgres, triggers, CI-writable | Phase 5 store (D4) | Medium, Phase 5 | Keep parked as the D4 default; connect only when a trigger fires |
+| Make | not installed | Scenario automation | none | None | Routines and Actions already run every job; a second scheduler is a second clock |
+| Microsoft 365 · Miro · Figma · Hugging Face · Windsor.ai · api.agi.tech · Caffeine | incomplete or unused | Duplicates or no job | none | None | Remove, or write the one job each does into the registry |
+
+### Value to add, ranked
+
+1. **PandaDoc** (High): closes Composed → Proposal → Won as records with
+   signature evidence. First accepted proposal or Phase 3.
+2. **Intuit QuickBooks** (High at first engagement): invoices become
+   LEDGER_ENTRY rows; the proof loop gets real actuals. Replaces the Wave pick.
+3. **Tally** (High): VSP screeners and surveys; a direct submissions path for
+   client intake. Free tier; the spec-writing skill exists.
+4. **tldv or Fireflies** (High for VSP and DRF): interview transcripts become
+   sourced ASSERTION rows. One connector, at the first interview engagement.
+5. **Parallel Search** (Medium): free, no sign-in, no contact table; one named
+   web-research call site for the composition run. Can be added this week.
+6. **Crunchbase** (Medium): funding SIGNAL rows for Segment A, through the
+   broker, after Gate 0 opens Segment A.
+7. **Typefully** (Medium): a LinkedIn cadence from copy already written, after
+   Gate 0, logged as ACTIVITY.
+8. **Similarweb, Semrush, Ahrefs** (Low now): engagement-funded, not stack.
+
+Sixteen connectors are named as none. Removing the fourteen installed and
+incomplete is step 9 of the plan. Adding any of the eight above follows the
+same rule as every tool: a registry node, a field-owner line, no contact
+table, and a review if it carries no data for 30 days.
+
+## 5 · The largest gaps now, ranked
 
 1. **Gate 0 is open with three days left.** Contact page, domain mailbox in
    use, booking link. Business gap; blocks three of four segments.
@@ -137,7 +241,7 @@ e-sign free tier, Vibe one-time packages as approved. Nothing new above about
    two Apollo sequences with no segment naming and 10 overdue tasks.
 8. **Personal artifacts in the business pinned set.**
 
-## 5 · Plan of action
+## 6 · Plan of action
 
 Owner tasks are UI work on the owner's machine (no commands to run). Session
 tasks run from the Claude Code session that owns this repo. Scheduled tasks
@@ -239,7 +343,7 @@ already exist as routines; do not start them from another session.
 - A phase starts at its gate. Two phases have already started early; from
   here the scheduled routines decide.
 
-## 6 · Stipulations this assessment adds
+## 7 · Stipulations this assessment adds
 
 1. Whether a Google Workspace seat exists for the domain address today, or
    only a forwarding alias at the registrar.
