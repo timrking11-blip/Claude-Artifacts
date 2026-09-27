@@ -149,6 +149,14 @@ entry condition is unmet does not start.
   12 Oct, cutover at the 19 Oct routine; the two old routines are paused,
   never deleted).
 
+**Tool stack assessment (27 Sep 2026).** `docs/tool-stack-assessment.md`:
+the blueprint assessed against the live state three days after Phases 1 and
+2 started early, the recommended GTM and operational stack (three hubs:
+Google Workspace on the domain, Apollo, the Claude stack; nothing else with
+its own contact table), the ranked gaps and a dated plan to 15 Nov. Its
+first finding: first touches are counted three ways (scorecard 1, Apollo 25
+delivered, activity rows 29) and outreach leaves from a personal Gmail.
+
 **Phase 0 status, 25 Sep 2026.** Done: steps 1–8 (the unpins and the
 pin, the retitle, GTM Control item 7, CRON_TZ on the three routines, parked
 nodes in registry v1.5 and on the Stack Status page, the orphan "Operations
