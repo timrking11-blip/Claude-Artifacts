@@ -172,8 +172,15 @@ Carly disconnected, no ZoomInfo connector installed), and the Drive mirror
 (My Drive › GitHub › Claude-Artifacts) carries a "not a source" marker file
 at its top; the folder was not renamed. The atlas page's embedded fallback
 snapshot and its clock caption refresh at the next atlas refresh (1 Oct).
-Phase 0 is not passed until its gate: the Monday 28 Sep Command Center
-refresh, checked at 10:00 ET by the scheduled gate-check routine.
+Phase 0 gate passed Mon 28 Sep 2026 (registry v1.13): the 28 Sep refresh
+wrote the dashboard at 12:44 UTC; the check fixed the Command Center texts
+that contradicted the registry (the SMI Launch Check card, three stack
+notes) and four pinned headings to match their titles (Engagement Operating
+System, SMI Go-to-Market Control, SMI Engagement Intake, SMI Tool Stack
+Assessment). R3 is answered: fresh, unbound routine sessions load
+ArtifactData (the refresh, the Apollo sync and the site check all wrote on
+28 Sep). A session-bound routine's `last_run` records the wake's delivery,
+so it "finishes" within a second; judge it by its runlog line.
 
 **Scheduled kickoffs (set 25 Sep 2026).** Eight one-shot routines, bound to
 the Claude Code session that ran Phase 0 (session_01TQKKRom7R4Hg9FsvJNhUs9),
@@ -200,8 +207,11 @@ service lines, 9 archetypes, segments A–D) with archetype and GTM segment
 pickers on the CRM page (`artifact/crm-system.html`), whose heading now matches its
 title; step 1's page part, the Command Center's Stack health section
 (`dashboard/stack`); step 6, its SWAT Engine build section (`build/gates`),
-with the cockpit page read-only. Held: the refresh and Apollo sync prompt
-changes until the Phase 0 gate check passes (it applies them on Mon 28 Sep);
+with the cockpit page read-only. Applied on 28 Sep after the Phase 0 gate
+(registry v1.14): the Monday Command Center refresh writes `dashboard/stack`
+and, from 5 Oct, does the 10-day atlas refresh's job (the 19 Oct cutover
+pauses that routine after two clean weekly runs); the Apollo sync never
+writes `archetype_code` or `segment_code`. Held:
 step 5, the Gate 0 checklist into Launch Check, until after Gate 0 (the 1 Oct
 continuation); the GTM Stack Status pointer until the panel shows the same
 facts two Mondays running (the 12 Oct close, which also writes the Phase 1
