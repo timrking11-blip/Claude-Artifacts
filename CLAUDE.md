@@ -149,6 +149,19 @@ entry condition is unmet does not start.
   12 Oct, cutover at the 19 Oct routine; the two old routines are paused,
   never deleted).
 
+**Tool stack assessment (27 Sep 2026).** `docs/tool-stack-assessment.md`,
+published and pinned as https://claude.ai/artifact/X1AmTcpR9ZYBZuzeJ74bQP:
+the blueprint assessed against the live state three days after Phases 1 and
+2 started early, the recommended GTM and operational stack (three hubs:
+Google Workspace on the domain, Apollo, the Claude stack; nothing else with
+its own contact table), the ranked gaps and a dated plan to 15 Nov. Its
+first finding: first touches are counted three ways (scorecard 1, Apollo 25
+delivered, activity rows 29) and outreach leaves from a personal Gmail. Its
+connector section, by Command Center function, ranks eight worth adding
+(PandaDoc, QuickBooks, Tally, tldv or Fireflies, Parallel Search,
+Crunchbase, Typefully; Similarweb-class tools engagement-funded) and names
+sixteen as none; every add needs a registry node and brings no contact table.
+
 **Phase 0 status, 25 Sep 2026.** Done: steps 1–8 (the unpins and the
 pin, the retitle, GTM Control item 7, CRON_TZ on the three routines, parked
 nodes in registry v1.5 and on the Stack Status page, the orphan "Operations
