@@ -39,3 +39,11 @@ Weekly sync · apollo 10 created, 0 updated, 67 unchanged; explorium 0 created, 
 - **apollo**: 10 created, 0 updated, 67 unchanged, 0 field changes, 1 conflicts held, 0 ambiguous matches
   - CONFLICT HELD `c_260b5a86fbab14a0` `company_name`: kept 'Culture Of Fit', rejected 'Culture Of Fit Health'
 - **explorium**: 0 created, 0 updated, 49 unchanged, 0 field changes, 0 conflicts held, 0 ambiguous matches
+
+## 2026-09-28T14:46:53+00:00
+
+Master now holds **77** contacts.
+
+- **apollo**: 10 created, 0 updated, 67 unchanged, 0 field changes, 1 conflicts held, 0 ambiguous matches
+  - CONFLICT HELD `c_260b5a86fbab14a0` `company_name`: kept 'Culture Of Fit', rejected 'Culture Of Fit Health'
+- **explorium**: 0 created, 1 updated, 50 unchanged, 0 field changes, 0 conflicts held, 0 ambiguous matches

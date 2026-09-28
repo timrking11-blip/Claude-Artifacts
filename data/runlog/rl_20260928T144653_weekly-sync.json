@@ -1,0 +1,24 @@
+{
+  "id": "rl_20260928T144653_weekly-sync",
+  "run": "Weekly sync",
+  "at": "2026-09-28T14:46:53Z",
+  "status": "applied",
+  "created": 10,
+  "updated": 1,
+  "detail": "apollo 10 created, 0 updated, 67 unchanged; explorium 0 created, 1 updated, 50 unchanged",
+  "line": "Weekly sync · apollo 10 created, 0 updated, 67 unchanged; explorium 0 created, 1 updated, 50 unchanged · applied",
+  "threshold": 5,
+  "created_names": [
+    "Zahra Biabani (InTheLoop)",
+    "Lisa Horan (Vortx, Inc.)",
+    "Jared Shulman (Daylit)",
+    "Bob Tacconi (Conversent)",
+    "Rajeeb Hussain (Feenix Lab)",
+    "Mark T (Curated Cloud Optimizer)",
+    "Raja Raman (INSILLION)",
+    "Sol Stauber (CodeBlue Ventures)",
+    "Herman Olsson (Solva)",
+    "Douglas Mulm (Turris)"
+  ],
+  "created_more": 0
+}

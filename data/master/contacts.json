@@ -22,47 +22,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -96,42 +96,42 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -164,27 +164,27 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -217,47 +217,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -291,42 +291,42 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -360,47 +360,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -434,17 +434,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -477,47 +477,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -551,32 +551,32 @@
       "provenance": {
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -610,47 +610,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -684,17 +684,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -727,42 +727,42 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -796,7 +796,7 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
@@ -806,37 +806,37 @@
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -870,47 +870,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -921,6 +921,79 @@
       ],
       "technologies": [],
       "title": "CEO and Founder"
+    },
+    {
+      "apollo_contact_id": "6ab606a514e57800185f7dfd",
+      "apollo_person_id": "57e16d37a6da987d84112c2b",
+      "company_domain": "codeblue.ventures",
+      "company_name": "CodeBlue Ventures",
+      "contact_id": "c_2a8db3eb7e608b37",
+      "crm_id": null,
+      "email": "sol@codeblue.ventures",
+      "employee_count": null,
+      "explorium_business_id": null,
+      "explorium_prospect_id": null,
+      "first_name": "Sol",
+      "first_seen": "2026-09-28T14:45:58+00:00",
+      "industry": null,
+      "last_name": "Stauber",
+      "last_updated": "2026-09-28T14:45:58+00:00",
+      "linkedin_url": "http://www.linkedin.com/in/sol-stauber-27157652",
+      "location": "New York, New York, United States",
+      "phone": "+18444242583",
+      "provenance": {
+        "company_domain": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "company_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "email": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "first_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "last_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "linkedin_url": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "location": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "phone": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "title": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        }
+      },
+      "seniority": null,
+      "sources": [
+        "apollo"
+      ],
+      "technologies": [],
+      "title": "CEO"
     },
     {
       "apollo_contact_id": "6aab8bd8280448000c4da240",
@@ -944,47 +1017,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -992,6 +1065,69 @@
       "sources": [
         "apollo",
         "explorium"
+      ],
+      "technologies": [],
+      "title": "CEO"
+    },
+    {
+      "apollo_contact_id": "6ab606a514e57800185f7dfc",
+      "apollo_person_id": "67060f0fb190bc00019fe926",
+      "company_domain": null,
+      "company_name": "Solva",
+      "contact_id": "c_2f1889f95d85638d",
+      "crm_id": null,
+      "email": "herman@solvatechnology.com",
+      "employee_count": null,
+      "explorium_business_id": null,
+      "explorium_prospect_id": null,
+      "first_name": "Herman",
+      "first_seen": "2026-09-28T14:45:58+00:00",
+      "industry": null,
+      "last_name": "Olsson",
+      "last_updated": "2026-09-28T14:45:58+00:00",
+      "linkedin_url": "http://www.linkedin.com/in/hermanbaverudolsson",
+      "location": "New York, New York, United States",
+      "phone": null,
+      "provenance": {
+        "company_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "email": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "first_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "last_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "linkedin_url": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "location": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "title": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        }
+      },
+      "seniority": null,
+      "sources": [
+        "apollo"
       ],
       "technologies": [],
       "title": "CEO"
@@ -1018,47 +1154,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1069,6 +1205,69 @@
       ],
       "technologies": [],
       "title": "CEO"
+    },
+    {
+      "apollo_contact_id": "6ab606a514e57800185f7e04",
+      "apollo_person_id": "60eaf063a57d5900015aaf7a",
+      "company_domain": "intheloop.ml",
+      "company_name": "InTheLoop",
+      "contact_id": "c_369133c9406e7588",
+      "crm_id": null,
+      "email": null,
+      "employee_count": null,
+      "explorium_business_id": null,
+      "explorium_prospect_id": null,
+      "first_name": "Zahra",
+      "first_seen": "2026-09-28T14:45:58+00:00",
+      "industry": null,
+      "last_name": "Biabani",
+      "last_updated": "2026-09-28T14:45:58+00:00",
+      "linkedin_url": "http://www.linkedin.com/in/zahrabiabani",
+      "location": "New York, New York, United States",
+      "phone": null,
+      "provenance": {
+        "company_domain": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "company_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "first_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "last_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "linkedin_url": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "location": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "title": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        }
+      },
+      "seniority": null,
+      "sources": [
+        "apollo"
+      ],
+      "technologies": [],
+      "title": "Modernizing Thrift Operations"
     },
     {
       "apollo_contact_id": "6aab6fed2d1ce7001067973e",
@@ -1092,47 +1291,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1166,47 +1365,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1240,47 +1439,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1314,42 +1513,42 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1383,47 +1582,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1457,42 +1656,42 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1526,47 +1725,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1600,22 +1799,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1648,47 +1847,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1722,22 +1921,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1770,47 +1969,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1821,6 +2020,74 @@
       ],
       "technologies": [],
       "title": "Founder and CEO"
+    },
+    {
+      "apollo_contact_id": "6ab606a514e57800185f7dfb",
+      "apollo_person_id": "607d8b722798b30001bdcd0b",
+      "company_domain": "turrisfi.com",
+      "company_name": "Turris",
+      "contact_id": "c_5ed413712135fa3f",
+      "crm_id": null,
+      "email": "douglas@turrisfi.com",
+      "employee_count": null,
+      "explorium_business_id": null,
+      "explorium_prospect_id": null,
+      "first_name": "Douglas",
+      "first_seen": "2026-09-28T14:45:58+00:00",
+      "industry": null,
+      "last_name": "Mulm",
+      "last_updated": "2026-09-28T14:45:58+00:00",
+      "linkedin_url": "http://www.linkedin.com/in/douglasvermulm",
+      "location": "New York, New York, United States",
+      "phone": null,
+      "provenance": {
+        "company_domain": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "company_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "email": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "first_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "last_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "linkedin_url": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "location": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "title": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        }
+      },
+      "seniority": null,
+      "sources": [
+        "apollo"
+      ],
+      "technologies": [],
+      "title": "Chief Executive Officer"
     },
     {
       "apollo_contact_id": "6aab6fed2d1ce7001067974e",
@@ -1844,42 +2111,42 @@
       "provenance": {
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1913,47 +2180,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -1987,47 +2254,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2038,6 +2305,79 @@
       ],
       "technologies": [],
       "title": "Founder / CEO / President"
+    },
+    {
+      "apollo_contact_id": "6ab606a514e57800185f7dff",
+      "apollo_person_id": "66f7253f57bcd7000163d263",
+      "company_domain": "curatedcloudoptimizer.io",
+      "company_name": "Curated Cloud Optimizer",
+      "contact_id": "c_69007bae2f0fc5df",
+      "crm_id": null,
+      "email": "mark@curatedcloudoptimizer.io",
+      "employee_count": null,
+      "explorium_business_id": null,
+      "explorium_prospect_id": null,
+      "first_name": "Mark",
+      "first_seen": "2026-09-28T14:45:58+00:00",
+      "industry": null,
+      "last_name": "T",
+      "last_updated": "2026-09-28T14:45:58+00:00",
+      "linkedin_url": "http://www.linkedin.com/in/mark-t-94016421b",
+      "location": "New York, New York, United States",
+      "phone": "+19148936736",
+      "provenance": {
+        "company_domain": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "company_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "email": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "first_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "last_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "linkedin_url": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "location": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "phone": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "title": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        }
+      },
+      "seniority": null,
+      "sources": [
+        "apollo"
+      ],
+      "technologies": [],
+      "title": "CEO"
     },
     {
       "apollo_contact_id": "6aab8b83646ad60010fd0596",
@@ -2061,47 +2401,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2135,42 +2475,42 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2204,42 +2544,42 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2273,47 +2613,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2347,17 +2687,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2390,17 +2730,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2433,47 +2773,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2507,17 +2847,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2550,17 +2890,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2593,47 +2933,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2667,17 +3007,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2710,47 +3050,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2784,47 +3124,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2835,6 +3175,74 @@
       ],
       "technologies": [],
       "title": "Founder"
+    },
+    {
+      "apollo_contact_id": "6ab606a514e57800185f7e01",
+      "apollo_person_id": "66f82257a8551a00013964c5",
+      "company_domain": "conversent.io",
+      "company_name": "Conversent",
+      "contact_id": "c_930a48d7817892c4",
+      "crm_id": null,
+      "email": "bob@conversent.io",
+      "employee_count": null,
+      "explorium_business_id": null,
+      "explorium_prospect_id": null,
+      "first_name": "Bob",
+      "first_seen": "2026-09-28T14:45:58+00:00",
+      "industry": null,
+      "last_name": "Tacconi",
+      "last_updated": "2026-09-28T14:45:58+00:00",
+      "linkedin_url": "http://www.linkedin.com/in/bob-tacconi-19901a50",
+      "location": "New York, New York, United States",
+      "phone": null,
+      "provenance": {
+        "company_domain": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "company_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "email": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "first_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "last_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "linkedin_url": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "location": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "title": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        }
+      },
+      "seniority": null,
+      "sources": [
+        "apollo"
+      ],
+      "technologies": [],
+      "title": "CEO"
     },
     {
       "apollo_contact_id": "6aab8cce87d22c00144b485a",
@@ -2858,47 +3266,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -2932,47 +3340,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3006,47 +3414,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3080,37 +3488,37 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3144,22 +3552,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3192,22 +3600,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3217,6 +3625,142 @@
       ],
       "technologies": [],
       "title": "President & Chief Executive Officer"
+    },
+    {
+      "apollo_contact_id": "6ab606a514e57800185f7dfe",
+      "apollo_person_id": "66f3f8f12fe42f00017450fd",
+      "company_domain": null,
+      "company_name": "INSILLION",
+      "contact_id": "c_a092d652425ea270",
+      "crm_id": null,
+      "email": "raja@insillion.com",
+      "employee_count": null,
+      "explorium_business_id": null,
+      "explorium_prospect_id": null,
+      "first_name": "Raja",
+      "first_seen": "2026-09-28T14:45:58+00:00",
+      "industry": null,
+      "last_name": "Raman",
+      "last_updated": "2026-09-28T14:45:58+00:00",
+      "linkedin_url": "http://www.linkedin.com/in/rajaru",
+      "location": "New York, New York, United States",
+      "phone": null,
+      "provenance": {
+        "company_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "email": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "first_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "last_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "linkedin_url": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "location": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "title": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        }
+      },
+      "seniority": null,
+      "sources": [
+        "apollo"
+      ],
+      "technologies": [],
+      "title": "Chief Executive Officer"
+    },
+    {
+      "apollo_contact_id": "6ab606a514e57800185f7e03",
+      "apollo_person_id": "66fd408121ea5600017c5182",
+      "company_domain": "vortx.com",
+      "company_name": "Vortx, Inc.",
+      "contact_id": "c_a37cdc762e31a8f1",
+      "crm_id": null,
+      "email": "lisa.horan@vortx.com",
+      "employee_count": null,
+      "explorium_business_id": null,
+      "explorium_prospect_id": null,
+      "first_name": "Lisa",
+      "first_seen": "2026-09-28T14:45:58+00:00",
+      "industry": null,
+      "last_name": "Horan",
+      "last_updated": "2026-09-28T14:45:58+00:00",
+      "linkedin_url": "http://www.linkedin.com/in/lisa-marie-horan-059ab5251",
+      "location": "Philadelphia, Pennsylvania, United States",
+      "phone": "+15412019965",
+      "provenance": {
+        "company_domain": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "company_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "email": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "first_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "last_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "linkedin_url": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "location": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "phone": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "title": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        }
+      },
+      "seniority": null,
+      "sources": [
+        "apollo"
+      ],
+      "technologies": [],
+      "title": "Chief Executive Officer"
     },
     {
       "apollo_contact_id": "6aab6fed2d1ce70010679744",
@@ -3240,37 +3784,37 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3304,47 +3848,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3378,47 +3922,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3452,42 +3996,42 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3521,37 +4065,37 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3562,6 +4106,147 @@
       ],
       "technologies": [],
       "title": "CEO"
+    },
+    {
+      "apollo_contact_id": "6ab606a514e57800185f7e02",
+      "apollo_person_id": "664d9a649866c100016061b0",
+      "company_domain": "daylit.com",
+      "company_name": "Daylit",
+      "contact_id": "c_c508e65eb2200511",
+      "crm_id": null,
+      "email": "jared@daylit.com",
+      "employee_count": null,
+      "explorium_business_id": null,
+      "explorium_prospect_id": null,
+      "first_name": "Jared",
+      "first_seen": "2026-09-28T14:45:58+00:00",
+      "industry": null,
+      "last_name": "Shulman",
+      "last_updated": "2026-09-28T14:45:58+00:00",
+      "linkedin_url": "http://www.linkedin.com/in/shulman-jared",
+      "location": "Boston, Massachusetts, United States",
+      "phone": "+16174197106",
+      "provenance": {
+        "company_domain": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "company_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "email": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "first_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "last_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "linkedin_url": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "location": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "phone": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "title": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        }
+      },
+      "seniority": null,
+      "sources": [
+        "apollo"
+      ],
+      "technologies": [],
+      "title": "CEO"
+    },
+    {
+      "apollo_contact_id": "6ab606a514e57800185f7e00",
+      "apollo_person_id": "57d74e51a6da985b5ffa2e26",
+      "company_domain": "feenixlab.com",
+      "company_name": "Feenix Lab",
+      "contact_id": "c_cd144643342afedd",
+      "crm_id": null,
+      "email": null,
+      "employee_count": null,
+      "explorium_business_id": null,
+      "explorium_prospect_id": null,
+      "first_name": "Rajeeb",
+      "first_seen": "2026-09-28T14:45:58+00:00",
+      "industry": null,
+      "last_name": "Hussain",
+      "last_updated": "2026-09-28T14:45:58+00:00",
+      "linkedin_url": "http://www.linkedin.com/in/rajeebhussain",
+      "location": "New York, New York, United States",
+      "phone": "+88029870456",
+      "provenance": {
+        "company_domain": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "company_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "first_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "last_name": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "linkedin_url": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "location": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "phone": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        },
+        "title": {
+          "confidence": 1.0,
+          "observed_at": "2026-09-28T14:45:58+00:00",
+          "source": "apollo"
+        }
+      },
+      "seniority": null,
+      "sources": [
+        "apollo"
+      ],
+      "technologies": [],
+      "title": "Chief Executive Officer"
     },
     {
       "apollo_contact_id": "6aab6fed2d1ce7001067974d",
@@ -3585,42 +4270,42 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3654,47 +4339,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3728,17 +4413,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3771,47 +4456,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3845,17 +4530,17 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -3876,65 +4561,66 @@
       "email": "suzanne@doulagivers.com",
       "employee_count": null,
       "explorium_business_id": null,
-      "explorium_prospect_id": null,
+      "explorium_prospect_id": "4f3ad90f0a6f0a17bde401394361fe4ae0b268e0",
       "first_name": "Suzanne",
       "first_seen": "2026-09-17T14:05:03+00:00",
       "industry": null,
       "last_name": "O'Brien",
-      "last_updated": "2026-09-17T14:05:03+00:00",
+      "last_updated": "2026-09-28T14:46:39+00:00",
       "linkedin_url": "http://www.linkedin.com/in/suzannebobrienrn",
       "location": "New York, New York, United States",
       "phone": "+18453370389",
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
       "seniority": null,
       "sources": [
-        "apollo"
+        "apollo",
+        "explorium"
       ],
       "technologies": [],
       "title": "CEO and Founder"
@@ -3961,47 +4647,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -4035,47 +4721,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -4109,47 +4795,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -4183,42 +4869,42 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -4252,22 +4938,22 @@
       "provenance": {
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -4300,42 +4986,42 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -4369,47 +5055,47 @@
       "provenance": {
         "company_domain": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "company_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "email": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "first_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "last_name": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:31+00:00",
+          "observed_at": "2026-09-28T14:46:39+00:00",
           "source": "apollo"
         },
         "linkedin_url": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "location": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "phone": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         },
         "title": {
           "confidence": 1.0,
-          "observed_at": "2026-09-21T06:05:13+00:00",
+          "observed_at": "2026-09-28T14:45:58+00:00",
           "source": "apollo"
         }
       },
@@ -4422,7 +5108,7 @@
       "title": "Chief Executive Officer"
     }
   ],
-  "count": 67,
-  "generated_at": "2026-09-25T19:47:56+00:00",
+  "count": 77,
+  "generated_at": "2026-09-28T14:46:53+00:00",
   "schema_version": 1
 }
