@@ -31,3 +31,11 @@ Master now holds **67** contacts.
 ## 2026-09-25T19:47:56+00:00
 
 - **key backfill** (scripts/backfill_keys.py): 64 CRM contact(s) given master_id (64 by Apollo id, 0 by email), 64 master row(s) given crm_id, 0 already keyed, 0 left unkeyed.
+
+## 2026-09-28T06:06:42+00:00 -- HELD
+
+Weekly sync · apollo 10 created, 0 updated, 67 unchanged; explorium 0 created, 0 updated, 49 unchanged · HELD (10 created, over 5). Master was not written.
+
+- **apollo**: 10 created, 0 updated, 67 unchanged, 0 field changes, 1 conflicts held, 0 ambiguous matches
+  - CONFLICT HELD `c_260b5a86fbab14a0` `company_name`: kept 'Culture Of Fit', rejected 'Culture Of Fit Health'
+- **explorium**: 0 created, 0 updated, 49 unchanged, 0 field changes, 0 conflicts held, 0 ambiguous matches

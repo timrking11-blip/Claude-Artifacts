@@ -1,0 +1,26 @@
+{
+  "id": "rl_20260928T060642_weekly-sync",
+  "run": "Weekly sync",
+  "at": "2026-09-28T06:06:42Z",
+  "status": "held",
+  "created": 10,
+  "updated": 0,
+  "detail": "apollo 10 created, 0 updated, 67 unchanged; explorium 0 created, 0 updated, 49 unchanged",
+  "line": "Weekly sync · apollo 10 created, 0 updated, 67 unchanged; explorium 0 created, 0 updated, 49 unchanged · HELD (10 created, over 5)",
+  "threshold": 5,
+  "created_names": [
+    "Zahra Biabani (InTheLoop)",
+    "Lisa Horan (Vortx, Inc.)",
+    "Jared Shulman (Daylit)",
+    "Bob Tacconi (Conversent)",
+    "Rajeeb Hussain (Feenix Lab)",
+    "Mark T (Curated Cloud Optimizer)",
+    "Raja Raman (INSILLION)",
+    "Sol Stauber (CodeBlue Ventures)",
+    "Herman Olsson (Solva)",
+    "Douglas Mulm (Turris)"
+  ],
+  "created_more": 0,
+  "check": "open each name in Apollo and in the CRM and confirm none is already a contact under another email or id (on 21 Sep 2026 all 15 were).",
+  "on_confirm": "GitHub → Actions → Weekly CRM sync → Run workflow with allow_created = 10. A different count holds again."
+}
