@@ -194,7 +194,9 @@ quarterly). Each starts only if the previous gate passed, asks the owner's
 decisions in-session, spends no credits without an estimate and a go, and
 writes its result to the registry (trigger ids in the registry's agents
 entry "Blueprint phase kickoffs"). Do not start a phase from another session
-while its routine is pending.
+while its routine is pending. Fired so far: the Phase 0 gate check (28 Sep),
+the Phase 1 continuation and the Phase 2 held pieces (1 Oct). The Monday Data
+Sync (shadow, from 5 Oct) also fires into that session.
 The routines work on this session's designated branch, restarted from the
 default branch after each merge; a `claude/blueprint-phase-N` branch named in
 an older routine prompt means that designated branch.
@@ -252,11 +254,20 @@ credits for 40 prospects, estimated and then refused: the owner declined the
 D1 backfill on 25 Sep, nothing bought); `pull_explorium.py` match-only. The
 account promotion (runlog `rl_20260925T202000_account-promotion`, 34
 companies) was confirmed by the owner on the CRM page on 25 Sep, check
-recorded; the 1 Oct held-pieces routine creates the accounts after the Phase
-0 gate. Held: the Monday Data Sync in shadow and the Ops refresh scorecard on
-activity rows (both by that routine); every credit spend (a `jobs/` row, a
-free estimate and the owner's go; no Vibe spend is planned). Apollo lead and
-direct-dial credits are used up until 11 Oct.
+recorded. The 1 Oct held-pieces routine did not apply it: the Apollo connector
+has no free saved-accounts search (`apollo_accounts_search` is not in it, and
+`apollo_mixed_companies_search` costs a credit per request that returns a
+result), so it waits on the owner's choice of how to find the 34 Apollo
+account ids. The Apollo sync's account ingest is blocked by the same gap.
+Done on 1 Oct (registry v1.17): the Monday Data Sync in shadow
+(`trig_012qYJ65sLwpVRXWWYrYkvP6`, Mon 07:50 ET, bound to this session; it
+writes only captured activity rows, `meta/heartbeat` and a runlog line, and
+runs the Apollo sync and the broker as dry runs) and the Ops refresh
+scorecard on activity rows (`crm/activity.scorecard`, never from stage; a
+routine with zero rows written two Mondays running shows as needing
+attention). Held: every credit spend (a `jobs/` row, a free estimate and the
+owner's go; no Vibe spend is planned). Apollo lead and direct-dial credits are
+used up until 11 Oct.
 
 - `master_id`, `org_id`, `provenance`, `held` and the `review_org` flag
   belong to the data layer and are written only by the enrichment push
