@@ -211,12 +211,21 @@ with the cockpit page read-only. Applied on 28 Sep after the Phase 0 gate
 (registry v1.14): the Monday Command Center refresh writes `dashboard/stack`
 and, from 5 Oct, does the 10-day atlas refresh's job (the 19 Oct cutover
 pauses that routine after two clean weekly runs); the Apollo sync never
-writes `archetype_code` or `segment_code`. Held:
-step 5, the Gate 0 checklist into Launch Check, until after Gate 0 (the 1 Oct
-continuation); the GTM Stack Status pointer until the panel shows the same
-facts two Mondays running (the 12 Oct close, which also writes the Phase 1
-gate). The owner re-enters the SWAT gate states on the Command Center; the
-cockpit is unpinned after that.
+writes `archetype_code` or `segment_code`. Done on 1 Oct by the continuation
+routine (registry v1.15): step 5, Gate 0 in one place. Launch Check's database
+holds the nine items as `gate0/items`, re-created unticked (the old ticks lived
+in one browser) for the owner to re-tick there; GTM Control's checklist is a
+link to Launch Check and keeps nothing in browser storage; the Monday Command
+Center refresh reads `gate0/items` for its Gate 0 card. Whether Gate 0 closed
+on 30 Sep is the owner's own statement (`closed_on_30_sep`, "not stated" until
+given); no routine ticks an item or infers closure from the site check.
+Sunset checks on 1 Oct: the 17 Sep Account Research Composition page stays (it
+holds the ADK agent's architecture, which the Intake lacks); the CRM ledger
+sync task's run history is in the registry changelog, and deleting the task is
+the owner's call. Held: the GTM Stack Status pointer until the panel shows the
+same facts two Mondays running (the 12 Oct close, which also writes the Phase 1
+gate). The owner re-enters the SWAT gate states on the Command Center (still
+all "unknown" on 1 Oct); the cockpit is unpinned after that.
 
 - Archetype codes: VIA Viability Test · VSP Validation Sprint · MOB
   Make-or-Buy Review · GTB GTM Blueprint · FRL Funding Route Lock · LRR Launch
