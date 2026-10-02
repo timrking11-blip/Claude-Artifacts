@@ -89,6 +89,26 @@ Don't work around them.
 - The internal check before a proposal goes out is "Review before sending"
   (`crm/review.py`). It's for SMI and is never shown to the prospect.
 
+## Architecture invariants: Notion governs, the YAML is the executable form
+
+- Architecture decisions (ADR-006, ADR-012, a future ADR-013) live in Notion
+  only. The repo never holds ADR copies; `architecture/invariants.yaml` lists
+  their Notion URLs and states INV-01…INV-16 as implementation-independent
+  rules. Today's modules and functions appear only in probe targets.
+- `scripts/check_architecture.py` runs the probes and reports conformance
+  (ENFORCED / PARTIAL / MISSING / UNVERIFIED) and evidence maturity (ADR-011
+  levels; never PRODUCTION_VERIFIED). Runtime rules are UNVERIFIED without
+  `--crm-dump`. CI's `architecture` job fails on a regression only: a
+  MUST_NOT_REGRESS probe failing, a rule below its `expected`, a schema error,
+  or `docs/architecture-invariants.md` out of date (`--render-md` regenerates
+  it; never edit it by hand). An improvement prints "raise `expected`".
+- Every existing hard control is a MUST_NOT_REGRESS probe. A change that
+  weakens one fails CI; don't loosen the probe in the same change.
+- Code reaches the default branch by pull request with the `architecture` and
+  `test` checks passing. Only the GitHub Actions integration bypasses (the
+  weekly sync's commits); composition-run data goes to the `data/runs` branch
+  and an auto-merge PR.
+
 ## Unified Architecture Blueprint (24 Sep 2026)
 
 The route the stack follows from 24 Sep 2026. The full import (findings,
