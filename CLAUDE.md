@@ -102,12 +102,24 @@ Don't work around them.
   MUST_NOT_REGRESS probe failing, a rule below its `expected`, a schema error,
   or `docs/architecture-invariants.md` out of date (`--render-md` regenerates
   it; never edit it by hand). An improvement prints "raise `expected`".
-- Every existing hard control is a MUST_NOT_REGRESS probe. A change that
-  weakens one fails CI; don't loosen the probe in the same change.
+- A rule is `normative` only when its ADR is written in Notion; until then it
+  is a `candidate` (INV-13 and INV-14, ADR-013), reported but never held to
+  `expected`. The checker refuses a normative rule whose ADR has no Notion
+  URL, and a candidate whose ADR has one. GitHub never creates a decision.
+- Every existing hard control is a MUST_NOT_REGRESS probe, whatever its
+  rule's standing. A change that weakens one fails CI; don't loosen the probe
+  in the same change.
+- A note never authorizes a bulk creation. Only a structured confirmation (a
+  check of 12+ characters, `confirmed_at`, `confirmed_count` equal to
+  `created`) does, on the run itself or on the hold that names it in
+  `applied_by`. Runs from before the hold existed (25 Sep 2026 03:52 UTC) are
+  the only exception.
+- PR CI checks the code plane; the runtime rules (P-07e, P-15b) need a fresh
+  CRM dump, so they belong in a scheduled runtime audit.
 - Code reaches the default branch by pull request with the `architecture` and
-  `test` checks passing. Only the GitHub Actions integration bypasses (the
-  weekly sync's commits); composition-run data goes to the `data/runs` branch
-  and an auto-merge PR.
+  `test` checks passing. No broad GitHub Actions bypass: automated data
+  commits (the weekly sync, composition runs) go to a `data/runs` branch and
+  an auto-merging PR that passes the same checks.
 
 ## Unified Architecture Blueprint (24 Sep 2026)
 

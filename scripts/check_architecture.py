@@ -52,6 +52,7 @@ MATURITY = {"static": "CODE_EXISTS", "unit": "CODE_EXISTS", "runtime": "EXECUTED
 MATURITY_RANK = {"DESIGNED": 0, "CODE_EXISTS": 1, "EXECUTED": 2}
 KINDS = ("static", "unit", "runtime")
 SCOPES = ("core", "guard")
+STANDINGS = ("normative", "candidate")
 #: A rule names concepts, never today's code.
 IMPLEMENTATION_NAMES = re.compile(r"\bcrm\.|scripts/|\.py\b|\bdef\s|\bartifact/|_tool\b")
 NOW = datetime(2026, 9, 24, 20, 0, tzinfo=timezone.utc)
@@ -209,25 +210,40 @@ def p07d() -> str:
     return "confirm disabled until a check note of 12+ characters"
 
 
+#: The bulk-creation hold arrived with the run log (f1ef3a4, 25 Sep 2026 03:52 UTC). A bulk
+#: creation applied before then could not have been confirmed; it passes only with a note
+#: saying so. After it, a note is never an authorization.
+HOLD_CUTOVER = "2026-09-25T03:52:14Z"
+#: The CRM page refuses a confirmation whose check note is shorter than this.
+MIN_CHECK = 12
+
+
+def _confirmed(d: dict) -> bool:
+    """Structured confirmation: a written check, when, and exactly this count."""
+    return (len((d.get("confirm_check") or "").strip()) >= MIN_CHECK and bool(d.get("confirmed_at"))
+            and d.get("confirmed_count") == d.get("created"))
+
+
 def p07e(dump: Path) -> str:
     docs = [json.loads(p.read_text()) for p in (dump / "runlog").glob("*.json")]
     ensure(docs, f"no runlog documents under {dump / 'runlog'}")
     from crm import runlog
     docs = [d.get("data", d) for d in docs]
-    # A confirmed hold may be applied by a later run that writes its own entry;
-    # the hold names that entry in `applied_by`, and the counts must agree.
-    authorized = {(d.get("applied_by"), d.get("confirmed_count")) for d in docs
-                  if (d.get("confirm_check") or "").strip() and d.get("applied_by")}
+    # A confirmed hold may be applied by a later run that writes its own entry: the hold names
+    # that entry in `applied_by`, and only a fully confirmed hold can authorize it.
+    authorized = {(d["applied_by"], d["confirmed_count"]) for d in docs if _confirmed(d) and d.get("applied_by")}
     bad = []
     for d in docs:
-        if d.get("confirmed_at") or d.get("status") == "confirmed":
-            if not (d.get("confirm_check") or "").strip() or d.get("confirmed_count") != d.get("created"):
+        if d.get("confirmed_at") or d.get("confirm_check") or d.get("status") == "confirmed":
+            if not _confirmed(d):
                 bad.append(d.get("id"))
-        elif (d.get("status") == "applied" and (d.get("created") or 0) > runlog.HOLD_OVER
-              and not d.get("note") and (d.get("id"), d.get("created")) not in authorized):
-            bad.append(d.get("id"))
-    ensure(not bad, f"held runs applied without a recorded check: {bad}")
-    return f"{len(docs)} runlog documents; every applied bulk creation has its check"
+        elif d.get("status") == "applied" and (d.get("created") or 0) > runlog.HOLD_OVER:
+            at = d.get("at") or ""
+            legacy = bool(at) and at < HOLD_CUTOVER and bool((d.get("note") or "").strip())
+            if not legacy and (d.get("id"), d.get("created")) not in authorized:
+                bad.append(d.get("id"))
+    ensure(not bad, f"bulk creations without a structured confirmation: {bad}")
+    return f"{len(docs)} runlog documents; every applied bulk creation has its confirmation"
 
 
 def p08b() -> str:
@@ -417,6 +433,7 @@ class RuleResult:
     expected: str
     status: str
     maturity: str
+    standing: str = "normative"
     probes: list[ProbeResult] = field(default_factory=list)
 
 
@@ -440,11 +457,18 @@ def validate(spec: dict[str, Any], probes: dict[str, Callable] | None = None) ->
         if iid in seen:
             errors.append(f"duplicate invariant {iid}")
         seen.add(iid)
-        for key in ("decision", "adr", "rule", "expected", "requires_runtime", "probes"):
+        for key in ("decision", "adr", "standing", "rule", "expected", "requires_runtime", "probes"):
             if key not in inv:
                 errors.append(f"{iid}: missing {key}")
         if inv.get("adr") not in adrs:
             errors.append(f"{iid}: adr {inv.get('adr')} is not in decisions")
+        elif inv.get("standing") not in STANDINGS:
+            errors.append(f"{iid}: standing must be one of {list(STANDINGS)}")
+        # Notion governs: only a written ADR makes a rule normative, and a written one makes it so.
+        elif inv["standing"] == "normative" and not adrs[inv["adr"]].get("url"):
+            errors.append(f"{iid}: normative, but {inv['adr']} is not written in Notion; mark it candidate")
+        elif inv["standing"] == "candidate" and adrs[inv["adr"]].get("url"):
+            errors.append(f"{iid}: {inv['adr']} now exists in Notion; promote the rule to normative")
         if inv.get("expected") not in RANK:
             errors.append(f"{iid}: expected must be one of {list(RANK)}")
         if IMPLEMENTATION_NAMES.search(inv.get("rule") or ""):
@@ -469,7 +493,7 @@ def run(spec: dict[str, Any], crm_dump: Path | None = None,
     probes = PROBES if probes is None else probes
     results = []
     for inv in spec["invariants"]:
-        rr = RuleResult(inv["id"], inv["decision"], inv["adr"], inv["expected"], "", "DESIGNED")
+        rr = RuleResult(inv["id"], inv["decision"], inv["adr"], inv["expected"], "", "DESIGNED", inv["standing"])
         for p in inv["probes"]:
             pr = ProbeResult(p["id"], p["kind"], p["scope"], bool(p.get("must_not_regress")), "skipped", "")
             if p["kind"] == "runtime" and crm_dump is None:
@@ -509,7 +533,7 @@ def verdict(results: list[RuleResult]) -> tuple[list[str], list[str]]:
         for p in r.probes:
             if p.mnr and p.outcome == "fail":
                 regressions.append(f"{r.id} {p.id} MUST_NOT_REGRESS failed: {p.evidence}")
-        if r.status in RANK:
+        if r.status in RANK and r.standing == "normative":  # a candidate is reported, not held to a line
             if RANK[r.status] < RANK[r.expected]:
                 regressions.append(f"{r.id} is {r.status}, below its expected {r.expected}")
             elif RANK[r.status] > RANK[r.expected]:
@@ -528,16 +552,20 @@ def render_md(spec: dict[str, Any], results: list[RuleResult]) -> str:
            "Decisions are governed in Notion; the repository holds their executable form. Conformance is "
            "ENFORCED, PARTIAL, MISSING, or UNVERIFIED (needs `--crm-dump`). Maturity uses ADR-011's "
            "evidence levels; this check never claims PRODUCTION_VERIFIED. Status below is the offline run.", "",
+           "A normative rule's ADR is written in Notion and CI holds it at its expected status. A candidate "
+           "rule is a design target whose ADR is not written yet: it is reported, never held to a line; its "
+           "MUST_NOT_REGRESS probes still fail CI, because they protect controls that exist today.", "",
            "## Governing decisions", "", "| ADR | Title | Status (as of) |", "|---|---|---|"]
     for d in spec["decisions"]:
         title = f"[{d['title']}]({d['url']})" if d.get("url") else d["title"]
         out.append(f"| {d['id']} | {title} | {d['status']} ({d['as_of']}) |")
-    out += ["", "## Invariants", "", "| ID | Decision | ADR | Rule | Expected | Offline | Maturity |",
-            "|---|---|---|---|---|---|---|"]
+    out += ["", "## Invariants", "", "| ID | Decision | ADR | Standing | Rule | Expected | Offline | Maturity |",
+            "|---|---|---|---|---|---|---|---|"]
     for inv in spec["invariants"]:
         r = by_id[inv["id"]]
         rule = " ".join(inv["rule"].split()).replace("|", "\\|")
-        out.append(f"| {inv['id']} | {inv['decision']} | {inv['adr']} | {rule} | {inv['expected']} | {r.status} | {r.maturity} |")
+        out.append(f"| {inv['id']} | {inv['decision']} | {inv['adr']} | {inv['standing']} | {rule} | {inv['expected']} "
+                   f"| {r.status} | {r.maturity} |")
     out += ["", "## Probes", "", "MNR = MUST_NOT_REGRESS: an existing hard control that CI never lets weaken.", "",
             "| Probe | Rule | Kind | Scope | MNR | What it checks | Target today |", "|---|---|---|---|---|---|---|"]
     for inv in spec["invariants"]:
@@ -554,7 +582,8 @@ def render_md(spec: dict[str, Any], results: list[RuleResult]) -> str:
 def report(results: list[RuleResult]) -> str:
     lines = []
     for r in results:
-        lines.append(f"{r.id}  {r.status:<10} {r.maturity:<11} expected {r.expected:<8} {r.decision} ({r.adr})")
+        held = f"expected {r.expected:<8}" if r.standing == "normative" else "candidate        "
+        lines.append(f"{r.id}  {r.status:<10} {r.maturity:<11} {held} {r.decision} ({r.adr})")
         for p in r.probes:
             mark = {"pass": "ok  ", "fail": "FAIL", "skipped": "--  "}[p.outcome]
             lines.append(f"    {mark} {p.id} {p.kind:<7}{' MNR' if p.mnr else '    '}  {p.evidence}")

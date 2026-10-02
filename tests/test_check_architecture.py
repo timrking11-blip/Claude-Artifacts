@@ -30,12 +30,13 @@ def probe(pid, *, kind="unit", scope="core", mnr=False):
     return {"id": pid, "what": "w", "kind": kind, "scope": scope, "target": "t", "must_not_regress": mnr}
 
 
-def spec(*probes, expected="PARTIAL", requires_runtime=False, rule="every x has a y"):
+def spec(*probes, expected="PARTIAL", requires_runtime=False, rule="every x has a y", standing="normative"):
     return {
         "schema": 1,
         "decisions": [{"id": "ADR-X", "title": "T", "url": "https://www.notion.so/x", "status": "Proposed",
                        "as_of": "2026-10-02"}],
-        "invariants": [{"id": "INV-T", "decision": "D", "adr": "ADR-X", "rule": rule, "expected": expected,
+        "invariants": [{"id": "INV-T", "decision": "D", "adr": "ADR-X", "standing": standing, "rule": rule,
+                        "expected": expected,
                         "requires_runtime": requires_runtime, "probes": list(probes)}],
     }
 
@@ -76,6 +77,26 @@ def test_declared_and_implemented_probes_must_agree():
     errors = ca.validate(s, {"P-2": ok})
     assert any("P-1: no probe implementation" in e for e in errors)
     assert any("P-2: implemented but not declared" in e for e in errors)
+
+
+def test_only_a_written_adr_makes_a_rule_normative():
+    s = spec(probe("P-1"))
+    s["decisions"][0]["url"] = None
+    assert any("not written in Notion; mark it candidate" in e for e in ca.validate(s, {"P-1": ok}))
+    s["invariants"][0]["standing"] = "candidate"
+    assert ca.validate(s, {"P-1": ok}) == []
+
+
+def test_a_candidate_is_promoted_once_its_adr_exists():
+    s = spec(probe("P-1"), standing="candidate")
+    assert any("promote the rule to normative" in e for e in ca.validate(s, {"P-1": ok}))
+
+
+def test_the_committed_candidates_are_the_rules_whose_adr_is_unwritten():
+    s = ca.load()
+    unwritten = {d["id"] for d in s["decisions"] if not d.get("url")}
+    assert {i["id"] for i in s["invariants"] if i["standing"] == "candidate"} == \
+        {i["id"] for i in s["invariants"] if i["adr"] in unwritten} == {"INV-13", "INV-14"}
 
 
 def test_status_vocabulary_and_duplicates():
@@ -122,6 +143,13 @@ def test_a_failing_must_not_regress_probe_is_a_regression_even_when_status_holds
 def test_falling_below_expected_is_a_regression():
     regressions, _ = ca.verdict(ca.run(spec(probe("A")), probes={"A": bad}))
     assert regressions == ["INV-T is MISSING, below its expected PARTIAL"]
+
+
+def test_a_candidate_is_never_held_to_expected_but_its_hard_controls_are():
+    s = spec(probe("A"), probe("M", scope="guard", mnr=True), standing="candidate")
+    assert ca.verdict(ca.run(s, probes={"A": bad, "M": ok})) == ([], [])
+    regressions, _ = ca.verdict(ca.run(s, probes={"A": bad, "M": bad}))
+    assert len(regressions) == 1 and "MUST_NOT_REGRESS" in regressions[0]
 
 
 def test_an_improvement_is_reported_not_failed():
@@ -182,8 +210,38 @@ def test_a_bulk_creation_applied_by_a_confirmed_hold_passes(tmp_path):
 
 def test_a_confirmation_for_a_different_count_does_not_authorize(tmp_path):
     dump = _dump(tmp_path,
-                 {"id": "rl_a", "status": "applied", "created": 10, "confirm_check": "checked",
+                 {"id": "rl_a", "status": "applied", "created": 10, "confirm_check": "Checked Apollo: all 10 new",
                   "confirmed_count": 10, "confirmed_at": "2026-09-28T14:00:00Z", "applied_by": "rl_b"},
                  {"id": "rl_b", "status": "applied", "created": 12})
+    with pytest.raises(ca.ProbeFailed):
+        ca.p07e(dump)
+
+
+def test_a_note_never_authorizes_a_bulk_creation_after_the_hold_existed(tmp_path):
+    dump = _dump(tmp_path, {"id": "rl_n", "at": "2026-10-01T06:00:00Z", "status": "applied", "created": 10,
+                            "note": "looked fine"})
+    with pytest.raises(ca.ProbeFailed):
+        ca.p07e(dump)
+
+
+def test_a_bulk_creation_from_before_the_hold_passes_with_a_note(tmp_path):
+    dump = _dump(tmp_path, {"id": "rl_l", "at": "2026-09-21T06:05:45Z", "status": "applied", "created": 15,
+                            "note": "Recorded from the changelog; the hold did not exist yet."})
+    assert "every applied bulk creation" in ca.p07e(dump)
+
+
+@pytest.mark.parametrize("hold", [
+    {"confirm_check": "Checked Apollo: all 10 new", "confirmed_count": 10},                # no confirmed_at
+    {"confirm_check": "ok", "confirmed_count": 10, "confirmed_at": "2026-09-28T14:00:00Z"},  # no real check
+])
+def test_only_a_structured_confirmation_can_authorize_another_run(tmp_path, hold):
+    dump = _dump(tmp_path, {"id": "rl_a", "status": "applied", "created": 10, "applied_by": "rl_b", **hold},
+                 {"id": "rl_b", "at": "2026-09-28T14:46:53Z", "status": "applied", "created": 10})
+    with pytest.raises(ca.ProbeFailed, match="rl_a.*rl_b|rl_b.*rl_a"):
+        ca.p07e(dump)
+
+
+def test_an_undated_run_is_never_legacy(tmp_path):
+    dump = _dump(tmp_path, {"id": "rl_u", "status": "applied", "created": 10, "note": "old run"})
     with pytest.raises(ca.ProbeFailed):
         ca.p07e(dump)
