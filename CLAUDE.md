@@ -89,6 +89,38 @@ Don't work around them.
 - The internal check before a proposal goes out is "Review before sending"
   (`crm/review.py`). It's for SMI and is never shown to the prospect.
 
+## Architecture invariants: Notion governs, the YAML is the executable form
+
+- Architecture decisions (ADR-006, ADR-012, a future ADR-013) live in Notion
+  only. The repo never holds ADR copies; `architecture/invariants.yaml` lists
+  their Notion URLs and states INV-01…INV-16 as implementation-independent
+  rules. Today's modules and functions appear only in probe targets.
+- `scripts/check_architecture.py` runs the probes and reports conformance
+  (ENFORCED / PARTIAL / MISSING / UNVERIFIED) and evidence maturity (ADR-011
+  levels; never PRODUCTION_VERIFIED). Runtime rules are UNVERIFIED without
+  `--crm-dump`. CI's `architecture` job fails on a regression only: a
+  MUST_NOT_REGRESS probe failing, a rule below its `expected`, a schema error,
+  or `docs/architecture-invariants.md` out of date (`--render-md` regenerates
+  it; never edit it by hand). An improvement prints "raise `expected`".
+- A rule is `normative` only when its ADR is written in Notion; until then it
+  is a `candidate` (INV-13 and INV-14, ADR-013), reported but never held to
+  `expected`. The checker refuses a normative rule whose ADR has no Notion
+  URL, and a candidate whose ADR has one. GitHub never creates a decision.
+- Every existing hard control is a MUST_NOT_REGRESS probe, whatever its
+  rule's standing. A change that weakens one fails CI; don't loosen the probe
+  in the same change.
+- A note never authorizes a bulk creation. Only a structured confirmation (a
+  check of 12+ characters, `confirmed_at`, `confirmed_count` equal to
+  `created`) does, on the run itself or on the hold that names it in
+  `applied_by`. Runs from before the hold existed (25 Sep 2026 03:52 UTC) are
+  the only exception.
+- PR CI checks the code plane; the runtime rules (P-07e, P-15b) need a fresh
+  CRM dump, so they belong in a scheduled runtime audit.
+- Code reaches the default branch by pull request with the `architecture` and
+  `test` checks passing. No broad GitHub Actions bypass: automated data
+  commits (the weekly sync, composition runs) go to a `data/runs` branch and
+  an auto-merging PR that passes the same checks.
+
 ## Unified Architecture Blueprint (24 Sep 2026)
 
 The route the stack follows from 24 Sep 2026. The full import (findings,

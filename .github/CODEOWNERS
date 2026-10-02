@@ -1,0 +1,5 @@
+# Changes to the architecture source, the CRM code, the scripts and CI need the owner.
+architecture/ @timrking11-blip
+crm/ @timrking11-blip
+scripts/ @timrking11-blip
+.github/ @timrking11-blip
