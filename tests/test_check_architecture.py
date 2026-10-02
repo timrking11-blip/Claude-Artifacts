@@ -136,6 +136,18 @@ def test_main_exits_1_on_a_must_not_regress_failure(monkeypatch, capsys):
     assert "REGRESSION  INV-T M MUST_NOT_REGRESS failed" in capsys.readouterr().out
 
 
+def test_repository_probes_do_not_depend_on_the_working_directory(monkeypatch, tmp_path):
+    """Repository evidence resolves from the checker's own location; only --crm-dump is caller-relative."""
+    monkeypatch.chdir(tmp_path)
+    assert ca.PROBES["P-07d"]() == "confirm disabled until a check note of 12+ characters"
+    results = ca.run(ca.load())
+    assert ca.verdict(results)[0] == []
+    assert [r.status for r in results] == [r.status for r in _OFFLINE]
+
+
+_OFFLINE = ca.run(ca.load())
+
+
 def test_check_md_fails_when_the_markdown_is_stale(monkeypatch, tmp_path):
     stale = tmp_path / "inv.md"
     stale.write_text("old\n")
