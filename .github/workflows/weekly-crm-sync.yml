@@ -31,8 +31,13 @@ on:
         default: false
         type: boolean
 
+# contents/pull-requests/actions: write let scripts/open_data_pr.sh push a
+# data branch, open its PR, dispatch Python CI on it and enable auto-merge.
+# Nothing here pushes to the default branch: it takes changes only by PR.
 permissions:
   contents: write
+  pull-requests: write
+  actions: write
 
 concurrency:
   group: crm-sync
@@ -156,6 +161,8 @@ jobs:
     # Run even if one pull failed or was skipped; merge_master.py handles a
     # missing staging file and refuses only when nothing staged at all.
     if: ${{ !cancelled() && (needs.pull-apollo.result == 'success' || needs.pull-explorium.result == 'success' || needs.pull-explorium-serial.result == 'success') }}
+    outputs:
+      branch: ${{ steps.commit.outputs.branch }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -179,17 +186,14 @@ jobs:
       # routine runs the same gate with --crm-dump before it pushes anything.
       - name: Validate data layer
         run: python scripts/validate_sync.py
-      - name: Commit master
-        run: |
-          git config user.name "crm-sync[bot]"
-          git config user.email "crm-sync[bot]@users.noreply.github.com"
-          git add data/master data/CHANGELOG.md data/runlog
-          if git diff --cached --quiet; then
-            echo "No changes to master this week."
-          else
-            git commit -m "chore(crm): weekly sync $(date -u +%Y-%m-%d)"
-            git push
-          fi
+      - name: Open the data PR
+        id: commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          scripts/open_data_pr.sh "data/weekly-sync-${{ github.run_id }}"
+          "chore(crm): weekly sync $(date -u +%Y-%m-%d)"
+          data/master data/CHANGELOG.md data/runlog
       - name: Upload master snapshot
         uses: actions/upload-artifact@v4
         with:
@@ -208,21 +212,20 @@ jobs:
       APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
       APOLLO_WRITEBACK_ENABLED: "true"
     steps:
+      # Write back from the master this run produced: its data PR may not have
+      # merged yet, so read the data branch, not the default branch.
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
-      - run: git pull --ff-only
+          ref: ${{ needs.merge.outputs.branch || github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - run: python scripts/push_apollo.py --apply
-      - name: Commit the run line
+      - name: Open the run line PR
         if: ${{ always() }}
-        run: |
-          git config user.name "crm-sync[bot]"
-          git config user.email "crm-sync[bot]@users.noreply.github.com"
-          git add data/runlog
-          if ! git diff --cached --quiet; then
-            git commit -m "chore(crm): Apollo writeback run line $(date -u +%Y-%m-%d)"
-            git push
-          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          scripts/open_data_pr.sh "data/writeback-${{ github.run_id }}"
+          "chore(crm): Apollo writeback run line $(date -u +%Y-%m-%d)"
+          data/runlog

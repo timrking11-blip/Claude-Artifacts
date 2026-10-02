@@ -117,9 +117,12 @@ Don't work around them.
 - PR CI checks the code plane; the runtime rules (P-07e, P-15b) need a fresh
   CRM dump, so they belong in a scheduled runtime audit.
 - Code reaches the default branch by pull request with the `architecture` and
-  `test` checks passing. No broad GitHub Actions bypass: automated data
-  commits (the weekly sync, composition runs) go to a `data/runs` branch and
-  an auto-merging PR that passes the same checks.
+  `test` checks passing. No broad GitHub Actions bypass: the weekly sync's
+  master and run lines go out through `scripts/open_data_pr.sh` (a
+  `data/weekly-sync-<run>` or `data/writeback-<run>` branch, a PR, Python CI
+  dispatched on that branch because PRs opened with GITHUB_TOKEN trigger no
+  workflows, and auto-merge). Composition runs from a session push a
+  `data/runs` branch and open an auto-merging PR the same way.
 
 ## Unified Architecture Blueprint (24 Sep 2026)
 
