@@ -31,9 +31,18 @@ on:
         default: false
         type: boolean
 
+# contents/pull-requests/actions: write let scripts/open_data_pr.sh push a
+# data branch, open its PR, dispatch Python CI on it and enable auto-merge.
+# Nothing here pushes to the default branch: it takes changes only by PR.
 permissions:
   contents: write
+  pull-requests: write
+  actions: write
 
+# The API keys belong in the `crm-sync` environment, whose deployment branch
+# policy admits only the default branch: a job from any other branch, or one
+# edited to drop `environment:`, then gets no key. The guard step in preflight
+# says the same thing early for an unmodified workflow dispatched on a branch.
 concurrency:
   group: crm-sync
   cancel-in-progress: false
@@ -42,10 +51,11 @@ jobs:
   preflight:
     name: Check secrets
     runs-on: ubuntu-latest
+    environment: crm-sync
     # Fail here, in one place, with a message that says what to fix -- rather
-    # than three jobs each dying on an empty env var. Secrets must be
-    # *Repository* secrets: no job declares an `environment:`, so Environment
-    # secrets are invisible to this workflow.
+    # than three jobs each dying on an empty env var. The keys are read from the
+    # `crm-sync` environment's secrets, or from repository secrets until they
+    # move there (every job sees those too, which is why they should move).
     env:
       APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
       EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
@@ -54,6 +64,11 @@ jobs:
       APOLLO_IN_VARS: ${{ vars.APOLLO_API_KEY != '' }}
       EXPLORIUM_IN_VARS: ${{ vars.EXPLORIUM_API_KEY != '' }}
     steps:
+      - name: Run only from the default branch
+        if: ${{ github.ref != format('refs/heads/{0}', github.event.repository.default_branch) }}
+        run: |
+          echo "::error::The weekly sync runs only from the default branch, not $GITHUB_REF: it holds the API keys and opens data PRs."
+          exit 1
       - name: Verify repository secrets are present
         run: |
           missing=""
@@ -65,7 +80,7 @@ jobs:
               echo "::error::Found under the VARIABLES tab instead (Apollo: $APOLLO_IN_VARS, Explorium: $EXPLORIUM_IN_VARS). Variables are plaintext and are read as vars.*, not secrets.*. Delete them there and re-add under the Secrets tab."
             else
               echo "Not found under Variables either. Check: Settings -> Secrets and variables -> Actions -> *Secrets* tab -> Repository secrets."
-              echo "Environment secrets need a job-level environment: (none declared here); Dependabot and Codespaces secrets are separate stores."
+              echo "Environment secrets live under Settings -> Environments -> crm-sync; Dependabot and Codespaces secrets are separate stores."
             fi
             exit 1
           fi
@@ -74,6 +89,7 @@ jobs:
   pull-apollo:
     name: Pull Apollo contacts
     runs-on: ubuntu-latest
+    environment: crm-sync
     needs: preflight
     env:
       APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
@@ -104,6 +120,7 @@ jobs:
   pull-explorium:
     name: Enrich via Explorium
     runs-on: ubuntu-latest
+    environment: crm-sync
     # Default mode: enriches the previous master, so it needs nothing from
     # pull-apollo and the two run side by side. Skipped in serial mode.
     needs: preflight
@@ -126,6 +143,7 @@ jobs:
   pull-explorium-serial:
     name: Enrich via Explorium (serial, this week's Apollo pull)
     runs-on: ubuntu-latest
+    environment: crm-sync
     # Opt-in via workflow_dispatch: waits for pull-apollo and enriches that
     # pull, so new contacts are enriched the same week at the cost of parallelism.
     needs: pull-apollo
@@ -156,6 +174,8 @@ jobs:
     # Run even if one pull failed or was skipped; merge_master.py handles a
     # missing staging file and refuses only when nothing staged at all.
     if: ${{ !cancelled() && (needs.pull-apollo.result == 'success' || needs.pull-explorium.result == 'success' || needs.pull-explorium-serial.result == 'success') }}
+    outputs:
+      branch: ${{ steps.commit.outputs.branch }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -179,17 +199,14 @@ jobs:
       # routine runs the same gate with --crm-dump before it pushes anything.
       - name: Validate data layer
         run: python scripts/validate_sync.py
-      - name: Commit master
-        run: |
-          git config user.name "crm-sync[bot]"
-          git config user.email "crm-sync[bot]@users.noreply.github.com"
-          git add data/master data/CHANGELOG.md data/runlog
-          if git diff --cached --quiet; then
-            echo "No changes to master this week."
-          else
-            git commit -m "chore(crm): weekly sync $(date -u +%Y-%m-%d)"
-            git push
-          fi
+      - name: Open the data PR
+        id: commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          scripts/open_data_pr.sh "data/weekly-sync-${{ github.run_id }}"
+          "chore(crm): weekly sync $(date -u +%Y-%m-%d)"
+          data/master data/CHANGELOG.md data/runlog
       - name: Upload master snapshot
         uses: actions/upload-artifact@v4
         with:
@@ -202,27 +219,30 @@ jobs:
   writeback:
     name: Push to Apollo
     runs-on: ubuntu-latest
+    environment: crm-sync
     needs: merge
     if: ${{ inputs.writeback == true }}
     env:
       APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
       APOLLO_WRITEBACK_ENABLED: "true"
     steps:
+      # Write back from the master this run produced: its data PR may not have
+      # merged yet, so read the data branch, not the default branch.
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
-      - run: git pull --ff-only
+          ref: ${{ needs.merge.outputs.branch || github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - run: python scripts/push_apollo.py --apply
-      - name: Commit the run line
+      - name: Open the run line PR
         if: ${{ always() }}
-        run: |
-          git config user.name "crm-sync[bot]"
-          git config user.email "crm-sync[bot]@users.noreply.github.com"
-          git add data/runlog
-          if ! git diff --cached --quiet; then
-            git commit -m "chore(crm): Apollo writeback run line $(date -u +%Y-%m-%d)"
-            git push
-          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Cut from the merge job's data branch: this PR carries that PR's
+          # commit too, and its body says so.
+          STACKED_ON: ${{ needs.merge.outputs.branch }}
+        run: >-
+          scripts/open_data_pr.sh "data/writeback-${{ github.run_id }}"
+          "chore(crm): Apollo writeback run line $(date -u +%Y-%m-%d)"
+          data/runlog

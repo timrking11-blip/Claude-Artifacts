@@ -117,9 +117,22 @@ Don't work around them.
 - PR CI checks the code plane; the runtime rules (P-07e, P-15b) need a fresh
   CRM dump, so they belong in a scheduled runtime audit.
 - Code reaches the default branch by pull request with the `architecture` and
-  `test` checks passing. No broad GitHub Actions bypass: automated data
-  commits (the weekly sync, composition runs) go to a `data/runs` branch and
-  an auto-merging PR that passes the same checks.
+  `test` checks passing. No broad GitHub Actions bypass: the weekly sync's
+  master and run lines go out through `scripts/open_data_pr.sh` (a
+  `data/weekly-sync-<run>` or `data/writeback-<run>` branch, a PR, Python CI
+  dispatched on that branch because PRs opened with GITHUB_TOKEN trigger no
+  workflows, and auto-merge). Composition runs from a session push a
+  `data/runs` branch and open an auto-merging PR the same way.
+- That script commits only the data paths it is given, resumes on a re-run
+  (the branch name is fixed per run; an open PR is reused, a merged one ends
+  the run, a closed one is never reopened) and fails the run unless the PR is
+  queued to auto-merge. A writeback PR is cut from the sync's data branch and
+  says so in its body: the two are dependent. `tests/test_open_data_pr.py` and
+  `tests/test_workflows.py` pin all of it.
+- The sync runs only from the default branch (a guard step), and its API keys
+  belong in the `crm-sync` environment with a deployment branch policy of the
+  default branch only; until they move there from repository secrets, a
+  branch that edits the workflow can still read them.
 
 ## Unified Architecture Blueprint (24 Sep 2026)
 

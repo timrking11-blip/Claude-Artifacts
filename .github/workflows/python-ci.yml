@@ -9,6 +9,10 @@ on:
     branches: [ "claude/explorium-docs-mcp-brregp" ]
   pull_request:
     branches: [ "claude/explorium-docs-mcp-brregp" ]
+  # Data PRs opened by a workflow's GITHUB_TOKEN do not trigger pull_request;
+  # scripts/open_data_pr.sh dispatches this on the data branch instead, so the
+  # required checks land on the PR's head commit.
+  workflow_dispatch:
 
 # Least privilege, and explicit: without this the workflow inherits whatever
 # the repository default happens to be. It only reads code and runs tests.
