@@ -272,6 +272,12 @@ python3 scripts/compose_account.py finalize <id> --proposal data/runs/<id>/propo
 
 `prepare` exits 2 on a gate failure (no account name or domain, null
 disposition, ambiguous account) or a halt (`on_fetch_error: halt`).
+`prepare` exits 3 when the month (America/New_York) already has 5 other
+composition runs (ADR-008's soft cap, `crm/costs.py`). It writes only
+`data/runs/<id>/cap_hold.json`, a held "Composition cap" runlog entry, which
+the session puts in the CRM. The owner confirms it on the CRM page with a
+written check, and the run proceeds with `--cap-confirmation <entry id>`. A
+retried run id is not held again.
 `finalize` exits 2 when the draft misses a section, mentions money, runs past
 1,000 words, or cites nothing when the research found sources.
 

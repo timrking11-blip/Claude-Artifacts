@@ -2,8 +2,8 @@
 """Check the system against architecture/invariants.yaml.
 
 The YAML is the machine-readable source: one implementation-independent rule
-per architecture decision (governed in Notion, indexed by URL under
-`decisions`), each with probes that test how far today's code meets it. This
+per architecture decision (ADR texts in architecture/adr/ and Notion 02,
+indexed by Notion URL under `decisions`), each with probes that test how far today's code meets it. This
 script runs the probes and reports, per rule:
 
   conformance  ENFORCED | PARTIAL | MISSING | UNVERIFIED
@@ -16,10 +16,17 @@ pass -> ENFORCED; some pass -> PARTIAL. A rule marked requires_runtime is
 UNVERIFIED unless --crm-dump is given. `guard` probes protect adjacent
 controls: they must pass but do not move the status.
 
-Exit 1 only on a regression: a must_not_regress probe fails, a rule ranks
-below its `expected` (UNVERIFIED is never compared), the YAML breaks its
-schema, or the rendered Markdown is out of date (--check-md). An improvement
-prints a note asking for `expected` to be raised and exits 0.
+Standing. A rule is `normative` only when its ADR's status is Accepted; CI
+then holds it at `expected`. A rule whose ADR is Proposed or not written is a
+`candidate`: reported, never held to `expected`. A Notion URL or an ADR file
+filed in architecture/adr/ is an index entry, not acceptance, so neither
+confers policy standing. must_not_regress probes are independent of standing:
+they protect controls that exist today and fail CI under a candidate rule too.
+
+Exit 1 only on a regression: a must_not_regress probe fails, a normative
+rule ranks below its `expected` (UNVERIFIED is never compared), the YAML
+breaks its schema, or the rendered Markdown is out of date (--check-md). An
+improvement prints a note asking for `expected` to be raised and exits 0.
 
   python3 scripts/check_architecture.py [--crm-dump DIR] [--render-md] [--check-md]
 """
@@ -442,6 +449,11 @@ def load(path: Path = SOURCE) -> dict[str, Any]:
     return yaml.safe_load(path.read_text())
 
 
+def accepted(decision: dict[str, Any]) -> bool:
+    """True only for an ADR whose status is Accepted. Its url and file are indexes, not standing."""
+    return str(decision.get("status") or "").split(";")[0].split("(")[0].strip() == "Accepted"
+
+
 def validate(spec: dict[str, Any], probes: dict[str, Callable] | None = None) -> list[str]:
     probes = PROBES if probes is None else probes
     errors = []
@@ -450,7 +462,7 @@ def validate(spec: dict[str, Any], probes: dict[str, Callable] | None = None) ->
     adrs = {d["id"]: d for d in spec.get("decisions") or []}
     for d in adrs.values():
         if d.get("url") and "notion" not in d["url"]:
-            errors.append(f"{d['id']}: decisions are governed in Notion; url must be a Notion link")
+            errors.append(f"{d['id']}: decisions are indexed by their Notion link; url must be a Notion link")
     seen, probe_ids = set(), set()
     for inv in spec.get("invariants") or []:
         iid = inv.get("id")
@@ -464,11 +476,12 @@ def validate(spec: dict[str, Any], probes: dict[str, Callable] | None = None) ->
             errors.append(f"{iid}: adr {inv.get('adr')} is not in decisions")
         elif inv.get("standing") not in STANDINGS:
             errors.append(f"{iid}: standing must be one of {list(STANDINGS)}")
-        # Notion governs: only a written ADR makes a rule normative, and a written one makes it so.
-        elif inv["standing"] == "normative" and not adrs[inv["adr"]].get("url"):
-            errors.append(f"{iid}: normative, but {inv['adr']} is not written in Notion; mark it candidate")
-        elif inv["standing"] == "candidate" and adrs[inv["adr"]].get("url"):
-            errors.append(f"{iid}: {inv['adr']} now exists in Notion; promote the rule to normative")
+        # Only an Accepted ADR confers policy standing. A URL or a filed Proposed ADR does not.
+        elif inv["standing"] == "normative" and not accepted(adrs[inv["adr"]]):
+            errors.append(f"{iid}: normative, but {inv['adr']} is {adrs[inv['adr']].get('status')!r}; only an "
+                          "Accepted ADR confers policy standing (a URL or a filed proposal does not); mark it candidate")
+        elif inv["standing"] == "candidate" and accepted(adrs[inv["adr"]]):
+            errors.append(f"{iid}: {inv['adr']} is Accepted; promote the rule to normative")
         if inv.get("expected") not in RANK:
             errors.append(f"{iid}: expected must be one of {list(RANK)}")
         if IMPLEMENTATION_NAMES.search(inv.get("rule") or ""):
@@ -549,12 +562,16 @@ def render_md(spec: dict[str, Any], results: list[RuleResult]) -> str:
     out = ["# Architecture invariants", "",
            "Rendered by `scripts/check_architecture.py --render-md` from `architecture/invariants.yaml`; "
            "CI fails when this file and the YAML disagree. Do not edit by hand.", "",
-           "Decisions are governed in Notion; the repository holds their executable form. Conformance is "
+           "ADR-007 (Accepted 1 Oct 2026) makes `architecture/` the architecture authority when it merges; until "
+           "then Notion governs. ADR texts are in `architecture/adr/` and Notion 02; this file is their "
+           "executable form. Conformance is "
            "ENFORCED, PARTIAL, MISSING, or UNVERIFIED (needs `--crm-dump`). Maturity uses ADR-011's "
            "evidence levels; this check never claims PRODUCTION_VERIFIED. Status below is the offline run.", "",
-           "A normative rule's ADR is written in Notion and CI holds it at its expected status. A candidate "
-           "rule is a design target whose ADR is not written yet: it is reported, never held to a line; its "
-           "MUST_NOT_REGRESS probes still fail CI, because they protect controls that exist today.", "",
+           "A normative rule's ADR is Accepted, and CI holds it at its expected status. A candidate rule's ADR "
+           "is Proposed or not written: a Notion URL or a filed proposal confers no policy standing, so it is "
+           "reported and never held to its expected status (shown as the line it would be held to on "
+           "acceptance). MUST_NOT_REGRESS probes are independent of standing: they fail CI under a candidate "
+           "rule too, because they protect controls that exist today.", "",
            "## Governing decisions", "", "| ADR | Title | Status (as of) |", "|---|---|---|"]
     for d in spec["decisions"]:
         title = f"[{d['title']}]({d['url']})" if d.get("url") else d["title"]

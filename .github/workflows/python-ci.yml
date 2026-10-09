@@ -31,10 +31,14 @@ jobs:
       - run: python -m pytest tests -q
       - run: python -m pytest python/agents/account-research/tests -q
 
-  # The architecture gate: architecture/invariants.yaml is the executable form
-  # of the Notion ADRs. Fails on a regression (a MUST_NOT_REGRESS control
-  # failing, a rule below its expected status, a schema error, stale Markdown),
-  # never on an improvement. A required status check on the default branch.
+  # The architecture gate. check_architecture: architecture/invariants.yaml is
+  # the executable form of the ADRs; fails on a regression (a MUST_NOT_REGRESS
+  # control failing, a rule below its expected status, a schema error, stale
+  # Markdown), never on an improvement. validate_architecture: the manifest,
+  # ADR files, system-of-record matrix, invariants and code agree, and the
+  # protected digest is current and CODEOWNERS covers the enforcement paths
+  # but no data path. The digest detects drift; it authenticates nobody.
+  # Meant as a required status check on the default branch.
   architecture:
     runs-on: ubuntu-latest
     steps:
@@ -44,4 +48,5 @@ jobs:
           python-version: "3.11"
       - run: pip install -q pytest pyyaml
       - run: python scripts/check_architecture.py --check-md
-      - run: python -m pytest tests/test_check_architecture.py -q
+      - run: python scripts/validate_architecture.py
+      - run: python -m pytest tests/test_check_architecture.py tests/test_validate_architecture.py -q

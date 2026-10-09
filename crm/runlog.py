@@ -50,6 +50,21 @@ MAX_NAMES = 25
 
 STATUS_APPLIED = "applied"
 STATUS_HELD = "held"
+STATUS_CONFIRMED = "confirmed"
+#: The CRM page refuses a confirmation whose check note is shorter than this.
+MIN_CHECK = 12
+
+
+def confirmed(doc: dict[str, Any]) -> bool:
+    """A held entry the owner confirmed on the CRM page: a written check, when, and exactly its count.
+
+    This is a structural check of the stored document. It shows the confirmation is
+    well formed; it does not authenticate who clicked Confirm.
+    """
+    return (doc.get("status") == STATUS_CONFIRMED
+            and len((doc.get("confirm_check") or "").strip()) >= MIN_CHECK
+            and bool(doc.get("confirmed_at"))
+            and doc.get("confirmed_count") == doc.get("created"))
 
 
 def _iso(now: datetime) -> str:
