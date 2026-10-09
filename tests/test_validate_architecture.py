@@ -26,6 +26,8 @@ SHA = "a" * 40
 @pytest.fixture
 def repo(tmp_path):
     shutil.copytree(ROOT / "architecture", tmp_path / "architecture")
+    (tmp_path / ".github").mkdir()
+    shutil.copy(ROOT / ".github" / "CODEOWNERS", tmp_path / ".github" / "CODEOWNERS")
     return tmp_path
 
 
@@ -169,3 +171,41 @@ def test_the_digest_detects_an_unregenerated_change_and_update_fixes_it(repo):
     assert any("protected_digest is stale" in e for e in errors(repo))
     assert va.main(["--root", str(repo), "--update-digest"]) == 0
     assert errors(repo) == []
+
+
+def test_a_normative_invariant_needs_an_accepted_adr(repo):
+    edit_yaml(repo / "architecture" / "invariants.yaml",
+              lambda m: next(i for i in m["invariants"] if i["adr"] == "ADR-012").update({"standing": "normative"}))
+    assert any("normative but ADR-012 is not Accepted" in e for e in errors(repo))
+
+
+def test_codeowners_must_cover_the_enforcement_paths(repo):
+    p = repo / ".github" / "CODEOWNERS"
+    p.write_text("\n".join(l for l in p.read_text().splitlines() if not l.startswith("tests/")) + "\n")
+    assert any("CODEOWNERS does not cover tests/" in e for e in errors(repo))
+
+
+def test_automated_data_paths_stay_outside_owner_review(repo):
+    p = repo / ".github" / "CODEOWNERS"
+    p.write_text(p.read_text() + "data/ @timrking11-blip\n")
+    errs = errors(repo)
+    assert any("CODEOWNERS covers data/runlog/" in e for e in errs)
+    assert any("CODEOWNERS covers data/master/" in e for e in errs)
+
+
+def test_codeowners_wildcards_are_refused_so_coverage_stays_checkable(repo):
+    p = repo / ".github" / "CODEOWNERS"
+    p.write_text(p.read_text() + "* @timrking11-blip\n")
+    assert any("use a directory" in e for e in errors(repo))
+
+
+def test_the_weekly_sync_data_pr_paths_are_not_code_owned():
+    """The paths the workflow hands scripts/open_data_pr.sh are all outside CODEOWNERS."""
+    import re
+    wf = (ROOT / ".github" / "workflows" / "weekly-crm-sync.yml").read_text()
+    paths = set()
+    for block in re.findall(r"scripts/open_data_pr\.sh .*?\n(?:.*\n){2}", wf):
+        paths.update(t for t in block.split() if t.startswith("data/") and "${{" not in t)
+    assert paths >= {"data/master", "data/CHANGELOG.md", "data/runlog"}
+    patterns = va.codeowners_patterns((ROOT / ".github" / "CODEOWNERS").read_text())
+    assert not any(va.code_owned(p, patterns) or va.code_owned(p + "/", patterns) for p in paths)

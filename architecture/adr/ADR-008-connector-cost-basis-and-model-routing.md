@@ -18,9 +18,11 @@ Acceptance evidence, checked 9 Oct 2026:
   Accepted)". Claude wrote this entry.
 - 00 Hub: "ADR-008 Connector cost basis and model routing — Accepted
   (1 Oct 2026)".
-- The routine changes it records were applied on 1 Oct and were observed on
-  9 Oct. The CRM Systems Atlas refresh runs on `claude-opus-5-5`; the morning
-  brief runs on `claude-sonnet-5-5` and succeeded on 9 Oct.
+- The routine changes it records are recorded as applied on 1 Oct (Notion 10
+  and 13, written by Claude). On 9 Oct, `get_trigger` showed the morning
+  brief's last update at 2026-10-01 19:27 UTC. It also showed the models:
+  the CRM Systems Atlas refresh runs on `claude-opus-5-5`, and the morning
+  brief runs on `claude-sonnet-5-5`, which succeeded on 9 Oct.
 - Open: 14 — Governance Amendment asked the owner to confirm this status or
   downgrade it to Proposed (A5). On 9 Oct the owner directed that ADR-001 to
   ADR-008 keep their original statuses. No owner-written acceptance record

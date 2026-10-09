@@ -23,14 +23,21 @@ Anything not observed is marked as not observed. Ownership is in
   commit 5613bc9 never reached GitHub.
 - **Invariants, offline run on this branch:** ENFORCED 0, PARTIAL 10,
   MISSING 4, UNVERIFIED 2 (UNVERIFIED needs a CRM dump); no regressions.
+  All sixteen rules are candidates, because their ADRs are Proposed or not
+  written. CI holds none of them to `expected`. Their must-not-regress
+  probes still fail CI if a control weakens.
 
 ## Tests, run 9 Oct 2026 on this branch (Python 3.11, local)
 
-- **`python -m pytest tests -q`:** 239 passed, 0 skipped. Of these, 192 were
-  on the baseline and 47 are new:
+- **`python -m pytest tests -q`:** 249 passed, 0 skipped. The baseline had
+  192; this branch adds 57:
   - `tests/test_costs.py`: 25;
-  - `tests/test_validate_architecture.py`: 18;
-  - cap entry points in `tests/test_compose_account.py`: 4.
+  - `tests/test_validate_architecture.py`: 23;
+  - cap entry points in `tests/test_compose_account.py`: 4;
+  - `tests/test_check_architecture.py`: a net 5 (from 28 to 33). Three
+    URL-based standing tests were replaced by tests that only an Accepted
+    ADR confers standing and that must-not-regress controls hold under
+    candidate rules.
 - **`python -m pytest python/agents/account-research/tests -q`:** 26 passed,
   4 skipped. The skips are in `test_model_provider.py`, because the
   `anthropic` package is not installed locally.

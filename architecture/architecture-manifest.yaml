@@ -144,6 +144,10 @@ cost_basis:
 controls:
   bulk_create_hold_over: 5           # crm.runlog.HOLD_OVER: a run creating more holds for an exact-count confirm
   min_confirm_check: 12              # crm.runlog.MIN_CHECK: the CRM page's shortest accepted check note
+  # .github/CODEOWNERS must own these (enforcement code, tests, docs, artifact pages) and no data/ path.
+  code_owned_paths: [architecture/, crm/, scripts/, .github/, .github/CODEOWNERS, .github/workflows/, tests/, docs/,
+                     artifact/, python/agents/account-research/, CLAUDE.md, README.md]
+  data_paths_not_code_owned: [data/master/, data/CHANGELOG.md, data/runlog/, data/runs/, data/proposals/]
 
 composition:
   decision: ADR-008

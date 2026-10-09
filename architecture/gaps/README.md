@@ -46,14 +46,14 @@ Status as of 9 Oct 2026.
   - SPEC-002 Signal Model: Current / Implemented, with a blank specification and no Signal records (INV-01 MISSING).
   - ADR-001: Implemented, though only its commercial part is EXECUTED.
   - ADR-002: In Progress, though it is DESIGNED.
-- **Applied 9 Oct, on current evidence.** These are Implementation Status corrections only. Each row's page records the prior value and the evidence:
+- **Prepared 9 Oct, not applied (pending the owner's approval).** These are Implementation Status corrections only, supported by current evidence. If approved, each row's page records the prior value and the evidence:
   - ARC-001: In Progress.
   - SPEC-002: In Design.
   - ADR-001: In Progress.
   - ADR-002: In Design.
 - **Still open: Architecture Status.** "Current" on ARC-001 and SPEC-002 means "implemented and authoritative" under the Hub convention, and the evidence does not support it. Changing a decision status is the owner's call.
-- **Closes when:** the owner sets the Architecture Status of ARC-001 and SPEC-002, or accepts ADR-011's mapping.
-- **Needs:** the owner (page 14's A6, decision-status part).
+- **Closes when:** the Implementation Status corrections are approved and applied with their prior values recorded; and the owner sets the Architecture Status of ARC-001 and SPEC-002, or accepts ADR-011's mapping.
+- **Needs:** the owner: approval to apply the prepared corrections, and the decision-status part of page 14's A6. As of 9 Oct no registry row has been changed.
 
 ## GAP-004 — WP-IC-1, one narrow evidence loop
 
@@ -151,21 +151,21 @@ Status as of 9 Oct 2026.
 - **Closes when:** `get_trigger` shows the new settings.
 - **Needs:** the owner, in the task settings. This pull request changes no routine.
 
-## GAP-014 — Branch protection and required review
+## GAP-014 — Branch protection, approval and identity
 
-- **Governs:** ADR-007 (approval is the owner's pull-request review).
+- **Governs:** ADR-007, and the rule that no script or merge creates a decision.
 - **Now (read 9 Oct):**
   - The only ruleset, "GCP branch ruleset", is disabled.
   - The branch-protection API is not readable from this session (403).
   - `allow_auto_merge` is false.
-  - `.github/CODEOWNERS` names the owner for `architecture/`, `crm/`, `scripts/` and `.github/`, but that review is enforced only by a protection rule.
-- **Target:** on the default branch:
-  - pull requests are required;
-  - code-owner review is required;
-  - the `test` and `architecture` checks are required;
-  - no force pushes.
-- **Closes when:** the owner configures it in the repository settings and a read shows it active.
-- **Needs:** the owner (repository settings). Claude cannot set it.
+  - `.github/CODEOWNERS` assigns the owner, but no rule requires its review.
+  - Pull requests from this session are authored by the owner's own account (#24: `timrking11-blip`). GitHub does not count an author's approval, so the owner cannot approve them. The session's credential is the owner's, so GitHub cannot tell the owner's merge from the session's.
+- **Target:** an approval arrangement the owner chooses from `architecture/README.md` (Approval and identity), with the checks `test` and `architecture` required on the default branch.
+- **Closes when:**
+  - the owner has chosen and configured an arrangement;
+  - a read of the branch rules shows it active;
+  - the README records the choice.
+- **Needs:** the owner, in repository settings and any account or app setup. Claude does not select or configure it.
 
 ## GAP-015 — HubSpot role
 
@@ -191,8 +191,8 @@ Status as of 9 Oct 2026.
 - **Governs:** ADR-007.
 - **Now:** on 1 Oct, the 00 Hub callout and Governance Authority bullet, the AI retrieval contract, and pages 10 and 13 described the repository as already authoritative, citing the unpushed commit 5613bc9 and "172 tests".
 - **Target:** Notion states the transition as pending until merge.
-- **Closes when:** dated corrections are on 00, 01, 10, 12, 13 and 14 (9 Oct), and on the effective-commit line after the merge.
-- **Needs:** nothing further; done in Notion on 9 Oct. The post-merge line waits on GAP-001.
+- **Closes when:** dated corrections are on 00, 01, 10, 12, 13 and 14 (and an index note on 02), and, after the merge, a line names the effective commit.
+- **Needs:** the owner's approval. The corrections are prepared, not applied: as of 9 Oct no Notion page has been changed by this work. The post-merge line also waits on GAP-001.
 
 ## GAP-018 — ADR-007 and ADR-008 texts were reconstructed
 

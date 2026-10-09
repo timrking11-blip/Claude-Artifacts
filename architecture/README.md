@@ -85,13 +85,47 @@ evidence, keeping the prior value (GAP-003).
 - **Protected digest.** `protected_digest` in the manifest is a SHA-256 over
   the authority block, the decisions index and `system-of-record.yaml`. It
   detects a protected section that changed without the digest being
-  regenerated (`--update-digest`).
-  - **It does not authenticate owner approval.** Anyone who can edit the
-    files can regenerate it.
-  - Approval is the owner's review of the pull request: `.github/CODEOWNERS`
-    names the owner for `architecture/`, `crm/`, `scripts/` and `.github/`.
-  - That review is enforced only by a branch protection rule, which is not
-    active (GAP-014).
+  regenerated (`--update-digest`). **It does not authenticate owner
+  approval:** anyone who can edit the files can regenerate it.
+- **CODEOWNERS.** `.github/CODEOWNERS` names the owner for:
+  - the architecture source and the enforcement code (`architecture/`,
+    `crm/`, `scripts/`, `.github/`, including the workflows and the
+    CODEOWNERS file itself);
+  - the tests (`tests/`, `python/agents/account-research/`);
+  - the documentation (`docs/`, `CLAUDE.md`, `README.md`);
+  - the artifact pages that probes read (`artifact/`).
+
+  No `data/` path is owned, so the automated data pull requests stay outside
+  owner review. The validator checks both. CODEOWNERS only assigns
+  reviewers; a review is required only if branch protection requires code
+  owner review, and none is active (GAP-014).
+
+## Approval and identity
+
+**Facts.**
+- In this environment Claude acts on GitHub with the owner's own
+  credential. Pull request #24 is authored by `timrking11-blip`, the account
+  that owns the repository and is its only code owner.
+- GitHub does not count a pull request author's approval, so **the owner
+  cannot approve pull requests that Claude opens under the owner's
+  account**. "The owner's review approves it" therefore cannot be met by a
+  GitHub approval on such a pull request.
+- For the same reason, GitHub cannot tell a merge by the owner from a merge
+  by the session. "Claude does not merge" is an instruction Claude follows,
+  not a control GitHub enforces.
+
+**Possible arrangements.** The owner chooses; none is selected or
+configured here.
+
+| Arrangement | What it gives | Limits |
+|---|---|---|
+| A separate author identity for Claude: a machine-user account, or a GitHub App | The owner can approve as code owner, and required code-owner review becomes meaningful | Someone has to create the identity and manage its credentials, and the session must use only that identity. While the session also holds the owner's credential, it can still act as the owner. The identity needs write access |
+| Another eligible reviewer: a second person with write access | A real approval that GitHub counts | Needs a second person, and the approval is theirs, not the owner's. It does not stop an owner-credentialed session from merging |
+| Protection without required approvals: require pull requests, the `test` and `architecture` checks, no force pushes | Checks gate every change; the owner's merge is the act of acceptance | GitHub records no approval, and a merge by the session is indistinguishable from the owner's |
+| Required approvals with an admin bypass: the owner merges by bypassing | The rule binds everyone else | Anyone acting as an admin can bypass, including a session holding the owner's credential. A bypass is logged, but it is not an approval |
+
+Until the owner chooses, acceptance of a pull request is the owner merging
+it. That is recorded in GitHub as the merge, not as an approval.
 - **Composition cap (ADR-008).**
   - `scripts/compose_account.py prepare` counts the month's runs, by calendar
     month in America/New_York. The sources are `data/runs/` and the CRM

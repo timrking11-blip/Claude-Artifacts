@@ -106,11 +106,19 @@ Don't work around them.
   Accepted text is never edited: dated annotations or a new ADR. Ownership
   has one definition, `architecture/system-of-record.yaml`; open questions
   are gaps in `architecture/gaps/README.md`, never guesses.
-- `scripts/validate_architecture.py` (CI job `architecture`) fails when the
-  manifest, ADR files, matrix, invariants and code disagree, or the protected
-  digest is stale. The digest detects drift; it does not authenticate the
-  owner. Approval is the owner's PR review (CODEOWNERS), which needs branch
-  protection, not active on 9 Oct (GAP-014).
+- `scripts/validate_architecture.py` (CI job `architecture`) fails when:
+  - the manifest, ADR files, matrix, invariants and code disagree;
+  - CODEOWNERS stops covering the enforcement paths, or starts covering a
+    data path;
+  - the protected digest is stale.
+
+  The digest detects drift; it does not authenticate the owner.
+- Claude's pull requests are authored by the owner's account, so the owner
+  cannot approve them on GitHub, and GitHub cannot tell the owner's merge
+  from the session's. Never merge. Never describe a CODEOWNERS review as
+  approval. Never pick or configure a protection model: the arrangements and
+  their limits are in `architecture/README.md` (Approval and identity;
+  GAP-014).
 - Cost basis (ADR-008): prices in the manifest are dated API list prices,
   estimates, never invoices; no spend figures or receipts in this public repo.
   The composition run's monthly cap is 5 (America/New_York calendar month):
@@ -128,13 +136,16 @@ Don't work around them.
   MUST_NOT_REGRESS probe failing, a rule below its `expected`, a schema error,
   or `docs/architecture-invariants.md` out of date (`--render-md` regenerates
   it; never edit it by hand). An improvement prints "raise `expected`".
-- A rule is `normative` only when its ADR is written in Notion; until then it
-  is a `candidate` (INV-13 and INV-14, ADR-013), reported but never held to
-  `expected`. The checker refuses a normative rule whose ADR has no Notion
-  URL, and a candidate whose ADR has one. A decision is the owner's: no
-  script, CI run or merge creates or accepts one.
-- Every existing hard control is a MUST_NOT_REGRESS probe, whatever its
-  rule's standing. A change that weakens one fails CI; don't loosen the probe
+- A rule is `normative` only when its ADR is Accepted. While its ADR is
+  Proposed or not written, it is a `candidate`, reported but never held to
+  `expected`. On 9 Oct all sixteen rules are candidates: ADR-006 and
+  ADR-012 are Proposed, and ADR-013 is not written. A Notion URL or an ADR
+  filed in `architecture/adr/` is an index, never acceptance; the checker
+  and the validator refuse a normative rule whose ADR is not Accepted. A
+  decision is the owner's: no script, CI run or merge creates or accepts
+  one.
+- Every existing hard control is a MUST_NOT_REGRESS probe, independent of
+  its rule's standing: it fails CI under a candidate rule too. A change that weakens one fails CI; don't loosen the probe
   in the same change.
 - A note never authorizes a bulk creation. Only a structured confirmation (a
   check of 12+ characters, `confirmed_at`, `confirmed_count` equal to

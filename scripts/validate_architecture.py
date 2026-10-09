@@ -4,7 +4,8 @@
 Checks (each failure is an error unless marked warning):
   decisions    every ADR file is indexed and every index row has its file;
                the file's Status line matches the index; accepted ADRs carry a
-               Decided date; the invariants' decision statuses agree
+               Decided date; the invariants' decision statuses agree, and a
+               normative invariant's ADR is Accepted
   authority    ADR-007's transition: while pending, its status reads
                "Accepted; transition pending merge" and no effective commit
                is set; once effective, the status, commit and date agree in
@@ -21,6 +22,9 @@ Checks (each failure is an error unless marked warning):
   capabilities four separate facts from a fixed vocabulary; the decision
                status matches the ADR; PRODUCTION_VERIFIED needs criteria
                and a reviewer; every gap reference exists in gaps/README.md
+  codeowners   .github/CODEOWNERS covers every path in controls.code_owned_paths
+               (enforcement code, tests, docs, artifact pages, itself) and none
+               in controls.data_paths_not_code_owned
   hygiene      no personal email addresses or infrastructure identifiers in
                architecture/ (this repository is public)
   digest       protected_digest equals SHA-256 over the authority block, the
@@ -28,8 +32,9 @@ Checks (each failure is an error unless marked warning):
 
 The digest detects a protected section that changed without the digest being
 regenerated. It does not authenticate the owner: anyone who can edit the
-files can run --update-digest. Approval is the owner's review of the pull
-request (CODEOWNERS), which needs branch protection to be enforced.
+files can run --update-digest. Nor is CODEOWNERS an approval. Claude's pull
+requests are authored by the owner's account, and GitHub never counts an
+author's approval; see architecture/README.md, Approval and identity.
 
   python3 scripts/validate_architecture.py [--update-digest] [--root DIR]
 """
@@ -132,6 +137,11 @@ def check_decisions(arch: Path, manifest: dict[str, Any], invariants: dict[str, 
             r.err(f"invariants.yaml: {d['id']} is not in the manifest's decisions")
         elif not str(d.get("status", "")).startswith(row["status"]):
             r.err(f"invariants.yaml: {d['id']} status {d.get('status')!r} disagrees with the manifest ({row['status']})")
+    for inv in (invariants or {}).get("invariants") or []:
+        row = by_id.get(inv.get("adr"))
+        if inv.get("standing") == "normative" and (row is None or row["status"] != "Accepted"):
+            r.err(f"invariants.yaml: {inv['id']} is normative but {inv.get('adr')} is not Accepted "
+                  "(a URL or a filed proposal confers no policy standing)")
     return by_id
 
 
@@ -279,6 +289,38 @@ def check_capabilities(arch: Path, manifest: dict[str, Any], matrix: dict[str, A
         r.err(f"{ref} is referenced but not in gaps/README.md")
 
 
+def codeowners_patterns(text: str) -> list[str]:
+    return [line.split()[0] for line in text.splitlines() if line.strip() and not line.lstrip().startswith("#")]
+
+
+def code_owned(path: str, patterns: list[str]) -> bool:
+    """Whether a repository path is covered. Only directory (`x/`) and rooted file (`/x`) patterns are used."""
+    for pat in patterns:
+        if pat.endswith("/") and (path == pat or path.startswith(pat.lstrip("/"))):
+            return True
+        if pat.startswith("/") and path == pat[1:]:
+            return True
+    return False
+
+
+def check_codeowners(root: Path, manifest: dict[str, Any], r: Result) -> None:
+    path = root / ".github" / "CODEOWNERS"
+    ctl = manifest.get("controls") or {}
+    if not path.exists():
+        r.err(".github/CODEOWNERS is missing")
+        return
+    patterns = codeowners_patterns(path.read_text())
+    for pat in patterns:
+        if any(ch in pat for ch in "*?[") or not (pat.endswith("/") or pat.startswith("/")):
+            r.err(f"CODEOWNERS pattern {pat!r}: use a directory (x/) or rooted file (/x) so coverage is checkable")
+    for want in ctl.get("code_owned_paths") or []:
+        if not code_owned(want, patterns):
+            r.err(f"CODEOWNERS does not cover {want}")
+    for data in ctl.get("data_paths_not_code_owned") or []:
+        if code_owned(data, patterns):
+            r.err(f"CODEOWNERS covers {data}; automated data pull requests must stay outside owner review")
+
+
 def check_hygiene(arch: Path, r: Result) -> None:
     for path in sorted(p for p in arch.rglob("*") if p.is_file() and p.suffix in (".md", ".yaml", ".yml")):
         text = path.read_text()
@@ -296,7 +338,7 @@ def check_digest(manifest: dict[str, Any], matrix: dict[str, Any], r: Result) ->
     have = str(manifest.get("protected_digest") or "")
     if have != want:
         r.err("protected_digest is stale: a protected section (authority, decisions, system-of-record.yaml) "
-              "changed. Regenerate with --update-digest in the same pull request; the owner's review approves it")
+              "changed. Regenerate with --update-digest in the same pull request; the owner accepts it by merging")
     return want
 
 
@@ -312,6 +354,7 @@ def validate(root: Path = ROOT) -> tuple[Result, str]:
     check_matrix(manifest, matrix, r)
     check_code(manifest, r)
     check_capabilities(arch, manifest, matrix, decisions, r)
+    check_codeowners(root, manifest, r)
     check_hygiene(arch, r)
     want = check_digest(manifest, matrix, r)
     return r, want

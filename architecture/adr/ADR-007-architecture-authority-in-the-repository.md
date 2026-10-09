@@ -72,9 +72,11 @@ As recorded on 1 Oct 2026:
 
 - The digest in `architecture-manifest.yaml` detects a protected section
   (authority, decisions, the system-of-record matrix) that changed without
-  the digest being updated. It does not authenticate the owner. Approval is
-  the owner's review of the pull request under `.github/CODEOWNERS`; see
-  `architecture/README.md`, Controls.
+  the digest being updated. It does not authenticate the owner.
+- Claude opens pull requests under the owner's account, so the owner cannot
+  approve them on GitHub. Until the owner chooses another arrangement (see
+  `architecture/README.md`, Approval and identity), the owner's merge is the
+  acceptance.
 - ADR-001 to ADR-006 were imported with their statuses unchanged. Nothing was
   promoted.
 
