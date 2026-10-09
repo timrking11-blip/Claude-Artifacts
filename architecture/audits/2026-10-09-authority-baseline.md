@@ -43,8 +43,8 @@ None of the patch's described files (`architecture/adr/`, the manifest,
 - On 1 Oct, pages 00, 10 and 13 described the repository as already
   authoritative and cited "172 repository tests". Those tests existed only
   on the unpushed branch.
-- On 9 Oct, after this branch's revisions, `tests/` passes 261. That is
-  the baseline's 192 plus 69 added here (see `current-state.md`); it is not
+- On 9 Oct, after this branch's revisions, `tests/` passes 265. That is
+  the baseline's 192 plus 73 added here (see `current-state.md`); it is not
   the historical 172.
 
 ## Disposition of 14 — Governance Amendment (PROPOSED)
@@ -116,6 +116,19 @@ owner's approval; none has been applied** (GAP-003, GAP-017).
 - **ADR-007.** The Consequences wording from the first commit is restored.
   The identity limitation and the interim acceptance arrangement are
   appended as a dated annotation.
+
+## Revision 3 (9 Oct 2026, on the owner's instruction; repository only)
+
+- **CODEOWNERS ownership is checked file by file, not only at the tree
+  root.**
+  - Every tracked file under each required tree must resolve to the owner,
+    and every tracked file under each data tree to no owner.
+  - Every rooted rule that targets a descendant is evaluated too, so a later
+    rule on one file is caught even before the file exists.
+  - Negative tests:
+    - `/scripts/check_architecture.py` with no owner fails;
+    - `/data/master/contacts.json @someone` fails;
+    - bare directory rules are judged through the files they actually match.
 
 ## Not done, and not to be done without the owner
 

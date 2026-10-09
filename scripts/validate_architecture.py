@@ -24,9 +24,13 @@ Checks (each failure is an error unless marked warning):
                and a reviewer; every gap reference exists in gaps/README.md
   codeowners   evaluated as GitHub does (last matching rule wins; a rule with
                no owners leaves the path unowned): every path in
-               controls.code_owned_paths is owned by controls.code_owner, and
-               none in controls.data_paths_not_code_owned has an owner; only
-               directory and rooted-file patterns are accepted
+               controls.code_owned_paths, and every file beneath it, is owned
+               by controls.code_owner, and nothing in or beneath
+               controls.data_paths_not_code_owned has an owner. Each tree is
+               checked through its tracked files and through every rooted
+               rule that targets a descendant, so a later rule on one file
+               cannot hide. Only directory and rooted-file patterns are
+               accepted
   hygiene      no personal email addresses or infrastructure identifiers in
                architecture/ (this repository is public)
   digest       protected_digest equals SHA-256 over the authority block, the
@@ -343,14 +347,55 @@ def check_codeowners(root: Path, manifest: dict[str, Any], r: Result) -> None:
     owner = ctl.get("code_owner")
     if not owner:
         r.err("controls.code_owner is not set")
-    for want in ctl.get("code_owned_paths") or []:
-        got = owners_for(want, rules)
-        if owner not in got:
-            r.err(f"CODEOWNERS: {want} is not owned by {owner} (effective owners: {got or 'none'})")
-    for data in ctl.get("data_paths_not_code_owned") or []:
-        got = owners_for(data, rules)
-        if got:
-            r.err(f"CODEOWNERS covers {data} (owners {got}); automated data pull requests must stay outside owner review")
+    required = list(ctl.get("code_owned_paths") or [])
+    data = list(ctl.get("data_paths_not_code_owned") or [])
+    files = repository_files(root)
+    # Each tree is judged by every file beneath it and by every rule that targets something inside it,
+    # so a later rule on one descendant (an existing file, or one not created yet) cannot hide.
+    for tree in required:
+        for target in sorted({tree} | {f for f in files if in_tree(f, tree)} | rule_targets(rules, tree)):
+            got = owners_for(target, rules)
+            if owner not in got:
+                r.err(f"CODEOWNERS: {target} is not owned by {owner} (effective owners: {got or 'none'})")
+    for tree in data:
+        for target in sorted({tree} | {f for f in files if in_tree(f, tree)} | rule_targets(rules, tree)):
+            got = owners_for(target, rules)
+            if got:
+                r.err(f"CODEOWNERS covers {target} (owners {got}); automated data pull requests must stay "
+                      "outside owner review")
+
+
+def in_tree(path: str, tree: str) -> bool:
+    return path == tree.rstrip("/") or (tree.endswith("/") and path.startswith(tree))
+
+
+def rule_targets(rules: list[tuple[str, list[str]]], tree: str) -> set[str]:
+    """A representative path for each rooted rule that targets the tree or something inside it."""
+    out = set()
+    for pattern, _ in rules:
+        if not supported(pattern):
+            continue
+        core = pattern.strip("/")
+        rooted = pattern.startswith("/") or "/" in core
+        if not rooted:
+            continue  # a bare directory name is judged through the files it actually matches
+        target = core + "/_" if pattern.endswith("/") else core
+        if in_tree(target, tree) or in_tree(core, tree):
+            out.add(target)
+    return out
+
+
+def repository_files(root: Path) -> list[str]:
+    """Tracked files (git ls-files), or every file when root is not a git checkout."""
+    try:
+        out = subprocess.run(["git", "-C", str(root), "ls-files", "-z"], capture_output=True, timeout=30)
+        if out.returncode == 0 and out.stdout:
+            return [f for f in out.stdout.decode().split("\0") if f]
+    except (OSError, subprocess.SubprocessError):
+        pass
+    skip = {".git", "__pycache__", ".pytest_cache"}
+    return sorted(str(p.relative_to(root)) for p in root.rglob("*")
+                  if p.is_file() and not skip & set(p.relative_to(root).parts))
 
 
 def check_hygiene(arch: Path, r: Result) -> None:

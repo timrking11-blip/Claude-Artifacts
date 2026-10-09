@@ -256,3 +256,32 @@ def test_the_weekly_sync_data_pr_paths_are_not_code_owned():
     assert paths >= {"data/master", "data/CHANGELOG.md", "data/runlog"}
     rules = va.codeowners_rules((ROOT / ".github" / "CODEOWNERS").read_text())
     assert not any(va.owners_for(p, rules) or va.owners_for(p + "/x", rules) for p in paths)
+
+
+def test_a_later_rule_on_one_file_cannot_strip_the_checker_of_its_owner(repo):
+    _codeowners(repo, append="/scripts/check_architecture.py\n")
+    assert any("scripts/check_architecture.py is not owned by @timrking11-blip" in e for e in errors(repo))
+
+
+def test_a_later_rule_cannot_give_one_data_file_an_owner(repo):
+    _codeowners(repo, append="/data/master/contacts.json @someone\n")
+    assert any("CODEOWNERS covers data/master/contacts.json" in e for e in errors(repo))
+
+
+def test_files_beneath_a_tree_are_checked_through_bare_directory_rules(repo):
+    (repo / "scripts" / "vendor").mkdir(parents=True)
+    (repo / "scripts" / "vendor" / "tool.py").write_text("")
+    (repo / "data" / "runs" / "run_x").mkdir(parents=True)
+    (repo / "data" / "runs" / "run_x" / "manifest.json").write_text("{}")
+    _codeowners(repo, append="vendor/\nrun_x/ @someone\n")
+    errs = errors(repo)
+    assert any("scripts/vendor/tool.py is not owned" in e for e in errs)
+    assert any("CODEOWNERS covers data/runs/run_x/manifest.json" in e for e in errs)
+
+
+def test_the_committed_tree_has_every_file_owned_and_no_data_file_owned():
+    rules = va.codeowners_rules((ROOT / ".github" / "CODEOWNERS").read_text())
+    files = va.repository_files(ROOT)
+    assert any(f.startswith("data/master/") for f in files) and any(f.startswith("scripts/") for f in files)
+    assert all("@timrking11-blip" in va.owners_for(f, rules) for f in files if f.startswith(("scripts/", "crm/", ".github/")))
+    assert not any(va.owners_for(f, rules) for f in files if f.startswith("data/"))
