@@ -133,6 +133,13 @@ Don't work around them.
   belong in the `crm-sync` environment with a deployment branch policy of the
   default branch only; until they move there from repository secrets, a
   branch that edits the workflow can still read them.
+- The 5 Oct 2026 scheduled sync (run 37313486004) failed in its first job:
+  `APOLLO_API_KEY` and `EXPLORIUM_API_KEY` were in neither the repository's
+  secrets nor `crm-sync`'s (they worked on 28 Sep). Claude cannot list or set
+  secrets (the session's GitHub proxy refuses those paths) and never handles
+  key values. After the owner adds or moves keys, a dispatch with
+  `check_keys: true` runs only that check: green means both keys reach the
+  sync, and nothing is pulled or written.
 
 ## Unified Architecture Blueprint (24 Sep 2026)
 

@@ -71,3 +71,22 @@ def test_python_ci_can_be_dispatched_onto_a_data_branch():
     ci = load(ROOT / ".github" / "workflows" / "python-ci.yml")
     assert "workflow_dispatch" in ci[True]  # YAML 1.1 reads the bare key `on` as True
     assert set(ci["jobs"]) >= {"test", "architecture"}
+
+
+def test_a_missing_key_names_both_places_the_sync_reads_from():
+    step = next(s for s in load(SYNC)["jobs"]["preflight"]["steps"] if s["name"] == "Verify the API keys are present")
+    assert "crm-sync" in step["run"] and "Secrets and variables -> Actions" in step["run"]
+    assert "APOLLO_API_KEY" in step["run"] and "EXPLORIUM_API_KEY" in step["run"]
+
+
+def test_check_keys_stops_after_the_key_check():
+    wf = load(SYNC)
+    assert wf[True]["workflow_dispatch"]["inputs"]["check_keys"]["default"] is False
+    jobs = wf["jobs"]
+    # every pull is skipped in check mode; merge and writeback need a pull, so they skip too
+    for name in ("pull-apollo", "pull-explorium", "pull-explorium-serial"):
+        assert jobs[name]["if"].startswith("${{ !inputs.check_keys"), name
+    assert "needs.pull-apollo.result == 'success'" in jobs["merge"]["if"]
+    assert jobs["writeback"]["needs"] == "merge"
+    last = jobs["preflight"]["steps"][-1]
+    assert last["if"] == "${{ inputs.check_keys }}" and "Nothing pulled or written" in last["run"]

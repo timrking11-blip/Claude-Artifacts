@@ -30,6 +30,11 @@ on:
         required: false
         default: false
         type: boolean
+      check_keys:
+        description: "Only check that both API keys reach the sync; pull and write nothing"
+        required: false
+        default: false
+        type: boolean
 
 # contents/pull-requests/actions: write let scripts/open_data_pr.sh push a
 # data branch, open its PR, dispatch Python CI on it and enable auto-merge.
@@ -69,28 +74,31 @@ jobs:
         run: |
           echo "::error::The weekly sync runs only from the default branch, not $GITHUB_REF: it holds the API keys and opens data PRs."
           exit 1
-      - name: Verify repository secrets are present
+      - name: Verify the API keys are present
         run: |
           missing=""
           [ -z "$APOLLO_API_KEY" ] && missing="$missing APOLLO_API_KEY"
           [ -z "$EXPLORIUM_API_KEY" ] && missing="$missing EXPLORIUM_API_KEY"
           if [ -n "$missing" ]; then
-            echo "::error::Missing repository secret(s):$missing"
+            echo "::error::Missing API key secret(s):$missing. The sync reads them from the crm-sync environment (Settings -> Environments -> crm-sync -> Environment secrets) or from repository secrets (Settings -> Secrets and variables -> Actions); it found them in neither."
             if [ "$APOLLO_IN_VARS" = "true" ] || [ "$EXPLORIUM_IN_VARS" = "true" ]; then
               echo "::error::Found under the VARIABLES tab instead (Apollo: $APOLLO_IN_VARS, Explorium: $EXPLORIUM_IN_VARS). Variables are plaintext and are read as vars.*, not secrets.*. Delete them there and re-add under the Secrets tab."
             else
-              echo "Not found under Variables either. Check: Settings -> Secrets and variables -> Actions -> *Secrets* tab -> Repository secrets."
-              echo "Environment secrets live under Settings -> Environments -> crm-sync; Dependabot and Codespaces secrets are separate stores."
+              echo "Not found under Variables either. Add them as Environment secrets of crm-sync (names exactly APOLLO_API_KEY and EXPLORIUM_API_KEY); Dependabot and Codespaces secrets are separate stores the sync cannot read."
             fi
             exit 1
           fi
           echo "Both secrets present (APOLLO_API_KEY: ${#APOLLO_API_KEY} chars, EXPLORIUM_API_KEY: ${#EXPLORIUM_API_KEY} chars)."
+      - name: Key check only
+        if: ${{ inputs.check_keys }}
+        run: echo "Key check passed - both API keys reach the sync. Nothing pulled or written (check_keys)." | tee -a "$GITHUB_STEP_SUMMARY"
 
   pull-apollo:
     name: Pull Apollo contacts
     runs-on: ubuntu-latest
     environment: crm-sync
     needs: preflight
+    if: ${{ !inputs.check_keys }}
     env:
       APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
     steps:
@@ -124,7 +132,7 @@ jobs:
     # Default mode: enriches the previous master, so it needs nothing from
     # pull-apollo and the two run side by side. Skipped in serial mode.
     needs: preflight
-    if: ${{ inputs.explorium_roster != 'apollo' }}
+    if: ${{ !inputs.check_keys && inputs.explorium_roster != 'apollo' }}
     env:
       EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
     steps:
@@ -147,7 +155,7 @@ jobs:
     # Opt-in via workflow_dispatch: waits for pull-apollo and enriches that
     # pull, so new contacts are enriched the same week at the cost of parallelism.
     needs: pull-apollo
-    if: ${{ inputs.explorium_roster == 'apollo' }}
+    if: ${{ !inputs.check_keys && inputs.explorium_roster == 'apollo' }}
     env:
       EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
     steps:
