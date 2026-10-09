@@ -29,10 +29,10 @@ Anything not observed is marked as not observed. Ownership is in
 
 ## Tests, run 9 Oct 2026 on this branch (Python 3.11, local)
 
-- **`python -m pytest tests -q`:** 249 passed, 0 skipped. The baseline had
-  192; this branch adds 57:
+- **`python -m pytest tests -q`:** 261 passed, 0 skipped. The baseline had
+  192; this branch adds 69:
   - `tests/test_costs.py`: 25;
-  - `tests/test_validate_architecture.py`: 23;
+  - `tests/test_validate_architecture.py`: 35;
   - cap entry points in `tests/test_compose_account.py`: 4;
   - `tests/test_check_architecture.py`: a net 5 (from 28 to 33). Three
     URL-based standing tests were replaced by tests that only an Accepted

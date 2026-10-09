@@ -22,9 +22,11 @@ Checks (each failure is an error unless marked warning):
   capabilities four separate facts from a fixed vocabulary; the decision
                status matches the ADR; PRODUCTION_VERIFIED needs criteria
                and a reviewer; every gap reference exists in gaps/README.md
-  codeowners   .github/CODEOWNERS covers every path in controls.code_owned_paths
-               (enforcement code, tests, docs, artifact pages, itself) and none
-               in controls.data_paths_not_code_owned
+  codeowners   evaluated as GitHub does (last matching rule wins; a rule with
+               no owners leaves the path unowned): every path in
+               controls.code_owned_paths is owned by controls.code_owner, and
+               none in controls.data_paths_not_code_owned has an owner; only
+               directory and rooted-file patterns are accepted
   hygiene      no personal email addresses or infrastructure identifiers in
                architecture/ (this repository is public)
   digest       protected_digest equals SHA-256 over the authority block, the
@@ -289,18 +291,40 @@ def check_capabilities(arch: Path, manifest: dict[str, Any], matrix: dict[str, A
         r.err(f"{ref} is referenced but not in gaps/README.md")
 
 
-def codeowners_patterns(text: str) -> list[str]:
-    return [line.split()[0] for line in text.splitlines() if line.strip() and not line.lstrip().startswith("#")]
+def codeowners_rules(text: str) -> list[tuple[str, list[str]]]:
+    """(pattern, owners) per rule, in file order. A rule may have no owners: GitHub reads that as unowned."""
+    rules = []
+    for line in text.splitlines():
+        line = line.split(" #", 1)[0].strip()
+        if not line or line.startswith("#"):
+            continue
+        pattern, *owners = line.split()
+        rules.append((pattern, owners))
+    return rules
 
 
-def code_owned(path: str, patterns: list[str]) -> bool:
-    """Whether a repository path is covered. Only directory (`x/`) and rooted file (`/x`) patterns are used."""
-    for pat in patterns:
-        if pat.endswith("/") and (path == pat or path.startswith(pat.lstrip("/"))):
-            return True
-        if pat.startswith("/") and path == pat[1:]:
-            return True
-    return False
+def supported(pattern: str) -> bool:
+    """The forms this checker evaluates exactly: a directory (`x/`, `/x/`, `a/b/`) or a rooted file (`/x`)."""
+    return not any(ch in pattern for ch in "*?[!\\") and (pattern.endswith("/") or pattern.startswith("/"))
+
+
+def _matches(pattern: str, path: str) -> bool:
+    core = pattern.strip("/")
+    if not pattern.endswith("/"):                       # rooted file
+        return path == core
+    rooted = pattern.startswith("/") or "/" in core     # a slash at the start or in the middle anchors it
+    if rooted:
+        return path == core or path.startswith(core + "/")
+    return ("/" + path + "/").find("/" + core + "/") >= 0   # a bare directory name matches at any depth
+
+
+def owners_for(path: str, rules: list[tuple[str, list[str]]]) -> list[str]:
+    """The owners GitHub assigns: the last matching rule wins, and an ownerless last match means no owner."""
+    owners: list[str] = []
+    for pattern, rule_owners in rules:
+        if supported(pattern) and _matches(pattern, path):
+            owners = rule_owners
+    return owners
 
 
 def check_codeowners(root: Path, manifest: dict[str, Any], r: Result) -> None:
@@ -309,16 +333,24 @@ def check_codeowners(root: Path, manifest: dict[str, Any], r: Result) -> None:
     if not path.exists():
         r.err(".github/CODEOWNERS is missing")
         return
-    patterns = codeowners_patterns(path.read_text())
-    for pat in patterns:
-        if any(ch in pat for ch in "*?[") or not (pat.endswith("/") or pat.startswith("/")):
-            r.err(f"CODEOWNERS pattern {pat!r}: use a directory (x/) or rooted file (/x) so coverage is checkable")
+    rules = codeowners_rules(path.read_text())
+    for pattern, owners in rules:
+        if not supported(pattern):
+            r.err(f"CODEOWNERS pattern {pattern!r}: use a directory (x/) or rooted file (/x) so ownership is checkable")
+        for o in owners:
+            if not o.startswith("@"):
+                r.err(f"CODEOWNERS {pattern}: owner {o!r} must be an @user or @org/team")
+    owner = ctl.get("code_owner")
+    if not owner:
+        r.err("controls.code_owner is not set")
     for want in ctl.get("code_owned_paths") or []:
-        if not code_owned(want, patterns):
-            r.err(f"CODEOWNERS does not cover {want}")
+        got = owners_for(want, rules)
+        if owner not in got:
+            r.err(f"CODEOWNERS: {want} is not owned by {owner} (effective owners: {got or 'none'})")
     for data in ctl.get("data_paths_not_code_owned") or []:
-        if code_owned(data, patterns):
-            r.err(f"CODEOWNERS covers {data}; automated data pull requests must stay outside owner review")
+        got = owners_for(data, rules)
+        if got:
+            r.err(f"CODEOWNERS covers {data} (owners {got}); automated data pull requests must stay outside owner review")
 
 
 def check_hygiene(arch: Path, r: Result) -> None:

@@ -72,11 +72,9 @@ As recorded on 1 Oct 2026:
 
 - The digest in `architecture-manifest.yaml` detects a protected section
   (authority, decisions, the system-of-record matrix) that changed without
-  the digest being updated. It does not authenticate the owner.
-- Claude opens pull requests under the owner's account, so the owner cannot
-  approve them on GitHub. Until the owner chooses another arrangement (see
-  `architecture/README.md`, Approval and identity), the owner's merge is the
-  acceptance.
+  the digest being updated. It does not authenticate the owner. Approval is
+  the owner's review of the pull request under `.github/CODEOWNERS`; see
+  `architecture/README.md`, Controls.
 - ADR-001 to ADR-006 were imported with their statuses unchanged. Nothing was
   promoted.
 
@@ -90,3 +88,18 @@ As recorded on 1 Oct 2026:
   (revised: roles, not authority), ADR-010, ADR-011 and ADR-012, all
   Proposed. The disposition is in
   `audits/2026-10-09-authority-baseline.md`.
+- **2026-10-09, correction to Consequences (approval and identity).** The
+  sentence "Approval is the owner's review of the pull request under
+  `.github/CODEOWNERS`" cannot hold for pull requests that Claude opens.
+  - **Why.** Claude acts on GitHub with the owner's account: pull request
+    #24 is authored by `timrking11-blip`. GitHub does not count an author's
+    approval, so the owner cannot approve such pull requests. GitHub also
+    cannot tell a merge by the owner from a merge by a session that holds
+    the owner's credential.
+  - **Interim arrangement.** Until the owner chooses an approval arrangement
+    (GAP-014), the owner merging a pull request is its acceptance. GitHub
+    records that as a merge, not an approval.
+  - **Options.** The arrangements the owner may choose from, with their
+    limits, are in `architecture/README.md`, Approval and identity. None is
+    selected or configured. This correction does not change the decision
+    above.

@@ -179,24 +179,71 @@ def test_a_normative_invariant_needs_an_accepted_adr(repo):
     assert any("normative but ADR-012 is not Accepted" in e for e in errors(repo))
 
 
+def _codeowners(repo, text=None, append=None):
+    p = repo / ".github" / "CODEOWNERS"
+    if text is not None:
+        p.write_text(text)
+    if append:
+        p.write_text(p.read_text() + append)
+    return p
+
+
 def test_codeowners_must_cover_the_enforcement_paths(repo):
-    p = repo / ".github" / "CODEOWNERS"
+    p = _codeowners(repo)
     p.write_text("\n".join(l for l in p.read_text().splitlines() if not l.startswith("tests/")) + "\n")
-    assert any("CODEOWNERS does not cover tests/" in e for e in errors(repo))
+    assert any("tests/ is not owned by @timrking11-blip" in e for e in errors(repo))
 
 
-def test_automated_data_paths_stay_outside_owner_review(repo):
-    p = repo / ".github" / "CODEOWNERS"
-    p.write_text(p.read_text() + "data/ @timrking11-blip\n")
-    errs = errors(repo)
-    assert any("CODEOWNERS covers data/runlog/" in e for e in errs)
-    assert any("CODEOWNERS covers data/master/" in e for e in errs)
+def test_an_ownerless_entry_does_not_count_as_owned(repo):
+    p = _codeowners(repo)
+    p.write_text(p.read_text().replace("tests/ @timrking11-blip", "tests/"))
+    assert any("tests/ is not owned by @timrking11-blip (effective owners: none)" in e for e in errors(repo))
 
 
-def test_codeowners_wildcards_are_refused_so_coverage_stays_checkable(repo):
-    p = repo / ".github" / "CODEOWNERS"
-    p.write_text(p.read_text() + "* @timrking11-blip\n")
-    assert any("use a directory" in e for e in errors(repo))
+@pytest.mark.parametrize("later", [
+    "/tests/\n",                              # a later ownerless rule removes ownership
+    "tests/\n",
+    "/.github/\n",                            # ...including from CODEOWNERS and the workflows
+    "tests/ @someone-else\n",                 # a later rule hands it to someone else
+])
+def test_a_later_rule_that_removes_or_moves_ownership_fails(repo, later):
+    _codeowners(repo, append=later)
+    assert any("is not owned by @timrking11-blip" in e for e in errors(repo))
+
+
+def test_a_later_rule_that_restores_ownership_passes(repo):
+    _codeowners(repo, append="/tests/\ntests/ @timrking11-blip\n")
+    assert errors(repo) == []
+
+
+@pytest.mark.parametrize("line,covered", [
+    ("data/ @timrking11-blip\n", "data/runlog/"),
+    ("runlog/ @timrking11-blip\n", "data/runlog/"),    # a bare directory name matches at any depth
+    ("/data/master/ @timrking11-blip\n", "data/master/"),
+])
+def test_automated_data_paths_stay_outside_owner_review(repo, line, covered):
+    _codeowners(repo, append=line)
+    assert any(f"CODEOWNERS covers {covered}" in e for e in errors(repo))
+
+
+@pytest.mark.parametrize("line", ["* @timrking11-blip\n", "CLAUDE.md @timrking11-blip\n", "docs/*.md @timrking11-blip\n"])
+def test_patterns_that_cannot_be_evaluated_exactly_are_refused(repo, line):
+    _codeowners(repo, append=line)
+    assert any("so ownership is checkable" in e for e in errors(repo))
+
+
+def test_owner_tokens_must_be_github_handles(repo):
+    _codeowners(repo, append="tests/ timrking11-blip\n")
+    assert any("must be an @user" in e for e in errors(repo))
+
+
+def test_owners_for_follows_github_precedence():
+    rules = va.codeowners_rules("scripts/ @a\n/scripts/x.py\nlib/ @b # trailing comment\n/a/b/ @c\n")
+    assert va.owners_for("scripts/y.py", rules) == ["@a"]
+    assert va.owners_for("scripts/x.py", rules) == []
+    assert va.owners_for("src/lib/z.py", rules) == ["@b"]
+    assert va.owners_for("x/a/b/z", rules) == []          # a middle slash anchors the pattern to the root
+    assert va.owners_for("a/b/z", rules) == ["@c"]
 
 
 def test_the_weekly_sync_data_pr_paths_are_not_code_owned():
@@ -207,5 +254,5 @@ def test_the_weekly_sync_data_pr_paths_are_not_code_owned():
     for block in re.findall(r"scripts/open_data_pr\.sh .*?\n(?:.*\n){2}", wf):
         paths.update(t for t in block.split() if t.startswith("data/") and "${{" not in t)
     assert paths >= {"data/master", "data/CHANGELOG.md", "data/runlog"}
-    patterns = va.codeowners_patterns((ROOT / ".github" / "CODEOWNERS").read_text())
-    assert not any(va.code_owned(p, patterns) or va.code_owned(p + "/", patterns) for p in paths)
+    rules = va.codeowners_rules((ROOT / ".github" / "CODEOWNERS").read_text())
+    assert not any(va.owners_for(p, rules) or va.owners_for(p + "/x", rules) for p in paths)

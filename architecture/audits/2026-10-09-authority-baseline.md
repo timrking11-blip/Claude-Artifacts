@@ -43,9 +43,9 @@ None of the patch's described files (`architecture/adr/`, the manifest,
 - On 1 Oct, pages 00, 10 and 13 described the repository as already
   authoritative and cited "172 repository tests". Those tests existed only
   on the unpushed branch.
-- On 9 Oct, after this branch's revision, `tests/` passes 249. That is the
-  baseline's 192 plus 57 added here (see `current-state.md`); it is not the
-  historical 172.
+- On 9 Oct, after this branch's revisions, `tests/` passes 261. That is
+  the baseline's 192 plus 69 added here (see `current-state.md`); it is not
+  the historical 172.
 
 ## Disposition of 14 — Governance Amendment (PROPOSED)
 
@@ -101,6 +101,21 @@ owner's approval; none has been applied** (GAP-003, GAP-017).
   - Every must-not-regress probe still fails CI under a candidate rule.
     This is tested on the committed source: every offline must-not-regress
     probe, forced to fail, is reported as a regression.
+
+## Revision 2 (9 Oct 2026, on the owner's instruction; repository only)
+
+- **The CODEOWNERS check evaluates ownership, not patterns.**
+  - Each rule's owners are read.
+  - The last matching rule wins, and a rule with no owners leaves a path
+    unowned, as on GitHub.
+  - Every required path must resolve to `controls.code_owner`, and no data
+    path may resolve to any owner.
+  - Negative tests cover ownerless entries, later rules that remove or move
+    ownership, data paths matched at any depth, and patterns the checker
+    cannot evaluate exactly.
+- **ADR-007.** The Consequences wording from the first commit is restored.
+  The identity limitation and the interim acceptance arrangement are
+  appended as a dated annotation.
 
 ## Not done, and not to be done without the owner
 
