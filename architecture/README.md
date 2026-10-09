@@ -1,0 +1,126 @@
+# Architecture
+
+## Authority
+
+**ADR-007 is Accepted (1 Oct 2026). Its transition is pending merge.**
+
+- When the pull request carrying this folder merges into the default branch
+  `claude/explorium-docs-mcp-brregp`, this folder becomes the architecture
+  authority. The Notion architecture space (INTEGRATED GTM ARCHITECTURE)
+  becomes its readable view.
+- Until then, Notion remains the effective authority, and this folder is the
+  reviewable form of the change.
+- After the merge, a follow-up commit records the effective commit and date
+  in `adr/ADR-007-…` and in the manifest's `authority` block. Nothing is
+  backdated.
+
+No change to system-of-record ownership, authority boundaries or canonical
+ontology is made without an accepted ADR (ADR-007).
+
+## Files
+
+| File | Holds |
+|---|---|
+| `README.md` | This page: authority, names, status vocabulary, controls |
+| `current-state.md` | What exists, with commit-pinned evidence and nothing aspirational |
+| `target-state.md` | The accepted target, the proposed target kept apart, work packages, WP-IC-1 |
+| `architecture-manifest.yaml` | Machine-readable index: authority, decisions, systems, capabilities, routines, cost basis, composition cap, protected digest |
+| `system-of-record.yaml` | **The one ownership definition**: current, accepted target and proposed, with field groups tied to code |
+| `invariants.yaml` | Implementation-independent rules per decision, with probes (`scripts/check_architecture.py`; rendered to `docs/architecture-invariants.md`) |
+| `adr/` | ADR-001 to ADR-012. Accepted text is never edited: changes are dated annotations or new ADRs |
+| `audits/README.md` | Audit index |
+| `gaps/README.md` | Gap index: open questions and disagreements, each with what closes it |
+
+## Names
+
+Names are used by evidence, and nothing is renamed. ADR-010 (Proposed) would
+make these rules binding.
+
+| Name | Means | Not |
+|---|---|---|
+| **CRM Systems Atlas** | The stack inventory: an artifact whose database holds `registry/main` (systems, routines, connectors, observed status), plus its refresh routine | The contact database; the architecture authority |
+| **Custom CRM** | The operational GTM system of record. Today this is the CRM System artifact and its database (contacts, accounts, activity, runlog, jobs, credits) | Architecture; intelligence objects |
+| **"Atlas"** alone | Historical. In ADR-001, ADR-003 and Notion 01 it names the logical commercial and intelligence system, whose commercial part is the Custom CRM today. In this repository and CLAUDE.md, "atlas" means the CRM Systems Atlas | — |
+| **GTM Command Center** | The status dashboard artifact (`dashboard/stack`, Gate 0 card, scorecard) | The governance space. Notion 01's "Notion GTM Command Center" row means the Notion architecture space |
+| **Notion architecture space** | INTEGRATED GTM ARCHITECTURE, pages 00–14 | — |
+| **Architecture Registry** | The Notion catalog of governed artifacts (ARC, ADR, SPEC rows) | The CRM Systems Atlas registry |
+| **Ledgers** | Several different things, so always qualified:<br>- Master Contact Ledger: retired<br>- git master: `data/master/`<br>- credit ledger: `meta/credits`<br>- LEDGER_ENTRY: a proposed record type | — |
+| **AI-Native Intelligence Core** | The proposed intelligence domain (ADR-012). Older text says "Intelligence Layer" | Anything in production |
+| **SWAT Engine** | A proposed hosted successor implementation of the Custom CRM | A new authority |
+
+## Status vocabulary
+
+A capability carries four separate facts, which are never collapsed into one
+label. The manifest's `capabilities` records them.
+
+1. **Decision status.** Proposed, Accepted, Superseded, Deferred, or Not
+   written. Acceptance is the owner's act and does not depend on a merge.
+2. **Implementation state.** What evidence shows: DESIGNED, CODE_EXISTS,
+   CONFIGURED, EXECUTED or PRODUCTION_VERIFIED.
+   - Code on a branch is CODE_EXISTS, not deployed.
+   - EXECUTED means one dated run, not verification.
+   - PRODUCTION_VERIFIED needs written acceptance criteria met in the
+     operating environment over a stated window, plus a reviewer. No script
+     here claims it.
+3. **Deployment.** Where it lives: branch, default branch, routine,
+   artifact, GitHub Actions, external, or none.
+4. **Evidence.** Commits, tests, runlog ids, trigger ids, dates.
+
+**Documentation currency** (when a page was last reviewed) is separate again
+and never counts as capability verification. These are the four facts that
+ADR-011 (Proposed) describes, used here descriptively.
+
+A correction to the Notion Architecture Registry is applied only on current
+evidence, keeping the prior value (GAP-003).
+
+## Controls
+
+- **`scripts/validate_architecture.py`** (CI job `architecture`). It checks:
+  - that the manifest, the ADR files, `system-of-record.yaml`,
+    `invariants.yaml` and the code agree;
+  - that every gap reference exists;
+  - ADR-007's transition fields;
+  - that no infrastructure identifiers or personal emails appear;
+  - the protected digest.
+- **Protected digest.** `protected_digest` in the manifest is a SHA-256 over
+  the authority block, the decisions index and `system-of-record.yaml`. It
+  detects a protected section that changed without the digest being
+  regenerated (`--update-digest`).
+  - **It does not authenticate owner approval.** Anyone who can edit the
+    files can regenerate it.
+  - Approval is the owner's review of the pull request: `.github/CODEOWNERS`
+    names the owner for `architecture/`, `crm/`, `scripts/` and `.github/`.
+  - That review is enforced only by a branch protection rule, which is not
+    active (GAP-014).
+- **Composition cap (ADR-008).**
+  - `scripts/compose_account.py prepare` counts the month's runs, by calendar
+    month in America/New_York. The sources are `data/runs/` and the CRM
+    runlog dump, and a retried run id counts once.
+  - The 6th run holds with exit code 3 and a held runlog entry.
+  - It proceeds only with `--cap-confirmation <runlog id>`, naming a held
+    entry that the owner confirmed on the CRM page for that run. The dump
+    must show it confirmed with a written check.
+  - The flag is a reference, not an approval: a CLI flag is never
+    authenticated human approval, and the run's line records which
+    confirmation it relied on.
+  - Counting is not atomic across concurrent sessions (GAP-016).
+- **`scripts/cost_report.py`.** Prints:
+  - the dated price table;
+  - each routine's model and basis;
+  - the month's composition count against the cap;
+  - an API-list estimate for a usage file.
+
+  These are estimates. Plan billing is not modelled.
+
+## Order an agent reads in
+
+Before a change that touches data models, system-of-record boundaries,
+integrations, agents, scoring, attribution, measurement or workflow state:
+
+1. Read this README, the manifest and `system-of-record.yaml`.
+2. Read the relevant ADRs in `adr/`, and the Notion pages for context.
+3. Inspect the current implementation and runtime evidence.
+4. Log any disagreement as a gap before changing code.
+5. Record material changes in Notion 10 — Architecture Change Log.
+
+While ADR-007 is pending, Notion governs wherever the two disagree.

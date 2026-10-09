@@ -1,0 +1,157 @@
+# Architecture manifest: the machine-readable index of architecture/.
+#
+# Sections: authority (ADR-007's transition), decisions (index of adr/),
+# systems (ids used by system-of-record.yaml), capabilities (four facts kept
+# apart: decision_status, implementation_state, deployment, evidence),
+# routines and connectors (ADR-008 cost basis), cost_basis (dated prices),
+# composition (the monthly soft cap), protected_digest.
+#
+# Ownership is not restated here: system-of-record.yaml is its one
+# definition. scripts/validate_architecture.py checks this file against the
+# ADR files, the matrix, architecture/invariants.yaml and the code.
+schema: 1
+as_of: 2026-10-09
+baseline_commit: 5cd30d3705dacbc0e60d4734d4d510eceddbe4ed
+default_branch: claude/explorium-docs-mcp-brregp
+
+authority:
+  decision: ADR-007
+  decision_status: Accepted
+  transition: pending_merge          # pending_merge | effective
+  condition: the pull request carrying this folder merges into the default branch
+  effective_commit: null             # the merge commit, recorded after the merge; never backdated
+  effective_date: null
+  until_effective: notion-architecture
+  after_effective: repository-architecture
+
+decisions:
+  - {id: ADR-001, title: Atlas as GTM System of Record, status: Accepted, decided: 2026-09-29, file: adr/ADR-001-atlas-as-gtm-system-of-record.md, notion: https://app.notion.com/p/1b180e2e00d4473f97bb754b5b9b45c4}
+  - {id: ADR-002, title: Journey Graph, status: Proposed, file: adr/ADR-002-journey-graph.md, notion: https://app.notion.com/p/05fdf7a1c99c4c59b9bfd2cf1ec4bbd8}
+  - {id: ADR-003, title: Measurement Plane, status: Proposed, file: adr/ADR-003-measurement-plane.md, notion: https://app.notion.com/p/dd5cfa9c7a8b488ab04522c938482219}
+  - {id: ADR-004, title: Fit / Intent / Engagement Scoring, status: Proposed, file: adr/ADR-004-fit-intent-engagement-scoring.md, notion: https://app.notion.com/p/493a3c3abad24c45948658d759bc44eb}
+  - {id: ADR-005, title: Attribution Model, status: Proposed, file: adr/ADR-005-attribution-model.md, notion: https://app.notion.com/p/c24070214a644c9b86f3c2b9d2e29672}
+  - {id: ADR-006, title: AI Action Contract, status: Proposed, file: adr/ADR-006-ai-action-contract.md, notion: https://app.notion.com/p/a749895b8af44375a86cba7edd7c298f}
+  - {id: ADR-007, title: Architecture authority moves to the repository, status: Accepted, decided: 2026-10-01, file: adr/ADR-007-architecture-authority-in-the-repository.md, notion: null}
+  - {id: ADR-008, title: Connector cost basis and model routing, status: Accepted, decided: 2026-10-01, file: adr/ADR-008-connector-cost-basis-and-model-routing.md, notion: null}
+  - {id: ADR-009, title: Authority roles under ADR-007, status: Proposed, file: adr/ADR-009-authority-roles.md, notion: https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6}
+  - {id: ADR-010, title: Naming, status: Proposed, file: adr/ADR-010-naming.md, notion: https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6}
+  - {id: ADR-011, title: Capability lifecycle and reconciliation, status: Proposed, file: adr/ADR-011-capability-lifecycle.md, notion: https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6}
+  - {id: ADR-012, title: AI-Native Intelligence Core (target), status: Proposed, file: adr/ADR-012-ai-native-intelligence-core.md, notion: https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6}
+  - {id: ADR-013, title: Learning and research optimisation (future), status: Not written, file: null, notion: null}
+
+# stage: proposed marks a system that may hold no current or accepted-target authority.
+systems:
+  - {id: custom-crm, name: Custom CRM, implementation: CRM System artifact and its database, location: artifact 8GigYGeoefKqxEptmeCHWG}
+  - {id: crm-systems-atlas, name: CRM Systems Atlas, implementation: artifact and its database (registry/main), location: artifact UEDBSUaVKdmf1NU1eVJrt7}
+  - {id: gtm-command-center, name: GTM Command Center, implementation: status dashboard artifact, location: artifact 5cDCX21jwDrxLihu5Umbpc}
+  - {id: launch-check, name: Launch Check, implementation: artifact and its database, location: artifact GqwkyeUePwkASUtoePWdo6}
+  - {id: notion-architecture, name: Notion architecture space, implementation: INTEGRATED GTM ARCHITECTURE pages 00–14, location: https://app.notion.com/p/1f765ad49b85472b8320316598fe765a}
+  - {id: notion-architecture-registry, name: Architecture Registry (Notion), implementation: Notion database, location: https://app.notion.com/p/a85ec78d0e364bc39a1554bd1072c0c7}
+  - {id: repository-architecture, name: Repository architecture folder, implementation: architecture/ on the default branch, location: architecture/}
+  - {id: github-repository, name: GitHub repository, implementation: timrking11-blip/Claude-Artifacts, location: default branch}
+  - {id: git-master, name: Git master (enriched data layer), implementation: data/master/contacts.json, location: data/master/}
+  - {id: git-proposals, name: Filed proposals in git, implementation: data/proposals/, location: data/proposals/}
+  - {id: pandadoc, name: PandaDoc, implementation: external, location: connector available; no flow}
+  - {id: operations-workbench, name: Operations Workbench, implementation: artifact with sample data, location: not in this repository}
+  - {id: intelligence-core, name: AI-Native Intelligence Core, implementation: none, location: proposed (ADR-012), stage: proposed}
+
+# decision_status: Proposed | Accepted | Superseded | Deferred | Not written | n/a (no ADR governs it)
+# implementation_state: none | DESIGNED | CODE_EXISTS | CONFIGURED | EXECUTED | PRODUCTION_VERIFIED | RETIRED
+# deployment: none | branch | default-branch | routine | artifact | external | github-actions
+capabilities:
+  - {id: CAP-authority, name: Architecture authority in the repository, decision: ADR-007, decision_status: Accepted,
+     implementation_state: CODE_EXISTS, deployment: branch, evidence: [branch claude/architecture-authority-cost-basis], gap: GAP-001}
+  - {id: CAP-validator, name: Architecture validator and protected digest, decision: ADR-007, decision_status: Accepted,
+     implementation_state: CODE_EXISTS, deployment: branch, evidence: [scripts/validate_architecture.py, tests/test_validate_architecture.py], gap: GAP-001}
+  - {id: CAP-invariants, name: Invariant checker (CI gate), decision: ADR-006, decision_status: Proposed,
+     implementation_state: EXECUTED, deployment: github-actions, evidence: [scripts/check_architecture.py, "PR #22 merge 28948f3"]}
+  - {id: CAP-cost-basis, name: Cost basis, cost report and composition cap, decision: ADR-008, decision_status: Accepted,
+     implementation_state: CODE_EXISTS, deployment: branch, evidence: [crm/costs.py, scripts/cost_report.py, tests/test_costs.py], gap: GAP-012}
+  - {id: CAP-model-routing, name: Routine model routing, decision: ADR-008, decision_status: Accepted,
+     implementation_state: EXECUTED, deployment: routine, evidence: ["morning brief on claude-sonnet-5-5, run 2026-10-09", "atlas refresh on claude-opus-5-5, run 2026-10-01"], gap: GAP-013}
+  - {id: CAP-crm-records, name: Custom CRM records and pinned writes, decision: ADR-001, decision_status: Accepted,
+     implementation_state: EXECUTED, deployment: artifact, evidence: [crm/crm_sync.py, CRM runlog 21–28 Sep], gap: GAP-007}
+  - {id: CAP-journey, name: Journey and evidence graph, decision: ADR-002, decision_status: Proposed,
+     implementation_state: DESIGNED, deployment: none, evidence: [], gap: GAP-003}
+  - {id: CAP-stored-keys, name: Stored keys (master_id, org_id), decision: n/a, decision_status: n/a,
+     implementation_state: EXECUTED, deployment: default-branch, evidence: [3814547, tests/test_keys.py, runlog rl_20260925T194944_phase-2-key-backfill]}
+  - {id: CAP-weekly-sync, name: Weekly GitHub sync and bulk-create hold, decision: n/a, decision_status: n/a,
+     implementation_state: EXECUTED, deployment: github-actions, evidence: [data/runlog/rl_20260928T060642_weekly-sync.json, crm/runlog.py, tests/test_runlog.py]}
+  - {id: CAP-broker, name: Enrichment Broker, decision: n/a, decision_status: n/a,
+     implementation_state: CODE_EXISTS, deployment: default-branch, evidence: [crm/broker.py, tests/test_broker_activity.py], gap: GAP-005}
+  - {id: CAP-activity-capture, name: Activity capture, decision: n/a, decision_status: n/a,
+     implementation_state: EXECUTED, deployment: routine, evidence: [runlog rl_20260925T200646_activity-capture, "Monday Data Sync shadow run 2026-10-05"], gap: GAP-006}
+  - {id: CAP-data-sync, name: Monday Data Sync (shadow), decision: n/a, decision_status: n/a,
+     implementation_state: EXECUTED, deployment: routine, evidence: ["trig_012qYJ65sLwpVRXWWYrYkvP6 last run 2026-10-05"], gap: GAP-006}
+  - {id: CAP-composition, name: Composition run, decision: n/a, decision_status: n/a,
+     implementation_state: EXECUTED, deployment: default-branch, evidence: [scripts/compose_account.py, data/runs/run_20260924_fj2c73, runlog rl_20260924T214000_composition-run]}
+  - {id: CAP-pandadoc, name: Signed proposals in PandaDoc, decision: n/a, decision_status: Accepted,
+     implementation_state: none, deployment: none, evidence: [01 — Living Reference Model, system-of-record policy]}
+  - {id: CAP-workbench, name: Operations Workbench as delivery authority, decision: n/a, decision_status: Accepted,
+     implementation_state: DESIGNED, deployment: artifact, evidence: [01 — Living Reference Model]}
+  - {id: CAP-parked-gcp, name: BigQuery, Vertex and HCP Terraform, decision: n/a, decision_status: Deferred,
+     implementation_state: CODE_EXISTS, deployment: default-branch, evidence: [terraform/]}
+  - {id: CAP-intelligence-core, name: AI-Native Intelligence Core and WP-IC-1, decision: ADR-012, decision_status: Proposed,
+     implementation_state: DESIGNED, deployment: none, evidence: [architecture/target-state.md], gap: GAP-004}
+
+# Observed 2026-10-09 through the routines API (list_triggers / get_trigger). Read-only; no setting was changed.
+# binding: fresh (a new session each firing) | session (bound to a long-lived session) | device (tied to the owner's computer)
+routines:
+  - {trigger: trig_01RYpi4CQGB2h3uG2DzVAXqJ, name: Weekly Apollo ⇄ CRM System two-way sync, schedule: "CRON_TZ=America/New_York 0 7 * * 1", model: claude-opus-5-5, binding: fresh, governed_writer: true, last_run: 2026-10-05}
+  - {trigger: trig_01DVc9TXfwjgg8QFK7BaCXLY, name: Weekly enrichment → CRM push, schedule: "CRON_TZ=America/New_York 30 7 * * 1", model: session, binding: session, governed_writer: true, last_run: 2026-10-05}
+  - {trigger: trig_012qYJ65sLwpVRXWWYrYkvP6, name: Monday Data Sync (shadow), schedule: "CRON_TZ=America/New_York 50 7 * * 1", model: session, binding: session, governed_writer: true, last_run: 2026-10-05}
+  - {trigger: trig_01S5mVAox1FebVCRNhvxTw5y, name: Weekly GTM Command Center refresh, schedule: "CRON_TZ=America/New_York 0 8 * * 1", model: claude-opus-5-5, binding: fresh, governed_writer: true, last_run: 2026-10-05}
+  - {trigger: trig_015HpyuPCC1fSmeYmmAPmuqv, name: CRM Systems Atlas refresh, schedule: "0 13 1,11,21 * *", model: claude-opus-5-5, binding: fresh, governed_writer: false, last_run: 2026-10-01}
+  - {trigger: trig_01MnLHnJcvc58uidm7hgrv4p, name: Morning brief, schedule: "0 12 * * 1-5", model: claude-sonnet-5-5, binding: fresh, governed_writer: false, last_run: 2026-10-09}
+  - {trigger: trig_01MCsLdgUtN71u559LmXiezX, name: Daily site check, schedule: "0 11 * * *", model: claude-opus-5, binding: fresh, governed_writer: false, last_run: 2026-10-09,
+     note: "ADR-008 routes it to Sonnet; changing its model is the owner's action (K5), not applied"}
+  - {trigger: trig_01W9A9anRnfQxBWhb2FxEoPF, name: Composition run (Intake page button), schedule: on demand, model: session, binding: session, governed_writer: true, last_run: null}
+
+connectors:
+  - {name: Anthropic models (sessions and routines), basis: plan_then_api_list, note: "plan-included usage, then usage credits at standard API rates"}
+  - {name: Apollo, basis: plan_included_credits, note: lead and direct-dial credits reset monthly; enrich only on the intake tick}
+  - {name: Vibe Prospecting, basis: credits, note: prepaid pack; nothing spent without a jobs/ row, a free estimate and the owner's go}
+  - {name: Explorium REST, basis: free, note: match-only (D1 declined)}
+  - {name: Crunchbase, basis: free, note: free data tokens}
+  - {name: Gmail, basis: free}
+  - {name: Google Calendar, basis: free}
+  - {name: Google Drive, basis: free}
+  - {name: Notion, basis: plan}
+  - {name: GitHub, basis: free}
+  - {name: PandaDoc, basis: plan, note: connector available, no flow}
+
+cost_basis:
+  as_of: 2026-10-09
+  sources:
+    - https://platform.claude.com/docs/en/about-claude/pricing
+    - https://platform.claude.com/docs/en/about-claude/models/overview
+    - https://claude.com/pricing
+  kind: api_list_estimate
+  note: >-
+    USD per million tokens at Anthropic API list prices, read on as_of. These are estimates, not
+    invoices: sessions and routines bill against the owner's plan first, and usage beyond it bills as
+    usage credits "at standard API rates" (claude.com/pricing). Actual spend and receipts are not kept
+    in this public repository.
+  usd_per_mtok:
+    claude-fable-5-1:  {input: 10.00, cache_write_5m: 12.50, cache_write_1h: 20.00, cache_read: 0.25, output: 50.00}
+    claude-opus-5-5:   {input: 4.00,  cache_write_5m: 5.00,  cache_write_1h: 8.00,  cache_read: 0.20, output: 20.00}
+    claude-opus-5:     {input: 5.00,  cache_write_5m: 6.25,  cache_write_1h: 10.00, cache_read: 0.50, output: 25.00}
+    claude-sonnet-5-5: {input: 2.00,  cache_write_5m: 2.50,  cache_write_1h: 4.00,  cache_read: 0.10, output: 10.00}
+    claude-haiku-5-5:  {input: 0.10,  cache_write_5m: 0.125, cache_write_1h: 0.20,  cache_read: 0.01, output: 0.50}
+  legacy_models: [claude-opus-5]
+  batch_discount: 0.5
+
+controls:
+  bulk_create_hold_over: 5           # crm.runlog.HOLD_OVER: a run creating more holds for an exact-count confirm
+  min_confirm_check: 12              # crm.runlog.MIN_CHECK: the CRM page's shortest accepted check note
+
+composition:
+  decision: ADR-008
+  monthly_cap: 5
+  month_timezone: America/New_York
+  over_cap: hold
+  counted_from: [data/runs/<run_id>/manifest.json run.composed_at, CRM runlog "Composition run" entries]
+
+protected:
+  sections: [authority, decisions, system-of-record.yaml]
+protected_digest: b8e109fb67917f9b1c3cdf02dc6d575ed496b10664ada75f5b6d2861d8364a6d

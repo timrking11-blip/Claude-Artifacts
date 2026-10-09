@@ -2,7 +2,7 @@
 
 Rendered by `scripts/check_architecture.py --render-md` from `architecture/invariants.yaml`; CI fails when this file and the YAML disagree. Do not edit by hand.
 
-Decisions are governed in Notion; the repository holds their executable form. Conformance is ENFORCED, PARTIAL, MISSING, or UNVERIFIED (needs `--crm-dump`). Maturity uses ADR-011's evidence levels; this check never claims PRODUCTION_VERIFIED. Status below is the offline run.
+ADR-007 (Accepted 1 Oct 2026) makes `architecture/` the architecture authority when it merges; until then Notion governs. ADR texts are in `architecture/adr/` and Notion 02; this file is their executable form. Conformance is ENFORCED, PARTIAL, MISSING, or UNVERIFIED (needs `--crm-dump`). Maturity uses ADR-011's evidence levels; this check never claims PRODUCTION_VERIFIED. Status below is the offline run.
 
 A normative rule's ADR is written in Notion and CI holds it at its expected status. A candidate rule is a design target whose ADR is not written yet: it is reported, never held to a line; its MUST_NOT_REGRESS probes still fail CI, because they protect controls that exist today.
 
@@ -11,7 +11,7 @@ A normative rule's ADR is written in Notion and CI holds it at its expected stat
 | ADR | Title | Status (as of) |
 |---|---|---|
 | ADR-006 | [AI Action Contract](https://app.notion.com/p/a749895b8af44375a86cba7edd7c298f) | Proposed (2026-10-02) |
-| ADR-012 | [AI-Native Intelligence Core (target)](https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6) | Proposed (draft in 14 — Governance Amendment; not yet filed in 02) (2026-10-02) |
+| ADR-012 | [AI-Native Intelligence Core (target)](https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6) | Proposed (architecture/adr/ADR-012; drafted in 14 — Governance Amendment; not filed in Notion 02) (2026-10-09) |
 | ADR-013 | Learning and research optimisation (future) | Not written (2026-10-02) |
 
 ## Invariants

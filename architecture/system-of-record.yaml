@@ -1,0 +1,153 @@
+# System-of-record matrix: the one authoritative ownership definition.
+#
+# One write authority (`store`) per canonical object, in three tiers that are
+# never mixed:
+#   current          observed today, with evidence (as_of below)
+#   accepted_target  accepted by the owner as the target, not yet true
+#   proposed         in a Proposed ADR or audit; no write authority
+# Store ids are `systems[].id` in architecture-manifest.yaml. Field groups
+# name the code constant that is their executable form; the validator fails
+# when the two disagree. Nothing else in the repository restates ownership:
+# docs link here. Questions that cannot be settled from evidence are gaps
+# (architecture/gaps/README.md), not guesses.
+#
+# Changing `current` or `accepted_target` changes system-of-record ownership:
+# under ADR-007 that needs an accepted ADR, and the protected digest in the
+# manifest must be updated in the same reviewed pull request.
+schema: 1
+as_of: 2026-10-09
+
+field_groups:
+  crm_owned:
+    code: crm.crm_sync.CRM_OWNED_FIELDS
+    fields: [apollo_id, apollo_lists, apollo_synced_at, apollo_url, company, created_at, deal_value, email,
+             first_name, last_name, mobile, name, next_date, next_step, notes, origin, product, qualified,
+             segment, stage, title]
+  key_fields:
+    code: crm.crm_sync.KEY_FIELDS
+    fields: [master_id, org_id, provenance, held]
+  key_flags:
+    code: crm.crm_sync.REVIEW_ORG_FLAG
+    fields: [review_org]
+
+current:
+  - object: contact
+    store: custom-crm
+    location: CRM System database, collection contacts
+    writers:
+      - {writer: owner on the CRM page, fields: crm_owned}
+      - {writer: Apollo sync routine, fields: crm_owned, note: Apollo-sourced fields only; never archetype_code or segment_code}
+      - {writer: enrichment push, fields: [key_fields, key_flags], note: crm.crm_sync.assert_not_owned refuses crm_owned fields}
+      - {writer: composition run and proposal push, fields: [notes, proposal_status, proposal_scope, proposal_ref, activity],
+         note: notes append-only; proposal_status set only when unset}
+      - {writer: activity capture (routine), fields: [activity]}
+    evidence: [crm/crm_sync.py, scripts/push_enrichment_to_crm.py, scripts/push_proposals_to_crm.py, crm/activity.py]
+
+  - object: account
+    store: custom-crm
+    location: CRM System database, collection accounts
+    writers:
+      - {writer: owner on the CRM page}
+      - {writer: Apollo sync routine, note: re-keys pending_apollo accounts to the Apollo id}
+      - {writer: composition run, note: mints an account or appends a note; stage never touched}
+    evidence: [scripts/compose_account.py, scripts/push_proposals_to_crm.py]
+
+  - object: activity
+    store: custom-crm
+    location: contact.activity rows
+    writers:
+      - {writer: owner on the CRM page}
+      - {writer: activity capture (routine), note: Gmail is the record for sends; Apollo adds replies and bounces}
+      - {writer: every script, note: system activity entries}
+    evidence: [crm/activity.py, "runlog rl_20260925T200646_activity-capture"]
+
+  - object: run log
+    store: custom-crm
+    location: CRM System database, collection runlog
+    writers:
+      - {writer: every run that creates or modifies records}
+      - {writer: GitHub Actions, note: commits data/runlog/*.json, posted into the CRM later (crm.runlog pending)}
+    evidence: [crm/runlog.py, data/runlog/]
+
+  - object: credit state and enrichment jobs
+    store: custom-crm
+    location: CRM System database, meta/credits and jobs/
+    writers: [{writer: Enrichment Broker steps in sessions, note: nothing bought without a jobs/ row and the owner's go}]
+    evidence: [crm/broker.py, "jobs/job_20260925_vibe_enrich_prospects_cafd6f18 (refused)"]
+
+  - object: contact master merge
+    store: git-master
+    location: data/master/contacts.json
+    writers: [{writer: weekly GitHub Actions merge, note: lands by data pull request}]
+    role: derived data layer that feeds the Custom CRM through the enrichment push; not a commercial authority
+    evidence: [scripts/merge_master.py, scripts/open_data_pr.sh]
+
+  - object: draft proposal text
+    store: git-proposals
+    location: data/proposals/*.json and *.md
+    writers: [{writer: composition run finalize}]
+    projections: [{store: custom-crm, how: append-only note on the contact or account, by finalize and the idempotent proposal push}]
+    role: >-
+      the draft originates in git and the CRM note is a projection of it written by the same run, so the two
+      are not competing writers; the proposal's lifecycle after "drafted" is the open question in GAP-011
+    evidence: [scripts/compose_account.py, scripts/push_proposals_to_crm.py]
+
+  - object: system inventory and observed status
+    store: crm-systems-atlas
+    location: CRM Systems Atlas database, registry/main
+    writers: [{writer: CRM Systems Atlas refresh routine}, {writer: Claude sessions that wire or retire something}]
+    evidence: [CLAUDE.md rule "written to registry/main in the same session"]
+
+  - object: stack status display
+    store: gtm-command-center
+    location: GTM Command Center database, dashboard/stack
+    writers: [{writer: Weekly GTM Command Center refresh routine}]
+    role: a status surface that reads the CRM Systems Atlas registry; not an authority
+
+  - object: Gate 0 items
+    store: launch-check
+    location: Launch Check database, gate0/items
+    writers: [{writer: owner, note: no routine ticks an item}]
+
+  - object: architecture decision
+    store: notion-architecture
+    location: Notion INTEGRATED GTM ARCHITECTURE, 02 — Architecture Decision Records
+    role: effective until ADR-007's transition condition is met; see accepted_target
+    evidence: [architecture/adr/ADR-007-architecture-authority-in-the-repository.md]
+
+  - object: architecture catalog
+    store: notion-architecture-registry
+    location: Notion Architecture Registry database
+    role: an index of governed artifacts, not a copy of them
+
+  - object: code, schemas, tests
+    store: github-repository
+    location: default branch claude/explorium-docs-mcp-brregp
+
+accepted_target:
+  - object: architecture decision
+    store: repository-architecture
+    decision: ADR-007
+    condition: the authority change merges into the default branch
+  - object: signed proposals and commercial terms
+    store: pandadoc
+    decision: 01 — Living Reference Model, system-of-record policy
+    note: connector available, no flow; ARC-001's registry status is disputed (GAP-003)
+  - object: clients, projects, work plans, time, expenses, approvals
+    store: operations-workbench
+    decision: 01 — Living Reference Model, system-of-record policy
+    note: implementation not in this repository
+  - object: analytical history and KPI models
+    store: custom-crm
+    decision: 01 — Living Reference Model, system-of-record policy
+    note: CRM activity now; BigQuery only after the analytics gate (parked)
+
+proposed:
+  - object: signal, observation, evidence, claim, hypothesis, contradiction, snapshot, recommendation, decision, authorization, action, outcome, evaluation, provenance edge
+    store: intelligence-core
+    decision: ADR-012
+    note: no write authority until ADR-012 is accepted and verified; WP-IC-1 would extend existing records first
+  - object: opportunity
+    store: custom-crm
+    decision: blueprint decision D5 (not decided)
+    note: today stage, value and next step are contact fields

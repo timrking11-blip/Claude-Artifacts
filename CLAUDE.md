@@ -89,12 +89,38 @@ Don't work around them.
 - The internal check before a proposal goes out is "Review before sending"
   (`crm/review.py`). It's for SMI and is never shown to the prospect.
 
-## Architecture invariants: Notion governs, the YAML is the executable form
+## Architecture authority (ADR-007) and the invariants
 
-- Architecture decisions (ADR-006, ADR-012, a future ADR-013) live in Notion
-  only. The repo never holds ADR copies; `architecture/invariants.yaml` lists
-  their Notion URLs and states INV-01…INV-16 as implementation-independent
-  rules. Today's modules and functions appear only in probe targets.
+- **ADR-007 is Accepted (1 Oct 2026, reaffirmed by the owner 9 Oct: "Repo
+  governs").** `architecture/` becomes the architecture authority when the
+  change carrying it merges into the default branch; until then Notion
+  (INTEGRATED GTM ARCHITECTURE) is the effective authority, and afterwards
+  its readable view. A blocked push never rescinded the decision. Never say
+  authority has moved before the merge, and never backdate it: after the
+  merge, a follow-up commit records the merge commit and date in ADR-007 and
+  the manifest's `authority` block.
+- Start at `architecture/README.md`. The ADRs are in `architecture/adr/`
+  (ADR-001…006 imported verbatim from Notion 02 with their statuses; ADR-007
+  and ADR-008 Accepted; ADR-009…012 Proposed, from page 14, revised; ADR-009
+  as drafted, which would have restored Notion authority, is not accepted).
+  Accepted text is never edited: dated annotations or a new ADR. Ownership
+  has one definition, `architecture/system-of-record.yaml`; open questions
+  are gaps in `architecture/gaps/README.md`, never guesses.
+- `scripts/validate_architecture.py` (CI job `architecture`) fails when the
+  manifest, ADR files, matrix, invariants and code disagree, or the protected
+  digest is stale. The digest detects drift; it does not authenticate the
+  owner. Approval is the owner's PR review (CODEOWNERS), which needs branch
+  protection, not active on 9 Oct (GAP-014).
+- Cost basis (ADR-008): prices in the manifest are dated API list prices,
+  estimates, never invoices; no spend figures or receipts in this public repo.
+  The composition run's monthly cap is 5 (America/New_York calendar month):
+  the 6th `prepare` exits 3 with a held `Composition cap` runlog entry, and
+  proceeds only with `--cap-confirmation <id>` naming that entry confirmed on
+  the CRM page. The flag is a reference, never approval by itself.
+- `architecture/invariants.yaml` states INV-01…INV-16 as
+  implementation-independent rules for ADR-006, ADR-012 and a future ADR-013,
+  indexed by their Notion URLs. Today's modules and functions appear only in
+  probe targets.
 - `scripts/check_architecture.py` runs the probes and reports conformance
   (ENFORCED / PARTIAL / MISSING / UNVERIFIED) and evidence maturity (ADR-011
   levels; never PRODUCTION_VERIFIED). Runtime rules are UNVERIFIED without
@@ -105,7 +131,8 @@ Don't work around them.
 - A rule is `normative` only when its ADR is written in Notion; until then it
   is a `candidate` (INV-13 and INV-14, ADR-013), reported but never held to
   `expected`. The checker refuses a normative rule whose ADR has no Notion
-  URL, and a candidate whose ADR has one. GitHub never creates a decision.
+  URL, and a candidate whose ADR has one. A decision is the owner's: no
+  script, CI run or merge creates or accepts one.
 - Every existing hard control is a MUST_NOT_REGRESS probe, whatever its
   rule's standing. A change that weakens one fails CI; don't loosen the probe
   in the same change.

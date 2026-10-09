@@ -2,8 +2,8 @@
 """Check the system against architecture/invariants.yaml.
 
 The YAML is the machine-readable source: one implementation-independent rule
-per architecture decision (governed in Notion, indexed by URL under
-`decisions`), each with probes that test how far today's code meets it. This
+per architecture decision (ADR texts in architecture/adr/ and Notion 02,
+indexed by Notion URL under `decisions`), each with probes that test how far today's code meets it. This
 script runs the probes and reports, per rule:
 
   conformance  ENFORCED | PARTIAL | MISSING | UNVERIFIED
@@ -450,7 +450,7 @@ def validate(spec: dict[str, Any], probes: dict[str, Callable] | None = None) ->
     adrs = {d["id"]: d for d in spec.get("decisions") or []}
     for d in adrs.values():
         if d.get("url") and "notion" not in d["url"]:
-            errors.append(f"{d['id']}: decisions are governed in Notion; url must be a Notion link")
+            errors.append(f"{d['id']}: decisions are indexed by their Notion link; url must be a Notion link")
     seen, probe_ids = set(), set()
     for inv in spec.get("invariants") or []:
         iid = inv.get("id")
@@ -464,7 +464,7 @@ def validate(spec: dict[str, Any], probes: dict[str, Callable] | None = None) ->
             errors.append(f"{iid}: adr {inv.get('adr')} is not in decisions")
         elif inv.get("standing") not in STANDINGS:
             errors.append(f"{iid}: standing must be one of {list(STANDINGS)}")
-        # Notion governs: only a written ADR makes a rule normative, and a written one makes it so.
+        # Only a written ADR makes a rule normative, and a written one makes it so.
         elif inv["standing"] == "normative" and not adrs[inv["adr"]].get("url"):
             errors.append(f"{iid}: normative, but {inv['adr']} is not written in Notion; mark it candidate")
         elif inv["standing"] == "candidate" and adrs[inv["adr"]].get("url"):
@@ -549,7 +549,9 @@ def render_md(spec: dict[str, Any], results: list[RuleResult]) -> str:
     out = ["# Architecture invariants", "",
            "Rendered by `scripts/check_architecture.py --render-md` from `architecture/invariants.yaml`; "
            "CI fails when this file and the YAML disagree. Do not edit by hand.", "",
-           "Decisions are governed in Notion; the repository holds their executable form. Conformance is "
+           "ADR-007 (Accepted 1 Oct 2026) makes `architecture/` the architecture authority when it merges; until "
+           "then Notion governs. ADR texts are in `architecture/adr/` and Notion 02; this file is their "
+           "executable form. Conformance is "
            "ENFORCED, PARTIAL, MISSING, or UNVERIFIED (needs `--crm-dump`). Maturity uses ADR-011's "
            "evidence levels; this check never claims PRODUCTION_VERIFIED. Status below is the offline run.", "",
            "A normative rule's ADR is written in Notion and CI holds it at its expected status. A candidate "
