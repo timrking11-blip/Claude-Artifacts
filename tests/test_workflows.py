@@ -91,3 +91,11 @@ def test_check_keys_stops_after_the_key_check():
     assert jobs["writeback"]["needs"] == "merge"
     last = jobs["preflight"]["steps"][-1]
     assert last["if"] == "${{ inputs.check_keys }}" and "Nothing pulled or written" in last["run"]
+
+
+def test_codeql_skips_while_the_repository_is_private():
+    jobs = load(ROOT / ".github" / "workflows" / "codeql.yml")["jobs"]
+    assert jobs["analyze"]["needs"] == "visibility"
+    # runs only on an explicit "false": an unreadable visibility skips rather than fails
+    assert jobs["analyze"]["if"] == "${{ needs.visibility.outputs.private == 'false' }}"
+    assert "gh api" in jobs["visibility"]["steps"][0]["run"] and ".private" in jobs["visibility"]["steps"][0]["run"]
