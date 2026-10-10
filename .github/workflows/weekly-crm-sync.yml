@@ -132,6 +132,9 @@ jobs:
       EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
     steps:
       - uses: actions/checkout@v4
+      # data/master left the committed tree (#26); it lives on the data/store branch.
+      - name: Restore the master from data/store
+        run: scripts/data_store.sh restore data/master
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -180,6 +183,9 @@ jobs:
       branch: ${{ steps.commit.outputs.branch }}
     steps:
       - uses: actions/checkout@v4
+      # The previous master: without it every contact would count as new.
+      - name: Restore the master from data/store
+        run: scripts/data_store.sh restore data/master
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -208,7 +214,15 @@ jobs:
         run: >-
           scripts/open_data_pr.sh "data/weekly-sync-${{ github.run_id }}"
           "chore(crm): weekly sync $(date -u +%Y-%m-%d)"
-          data/master data/CHANGELOG.md data/runlog
+          data/CHANGELOG.md data/runlog
+      # Last, so a run that failed earlier leaves the stored master as it was
+      # and a re-run computes from the same starting point. A held run wrote
+      # no master, so there is nothing to save.
+      - name: Save the master to data/store
+        run: >-
+          scripts/data_store.sh save
+          "data: weekly sync master $(date -u +%Y-%m-%d) (run ${{ github.run_id }}, attempt ${{ github.run_attempt }})"
+          data/master
       - name: Upload master snapshot
         uses: actions/upload-artifact@v4
         with:
@@ -227,11 +241,14 @@ jobs:
       APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
       APOLLO_WRITEBACK_ENABLED: "true"
     steps:
-      # Write back from the master this run produced: its data PR may not have
-      # merged yet, so read the data branch, not the default branch.
+      # Write back from the master this run produced (the merge job saved it to
+      # data/store); the run line PR is cut from the merge job's data PR
+      # branch, which may not have merged yet.
       - uses: actions/checkout@v4
         with:
           ref: ${{ needs.merge.outputs.branch || github.ref }}
+      - name: Restore the master from data/store
+        run: scripts/data_store.sh restore data/master
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"

@@ -99,3 +99,22 @@ def test_codeql_skips_while_the_repository_is_private():
     # runs only on an explicit "false": an unreadable visibility skips rather than fails
     assert jobs["analyze"]["if"] == "${{ needs.visibility.outputs.private == 'false' }}"
     assert "gh api" in jobs["visibility"]["steps"][0]["run"] and ".private" in jobs["visibility"]["steps"][0]["run"]
+
+
+def test_every_job_that_reads_the_master_restores_it_from_the_data_branch():
+    jobs = load(SYNC)["jobs"]
+    for name in ("pull-explorium", "merge", "writeback"):
+        runs = [s.get("run", "") for s in jobs[name]["steps"]]
+        restore = next(i for i, r in enumerate(runs) if r == "scripts/data_store.sh restore data/master")
+        reads = [i for i, r in enumerate(runs) if r.startswith("python scripts/")]
+        assert reads and restore < min(reads), name
+
+
+def test_the_master_is_saved_to_the_data_branch_last_and_never_rides_a_data_pr():
+    steps = load(SYNC)["jobs"]["merge"]["steps"]
+    runs = [s.get("run", "") for s in steps]
+    pr = next(i for i, r in enumerate(runs) if "open_data_pr.sh" in r)
+    save = next(i for i, r in enumerate(runs) if r.startswith("scripts/data_store.sh save"))
+    assert pr < save and "data/master" not in runs[pr]
+    assert runs[save].rstrip().endswith("data/master")
+    assert all("data/master" not in r for r in runs if "open_data_pr.sh" in r)

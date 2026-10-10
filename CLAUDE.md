@@ -184,9 +184,17 @@ Don't work around them.
   sync, and nothing is pulled or written.
 - #26 (9 Oct 2026, the owner's) took `data/master/` and `data/runs/` out of the
   committed tree and gitignored them, for advisor sharing; history keeps them.
-  Anything that read the master from a checkout (the weekly sync's previous
-  master, the Monday enrichment push, the account-research ledger) needs a
-  new home for it, which is the owner's decision.
+  On 10 Oct the owner chose their home: the orphan branch `data/store` in this
+  repo (over a separate private repo or re-tracking them). It holds data only,
+  with the same paths as the working tree, seeded from 1e8104b (the master of
+  28 Sep 14:46:53 UTC, 77 contacts). `scripts/data_store.sh restore data/master`
+  puts the master where the scripts read it without staging anything; `save
+  "message" PATH...` commits only those paths to the branch, only if they
+  changed, retrying over a concurrent push. Every job, routine or session that
+  reads the master restores it first; nothing writes the master to the default
+  branch. The weekly sync saves it last, after its data PR (CHANGELOG and run
+  lines, which stay on the default branch) is queued, so a failed run leaves
+  the stored master as it was. `tests/test_data_store.py` pins the script.
 
 ## Unified Architecture Blueprint (24 Sep 2026)
 

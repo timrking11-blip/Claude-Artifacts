@@ -253,9 +253,12 @@ def test_the_weekly_sync_data_pr_paths_are_not_code_owned():
     paths = set()
     for block in re.findall(r"scripts/open_data_pr\.sh .*?\n(?:.*\n){2}", wf):
         paths.update(t for t in block.split() if t.startswith("data/") and "${{" not in t)
-    assert paths >= {"data/master", "data/CHANGELOG.md", "data/runlog"}
+    # data/master left the tree (#26) and is saved to the data/store branch, never a data PR.
+    assert paths >= {"data/CHANGELOG.md", "data/runlog"} and "data/master" not in paths
+    stored = set(re.findall(r"scripts/data_store\.sh (?:restore|save)[^\n]*?(data/[\w/.-]+)\s*$", wf, re.M))
+    assert stored == {"data/master"}
     rules = va.codeowners_rules((ROOT / ".github" / "CODEOWNERS").read_text())
-    assert not any(va.owners_for(p, rules) or va.owners_for(p + "/x", rules) for p in paths)
+    assert not any(va.owners_for(p, rules) or va.owners_for(p + "/x", rules) for p in paths | stored)
 
 
 def test_a_later_rule_on_one_file_cannot_strip_the_checker_of_its_owner(repo):
