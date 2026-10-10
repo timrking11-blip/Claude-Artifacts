@@ -195,7 +195,7 @@ jobs:
           path: data/staging
           merge-multiple: true
       - name: Run tests
-        run: pip install -q pytest && python -m pytest tests -q
+        run: pip install -q pytest pyyaml && python -m pytest tests -q
       - name: Merge
         # Holds instead of writing master when a run would create more than
         # crm.runlog.HOLD_OVER contacts; allow_created applies exactly that count.
