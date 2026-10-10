@@ -4,6 +4,7 @@ A plain YAML load accepts a duplicated key and keeps the last one, so the
 workflows are loaded strictly here first.
 """
 
+import re
 from pathlib import Path
 
 import pytest
@@ -99,3 +100,18 @@ def test_codeql_skips_while_the_repository_is_private():
     # runs only on an explicit "false": an unreadable visibility skips rather than fails
     assert jobs["analyze"]["if"] == "${{ needs.visibility.outputs.private == 'false' }}"
     assert "gh api" in jobs["visibility"]["steps"][0]["run"] and ".private" in jobs["visibility"]["steps"][0]["run"]
+
+
+@pytest.mark.parametrize("path", WORKFLOWS, ids=lambda p: p.name)
+def test_every_job_that_runs_pytest_installs_pyyaml_first(path):
+    # Several test modules import yaml when pytest collects them, so a job that
+    # runs pytest without PyYAML fails before any test runs (the weekly sync's
+    # merge job did until 10 Oct 2026). Commands are read in order across steps.
+    for name, job in (load(path).get("jobs") or {}).items():
+        commands = [c.strip() for s in job.get("steps") or [] for c in s.get("run", "").split("&&")]
+        runs_pytest = [i for i, c in enumerate(commands)
+                       if not c.startswith("pip ") and re.search(r"(^|\s)(python -m )?pytest\b", c)]
+        if not runs_pytest:
+            continue
+        installs = [i for i, c in enumerate(commands) if c.startswith("pip install") and "pyyaml" in c.split()]
+        assert installs and min(installs) < min(runs_pytest), f"{path.name}: job {name} runs pytest before installing pyyaml"
