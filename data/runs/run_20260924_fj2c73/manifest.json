@@ -1,0 +1,55 @@
+{
+  "crm": {
+    "disposition": "apollo",
+    "pre_qual": true
+  },
+  "data_sources": {
+    "allow_credit_spend": false
+  },
+  "request": {
+    "requester": {
+      "linkedin_url": "https://www.linkedin.com/in/kristingludwick/",
+      "name": "Kristin Ludwick"
+    },
+    "source_url": "https://www.linkedin.com/service-marketplace/projects/15213575780/",
+    "text": "I need help taking Claridi.ai to market. I built a strategic intelligence methodology, automated it into a reasoning engine, and realized the opportunity is much bigger than the original brand strategy use case. Claridi can help people make better decisions before they execute, and potentially serve as a strategy layer inside AI tools and business platforms. I’ve gotten it surprisingly far on my own, but I need guidance on protecting the IP, validating the business model, raising capital, building the right team, partnerships/licensing, and scaling it into a real company."
+  },
+  "run": {
+    "composed_at": "2026-09-24T21:43:31.397Z",
+    "event": "agents-go-live",
+    "run_id": "run_20260924_fj2c73"
+  },
+  "state": {
+    "account": {
+      "crm_account_id": "Claridi.AI",
+      "domain": "https://www.claridi.ai/",
+      "name": "Claridi.AI",
+      "required": true,
+      "resolved_by": "find_account",
+      "source": "linkedin"
+    },
+    "account_contacts": {
+      "include": true,
+      "limit": "25",
+      "written_by": "list_account_contacts"
+    },
+    "ledger_quality": {
+      "include": true,
+      "quality_floor": "fair",
+      "written_by": "assess_ledger_quality"
+    },
+    "warehouse_findings": {
+      "include": true,
+      "scope": null,
+      "sentinel": "not available",
+      "written_by": "store_state sentinel"
+    },
+    "website_summary": {
+      "include": true,
+      "note": "page_contents and page_url are not read by analysis",
+      "on_fetch_error": "store_state",
+      "page_url": null,
+      "written_by": "summarize_page"
+    }
+  }
+}

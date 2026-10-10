@@ -1,0 +1,13 @@
+{
+  "ambiguous_matches": [],
+  "conflicts_held": [
+    {
+      "contact_id": "c_260b5a86fbab14a0",
+      "field": "company_name",
+      "kept": "Culture Of Fit",
+      "rejected": "Culture Of Fit Health",
+      "source": "apollo"
+    }
+  ],
+  "generated_at": "2026-09-28T14:46:53+00:00"
+}

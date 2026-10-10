@@ -1,0 +1,26 @@
+{
+  "status": "running",
+  "steps": {
+    "find_account": "not_found",
+    "list_account_contacts": "empty",
+    "assess_ledger_quality": "empty",
+    "fetch_page": "failed:store_state",
+    "summarize_page": "skipped",
+    "apollo": "pending",
+    "prospecting": "pending",
+    "web_research": "pending",
+    "warehouse_findings": "sentinel",
+    "compose_proposal": "pending",
+    "crm_write": "pending"
+  },
+  "founder_note": "Note — No CRM contact matched this account; the proposal is filed on the account record only, with nobody to attach it to.\nNote — Account is not in the enriched data layer; the proposal leans on the website and the request alone.\nNote — Website fetch failed (Failed to fetch page https://claridi.ai: <urlopen error Tunnel connection failed: 403 Forbidden>); no website summary.\nNote — Warehouse findings are the 'not available' sentinel; no BigQuery in this run.",
+  "founder_status": "done",
+  "matched_contact_ids": [],
+  "account": {
+    "name": "Claridi.AI",
+    "domain": "claridi.ai",
+    "in_ledger": false,
+    "contact_count": 0
+  },
+  "prepared_at": "2026-09-24T21:47:54Z"
+}
