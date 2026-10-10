@@ -493,3 +493,79 @@ def test_composer_flag_carries_its_own_check():
         "Composer: Deadline is unrealistic. Confirm by: ask the founder for the launch date in writing")
     assert compose.composer_hold("Outside the practice | check:").endswith('ask Claude "what would confirm this?" and do that check.')
 
+
+
+# ---------- monthly composition cap (ADR-008, crm/costs.py) -----------------
+
+def _prior_runs(runs, n, day="2026-10-0{}T15:00:00Z"):
+    for i in range(n):
+        d = runs / f"run_prev{i}"
+        d.mkdir(parents=True)
+        (d / "manifest.json").write_text(json.dumps({"run": {"run_id": d.name, "composed_at": day.format(i + 1)}}))
+
+
+def _prepare(mpath, dump, runs, *extra):
+    return compose.main(["prepare", str(mpath), "--crm-dump", str(dump), "--runs-dir", str(runs), "--no-fetch",
+                         "--now", "2026-10-09T15:00:00Z", *extra])
+
+
+def test_the_sixth_run_in_a_month_holds_and_writes_nothing_else(ledger, dump, tmp_path, capsys):
+    runs = tmp_path / "runs"
+    _prior_runs(runs, 5)
+    mpath = tmp_path / "manifest.json"
+    mpath.write_text(json.dumps(manifest()))
+    assert _prepare(mpath, dump, runs) == 3
+    out = json.loads(capsys.readouterr().out)
+    assert out["cap"]["status"] == "held" and out["cap"]["count"] == 5
+    run_dir = runs / "run_t"
+    assert (run_dir / "cap_hold.json").exists() and not (run_dir / "manifest.json").exists()
+    hold = json.loads((run_dir / "cap_hold.json").read_text())
+    assert hold["status"] == "held" and hold["run_id"] == "run_t" and hold["run"] == "Composition cap"
+
+
+def test_a_cli_flag_alone_is_not_approval(ledger, dump, tmp_path, capsys):
+    runs = tmp_path / "runs"
+    _prior_runs(runs, 5)
+    mpath = tmp_path / "manifest.json"
+    mpath.write_text(json.dumps(manifest()))
+    with pytest.raises(compose.GateError):
+        _prepare(mpath, dump, runs, "--cap-confirmation", "rl_made_up")
+    assert "composition cap" in capsys.readouterr().err
+    assert not (runs / "run_t" / "manifest.json").exists()
+
+
+def test_owner_confirmed_cap_entry_lets_the_run_proceed_and_is_recorded(ledger, dump, tmp_path):
+    runs = tmp_path / "runs"
+    _prior_runs(runs, 5)
+    mpath = tmp_path / "manifest.json"
+    mpath.write_text(json.dumps(manifest()))
+    assert _prepare(mpath, dump, runs) == 3
+    hold = json.loads((runs / "run_t" / "cap_hold.json").read_text())
+    # The owner confirms on the CRM page; the next dump carries the confirmed entry.
+    (dump / "runlog").mkdir()
+    hold.update({"status": "confirmed", "confirmed_at": "2026-10-09T15:10:00Z", "confirmed_count": 0,
+                 "confirm_check": "opened the Intake page: a new account request"})
+    (dump / "runlog" / f"{hold['id']}.json").write_text(json.dumps(hold))
+    assert _prepare(mpath, dump, runs, "--cap-confirmation", hold["id"]) == 0
+    cap = json.loads((runs / "run_t" / "cap.json").read_text())
+    assert cap["status"] == "confirmed" and cap["confirmation"] == hold["id"]
+    # A retry of the same run id is not held again.
+    assert _prepare(mpath, dump, runs) == 0
+    draft = tmp_path / "draft.md"
+    draft.write_text(PROPOSAL)
+    rc = compose.main(["finalize", "run_t", "--proposal", str(draft), "--crm-dump", str(dump),
+                       "--runs-dir", str(runs), "--proposals-dir", str(tmp_path / "proposals"),
+                       "--out-dir", str(tmp_path / "batch"), "--master", str(ledger), "--now", "2026-10-09T15:30:00Z"])
+    assert rc == 0
+    line = next(json.loads(p.read_text()) for p in (tmp_path / "batch" / "compose_run_t").glob("runlog__*.json"))
+    assert line["run_id"] == "run_t"
+    assert line["cap_confirmation"] == hold["id"] and "over the monthly cap" in line["line"]
+
+
+def test_under_the_cap_the_run_line_carries_its_run_id(ledger, dump, tmp_path):
+    runs = tmp_path / "runs"
+    _prior_runs(runs, 4)
+    mpath = tmp_path / "manifest.json"
+    mpath.write_text(json.dumps(manifest()))
+    assert _prepare(mpath, dump, runs) == 0
+    assert json.loads((runs / "run_t" / "cap.json").read_text())["status"] == "ok"

@@ -18,6 +18,14 @@ draft. No ADK runtime, no API key, no GCP.
       the page-summary prompt, filled in. Exit 2 when the manifest fails its
       gate or the run is halted for operator review.
 
+      First, the monthly composition cap (ADR-008, crm/costs.py): when this
+      month (America/New_York) already has 5 other runs, prepare writes
+      nothing but data/runs/<id>/cap_hold.json, a held runlog entry for the
+      session to put in the CRM, and exits 3. The owner confirms that entry
+      on the CRM page with a written check; prepare then proceeds only with
+      --cap-confirmation <entry id>, which it checks against the dump. The
+      flag is a reference to the owner's confirmation, not an approval.
+
   brief    <run-id> --web-research <memo.md> [--web-sources <urls.txt>]
            [--website-summary <file>] [--data-sources <firmographics.md>]
            [--coverage <coverage.json>]
@@ -58,7 +66,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from crm import config, runlog  # noqa: E402
+from crm import config, costs, runlog  # noqa: E402
 from crm.crm_sync import load_crm_dump, pinned, system_activity, utcnow_iso  # noqa: E402
 from crm.guardrails import check_run, credit_spend_allowed, found_on_intake_domain, urls_in  # noqa: E402
 from crm.master import load_master  # noqa: E402
@@ -667,14 +675,19 @@ def finalize(run_dir: Path, proposal_md: str, website_summary: str | None, compo
     account_write = plan_account_write(record, manifest, accounts, contact_ids, now)
     if account_write:
         writes.append(account_write)
+    cap = json.loads((run_dir / "cap.json").read_text()) if (run_dir / "cap.json").exists() else None
     return {"record": record, "state": state, "writes": writes, "log": log, "contact_ids": contact_ids,
             "account_id": account_write["doc_id"] if account_write else None,
-            "runlog": run_line(record, contact_ids, account_write, now)}
+            "runlog": run_line(record, contact_ids, account_write, now, run_id=run_id, cap=cap)}
 
 
 def run_line(record: dict[str, Any], contact_ids: list[str], account_write: dict[str, Any] | None,
-             now: datetime) -> dict[str, Any]:
-    """The run's one line for the CRM page's Last runs strip (crm/runlog.py)."""
+             now: datetime, *, run_id: str | None = None, cap: dict[str, Any] | None = None) -> dict[str, Any]:
+    """The run's one line for the CRM page's Last runs strip (crm/runlog.py).
+
+    Carries the run id, so the monthly cap counts the run once, and, for a run
+    over the cap, the confirmed cap entry it relied on.
+    """
     created = 1 if account_write and account_write["op"] == "set" else 0
     updated = len(contact_ids) + (1 if account_write and account_write["op"] == "update" else 0)
     review = record["review"]
@@ -685,8 +698,15 @@ def run_line(record: dict[str, Any], contact_ids: list[str], account_write: dict
         parts.append(f"{updated} record(s) got the note")
     parts.append(f"review {review['status'].replace('_', ' ')}"
                  + (f" ({len(review['holds'])} HOLD)" if review.get("holds") else ""))
+    if cap and cap.get("status") == costs.CAP_CONFIRMED:
+        parts.append(f"over the monthly cap on confirmation {cap['confirmation']}")
     names = [record["account"].get("name") or ""] if created else []
-    return runlog.entry("Composition run", ", ".join(parts), created, updated, now, created_names=names)
+    doc = runlog.entry(costs.COMPOSITION_RUN, ", ".join(parts), created, updated, now, created_names=names)
+    if run_id:
+        doc["run_id"] = run_id
+    if cap and cap.get("status") == costs.CAP_CONFIRMED:
+        doc["cap_confirmation"] = cap["confirmation"]
+    return doc
 
 
 def write_finalize(run_dir: Path, result: dict[str, Any], batch_dir: Path, json_path: Path, md_path: Path,
@@ -756,6 +776,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--no-fetch", action="store_true", help="do not fetch the page (tests, offline)")
     p.add_argument("--account-lists-present", action="store_true",
                    help="meta/config.account_lists is no longer empty (default: empty, as of 17 Sep 2026)")
+    p.add_argument("--cap-confirmation", default=None,
+                   help="runlog id of the cap entry the owner confirmed on the CRM page (a reference, not an approval)")
     p.add_argument("--now", default=None)
 
     b = sub.add_parser("brief")
@@ -791,11 +813,26 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "prepare":
         manifest = json.loads(args.manifest.read_text())
         run_id = args.run_id or (manifest.get("run") or {}).get("run_id") or ("run_" + now.strftime("%Y%m%d") + "_" + secrets.token_hex(3))
+        run_dir = args.runs_dir / run_id
+        try:
+            runlog_docs = [{"id": k, **d} for k, d in load_crm_dump(args.crm_dump, runlog.COLLECTION).items()]
+            cap = costs.cap_check(run_id, now, args.runs_dir, runlog_docs, args.cap_confirmation)
+        except costs.CapError as exc:
+            raise GateError(f"composition cap: {exc}") from None
+        if cap["status"] == costs.CAP_HELD:
+            run_dir.mkdir(parents=True, exist_ok=True)
+            _write_json(run_dir / "cap_hold.json", cap["entry"])
+            print(json.dumps({"run_id": run_id, "cap": {k: v for k, v in cap.items() if k != "entry"},
+                              "held": cap["entry"]["line"], "runlog_entry": str(run_dir / "cap_hold.json"),
+                              "next": "write the entry to the CRM runlog; the owner confirms it on the CRM page"},
+                             indent=2))
+            return 3
         docs = load_crm_dump(args.crm_dump)
         result = prepare(manifest, run_id, docs, now, fetch=not args.no_fetch,
                          account_lists_empty=not args.account_lists_present)
-        run_dir = args.runs_dir / run_id
         write_prepare(run_dir, manifest, result, run_id, now)
+        if not (cap["status"] == costs.CAP_RETRY and (run_dir / "cap.json").exists()):
+            _write_json(run_dir / "cap.json", cap)  # a retry keeps the record of how the run was allowed
         review = result["review"]
         print(json.dumps({"run_id": run_id, "run_dir": str(run_dir), "steps": result["steps"],
                           "founder": result["state"].get("founder"),

@@ -1,6 +1,8 @@
-# Derived per-run output; master/ and CHANGELOG.md are the committed record.
+# Derived/local data; committed records live outside data/master and data/runs.
 data/staging/
 data/artifact/
+data/master/
+data/runs/
 
 __pycache__/
 *.pyc

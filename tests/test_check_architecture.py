@@ -30,10 +30,11 @@ def probe(pid, *, kind="unit", scope="core", mnr=False):
     return {"id": pid, "what": "w", "kind": kind, "scope": scope, "target": "t", "must_not_regress": mnr}
 
 
-def spec(*probes, expected="PARTIAL", requires_runtime=False, rule="every x has a y", standing="normative"):
+def spec(*probes, expected="PARTIAL", requires_runtime=False, rule="every x has a y", standing="normative",
+         status="Accepted"):
     return {
         "schema": 1,
-        "decisions": [{"id": "ADR-X", "title": "T", "url": "https://www.notion.so/x", "status": "Proposed",
+        "decisions": [{"id": "ADR-X", "title": "T", "url": "https://www.notion.so/x", "status": status,
                        "as_of": "2026-10-02"}],
         "invariants": [{"id": "INV-T", "decision": "D", "adr": "ADR-X", "standing": standing, "rule": rule,
                         "expected": expected,
@@ -79,24 +80,49 @@ def test_declared_and_implemented_probes_must_agree():
     assert any("P-2: implemented but not declared" in e for e in errors)
 
 
-def test_only_a_written_adr_makes_a_rule_normative():
-    s = spec(probe("P-1"))
-    s["decisions"][0]["url"] = None
-    assert any("not written in Notion; mark it candidate" in e for e in ca.validate(s, {"P-1": ok}))
+def test_only_an_accepted_adr_makes_a_rule_normative():
+    assert ca.validate(spec(probe("P-1")), {"P-1": ok}) == []
+
+
+@pytest.mark.parametrize("status,url", [
+    ("Proposed", "https://www.notion.so/x"),                          # a URL is an index, not acceptance
+    ("Proposed (architecture/adr/ADR-X; filed)", "https://www.notion.so/x"),  # a filed proposal neither
+    ("Not written", None),
+    ("Superseded", "https://www.notion.so/x"),
+])
+def test_a_url_or_a_filed_proposal_confers_no_standing(status, url):
+    s = spec(probe("P-1"), status=status)
+    s["decisions"][0]["url"] = url
+    assert any("only an Accepted ADR confers policy standing" in e for e in ca.validate(s, {"P-1": ok}))
     s["invariants"][0]["standing"] = "candidate"
     assert ca.validate(s, {"P-1": ok}) == []
 
 
-def test_a_candidate_is_promoted_once_its_adr_exists():
+def test_a_candidate_is_promoted_once_its_adr_is_accepted():
     s = spec(probe("P-1"), standing="candidate")
+    assert any("promote the rule to normative" in e for e in ca.validate(s, {"P-1": ok}))
+    s["decisions"][0]["url"] = None                                   # acceptance, not the link, is what counts
     assert any("promote the rule to normative" in e for e in ca.validate(s, {"P-1": ok}))
 
 
-def test_the_committed_candidates_are_the_rules_whose_adr_is_unwritten():
+def test_the_committed_rules_are_candidates_while_their_adrs_are_not_accepted():
     s = ca.load()
-    unwritten = {d["id"] for d in s["decisions"] if not d.get("url")}
-    assert {i["id"] for i in s["invariants"] if i["standing"] == "candidate"} == \
-        {i["id"] for i in s["invariants"] if i["adr"] in unwritten} == {"INV-13", "INV-14"}
+    not_accepted = {d["id"] for d in s["decisions"] if not ca.accepted(d)}
+    assert not_accepted == {"ADR-006", "ADR-012", "ADR-013"}
+    assert all(i["standing"] == "candidate" for i in s["invariants"] if i["adr"] in not_accepted)
+    assert {i["standing"] for i in s["invariants"]} == {"candidate"}
+
+
+def test_hard_controls_hold_under_candidate_rules_in_the_committed_source():
+    """Moving every rule to candidate keeps each existing control a CI failure if it regresses."""
+    s = ca.load()
+    mnr = [p["id"] for i in s["invariants"] for p in i["probes"] if p.get("must_not_regress")]
+    assert len(mnr) >= 25
+    broken = {pid: bad for pid in ca.PROBES}
+    regressions, _ = ca.verdict(ca.run(s, probes=broken))
+    failed = {r.split()[1] for r in regressions}
+    offline = {p["id"] for i in s["invariants"] for p in i["probes"] if p.get("must_not_regress") and p["kind"] != "runtime"}
+    assert failed == offline
 
 
 def test_status_vocabulary_and_duplicates():
@@ -146,7 +172,7 @@ def test_falling_below_expected_is_a_regression():
 
 
 def test_a_candidate_is_never_held_to_expected_but_its_hard_controls_are():
-    s = spec(probe("A"), probe("M", scope="guard", mnr=True), standing="candidate")
+    s = spec(probe("A"), probe("M", scope="guard", mnr=True), standing="candidate", status="Proposed")
     assert ca.verdict(ca.run(s, probes={"A": bad, "M": ok})) == ([], [])
     regressions, _ = ca.verdict(ca.run(s, probes={"A": bad, "M": bad}))
     assert len(regressions) == 1 and "MUST_NOT_REGRESS" in regressions[0]

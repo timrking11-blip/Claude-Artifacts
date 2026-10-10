@@ -1,7 +1,9 @@
 # Architecture invariants: the machine-readable source.
 #
-# Notion governs architecture decisions (INTEGRATED GTM ARCHITECTURE, 02 —
-# Architecture Decision Records). This file is their executable form: one
+# ADR texts are in architecture/adr/ and Notion 02 — Architecture Decision
+# Records; under ADR-007 (Accepted 1 Oct 2026) architecture/ becomes the
+# authority when it merges, and Notion governs until then. This file is the
+# decisions' executable form: one
 # implementation-independent rule per decision, with the probes that test
 # how far today's system meets it. scripts/check_architecture.py runs the
 # probes; docs/architecture-invariants.md is rendered from this file and
@@ -11,11 +13,12 @@
 # Fields
 #   decisions[]   id, title, url (Notion; null when not written), status, as_of
 #   invariants[]  id, decision (row title), adr (decisions[].id), standing
-#                 (normative: its ADR exists in Notion and CI holds the line
-#                 at `expected` | candidate: a design target whose ADR is not
-#                 written yet; reported, never compared to `expected`), rule
-#                 (no module or function names), expected (ENFORCED | PARTIAL
-#                 | MISSING: the status CI holds the line at, with a CRM dump),
+#                 (normative: its ADR is Accepted and CI holds the line at
+#                 `expected` | candidate: its ADR is Proposed or not written;
+#                 reported, never compared to `expected`. A URL or a filed
+#                 Proposed ADR confers no standing), rule (no module or
+#                 function names), expected (ENFORCED | PARTIAL | MISSING:
+#                 the line CI holds a normative rule at, with a CRM dump),
 #                 requires_runtime (true: UNVERIFIED without --crm-dump),
 #                 gaps (what stops ENFORCED), probes[]
 #   probes[]      id, what, kind (static | unit | runtime), scope (core: counts
@@ -35,8 +38,8 @@ decisions:
   - id: ADR-012
     title: AI-Native Intelligence Core (target)
     url: https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6
-    status: Proposed (draft in 14 — Governance Amendment; not yet filed in 02)
-    as_of: 2026-10-02
+    status: Proposed (architecture/adr/ADR-012; drafted in 14 — Governance Amendment; not filed in Notion 02)
+    as_of: 2026-10-09
   - id: ADR-013
     title: Learning and research optimisation (future)
     url: null
@@ -47,7 +50,7 @@ invariants:
   - id: INV-01
     decision: Signal is first-class
     adr: ADR-012
-    standing: normative
+    standing: candidate
     rule: >-
       ∀ s ∈ Signal: s.id ∧ s.subject ∧ s.source ∧ s.observed_at ∧ s.kind ∈ SignalKinds,
       stored as a record of its own, never only as text inside another record
@@ -60,7 +63,7 @@ invariants:
   - id: INV-02
     decision: Observation is not interpretation
     adr: ADR-012
-    standing: normative
+    standing: candidate
     rule: >-
       an Observation records only what a source reported (value, source, observed_at); stance and
       meaning attach only through Evidence(observation, hypothesis, stance)
@@ -74,7 +77,7 @@ invariants:
   - id: INV-03
     decision: Hypotheses are explicit
     adr: ADR-012
-    standing: normative
+    standing: candidate
     rule: >-
       Hypothesis is versioned: an edit creates version v+1 with parent = v, and no version is ever
       overwritten or deleted
@@ -87,7 +90,7 @@ invariants:
   - id: INV-04
     decision: Negative evidence counts
     adr: ADR-012
-    standing: normative
+    standing: candidate
     rule: >-
       Evidence.stance ∈ {supports, contradicts}; contradicting evidence is preserved, never silently
       discarded, and is surfaced wherever the hypothesis's support is reported; unresolved
@@ -103,7 +106,7 @@ invariants:
   - id: INV-05
     decision: Temporal intelligence
     adr: ADR-012
-    standing: normative
+    standing: candidate
     rule: >-
       the state recorded at time t is an immutable snapshot: no write at t' > t alters what t recorded
     expected: PARTIAL
@@ -117,7 +120,7 @@ invariants:
   - id: INV-06
     decision: Decisions are reproducible
     adr: ADR-006
-    standing: normative
+    standing: candidate
     rule: >-
       Decision.id is unique and opaque; Decision.fingerprint = H(inputs, policy_version, model,
       prompt) is stored separately; equal fingerprints yield equal outcomes; the ledger is append-only
@@ -131,7 +134,7 @@ invariants:
   - id: INV-07
     decision: Human in the loop is required
     adr: ADR-006
-    standing: normative
+    standing: candidate
     rule: >-
       ∀ action a with risk(a) ≥ threshold(kind(a)): executed(a) ⇒ ∃ authorization(a) by a human
       that records the check performed and covers exactly a
@@ -149,7 +152,7 @@ invariants:
   - id: INV-08
     decision: Policies are enforced
     adr: ADR-006
-    standing: normative
+    standing: candidate
     rule: >-
       every consequential action (a change to a canonical or protected field, an external action
       such as outreach or a vendor write, or a spend) is preceded by exactly one verdict ∈ {allow,
@@ -169,7 +172,7 @@ invariants:
   - id: INV-09
     decision: Agents cannot bypass gates
     adr: ADR-006
-    standing: normative
+    standing: candidate
     rule: >-
       the executor refuses any action that does not carry a valid authorization id bound to that action
     expected: PARTIAL
@@ -183,7 +186,7 @@ invariants:
   - id: INV-10
     decision: Execution is verified
     adr: ADR-006
-    standing: normative
+    standing: candidate
     rule: >-
       each action kind declares postconditions; after execution they are read back from the target
       and must hold, else the action is marked failed
@@ -198,7 +201,7 @@ invariants:
   - id: INV-11
     decision: Outcomes are captured
     adr: ADR-012
-    standing: normative
+    standing: candidate
     rule: >-
       Outcome(action_ref, effect, observed_at) is append-only and every outcome references the action
       or decision it follows
@@ -212,7 +215,7 @@ invariants:
   - id: INV-12
     decision: Learning is measured
     adr: ADR-012
-    standing: normative
+    standing: candidate
     rule: >-
       Evaluation(subject, metric, method ∈ {computed, human_labeled, model_judged}, method provenance,
       cohort, window, value, n, baseline); an observed performance metric is computed from Outcome
@@ -256,7 +259,7 @@ invariants:
   - id: INV-15
     decision: Provenance is preserved
     adr: ADR-012
-    standing: normative
+    standing: candidate
     rule: >-
       every canonical, intelligence-bearing or decision-relevant value has a path value → transform* →
       source, with observation time at the source; operational metadata (timestamps, versions, view
@@ -272,7 +275,7 @@ invariants:
   - id: INV-16
     decision: Auditability
     adr: ADR-006
-    standing: normative
+    standing: candidate
     rule: >-
       every decision, output and consequential write carries what produced it (model and prompt hash
       when a model did, otherwise the deterministic rule's id and version) plus the policy version and

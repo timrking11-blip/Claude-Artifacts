@@ -256,6 +256,11 @@ data/master/review.json       held conflicts and ambiguous matches from the late
 data/CHANGELOG.md             per-run record of what changed
 data/runlog/                  one line per Actions run, posted to the CRM's Last runs strip by the Monday 11:30 routine
 crm/runlog.py                 the run line, the created-count hold (HOLD_OVER = 5), and its CLI
+crm/costs.py                  ADR-008 cost basis: dated list prices, API-list estimates, the monthly composition cap
+architecture/                 the architecture authority under ADR-007 once merged: README, ADRs, manifest, system-of-record matrix, invariants, audits, gaps
+scripts/validate_architecture.py  manifest, ADRs, matrix, invariants and code agree; protected digest
+scripts/check_architecture.py  the invariant probes (docs/architecture-invariants.md is rendered from them)
+scripts/cost_report.py        price basis, routine routing, this month's composition runs against the cap
 data/proposals/               prequalification proposals the agent wrote (committed)
 data/runs/<id>/               what each Intake-page composition run saw and produced (committed) -- the only proposal path
 docs/composition-run.md       the one-button flow: page → routine → scripts → CRM
