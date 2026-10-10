@@ -26,9 +26,8 @@ log = logging.getLogger("pull_apollo")
 def apollo_headers() -> dict[str, str]:
     if not config.APOLLO_API_KEY:
         raise SystemExit(
-            "APOLLO_API_KEY is not set. In CI it comes from the crm-sync "
-            "environment's secret (or a repository secret) of the same name; "
-            "locally, export it before running."
+            "APOLLO_API_KEY is not set. In CI it comes from the repository "
+            "secret of the same name; locally, export it before running."
         )
     return {"X-Api-Key": config.APOLLO_API_KEY, "Cache-Control": "no-cache"}
 

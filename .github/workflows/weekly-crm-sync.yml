@@ -44,10 +44,10 @@ permissions:
   pull-requests: write
   actions: write
 
-# The API keys belong in the `crm-sync` environment, whose deployment branch
-# policy admits only the default branch: a job from any other branch, or one
-# edited to drop `environment:`, then gets no key. The guard step in preflight
-# says the same thing early for an unmodified workflow dispatched on a branch.
+# The API keys are repository secrets. The repository is private on GitHub
+# Free, which offers no environment secrets or deployment branch policies for
+# private repositories, so the guard step in preflight is the branch boundary:
+# the sync refuses to run from any branch but the default.
 concurrency:
   group: crm-sync
   cancel-in-progress: false
@@ -56,11 +56,8 @@ jobs:
   preflight:
     name: Check secrets
     runs-on: ubuntu-latest
-    environment: crm-sync
     # Fail here, in one place, with a message that says what to fix -- rather
-    # than three jobs each dying on an empty env var. The keys are read from the
-    # `crm-sync` environment's secrets, or from repository secrets until they
-    # move there (every job sees those too, which is why they should move).
+    # than three jobs each dying on an empty env var.
     env:
       APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
       EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
@@ -80,11 +77,11 @@ jobs:
           [ -z "$APOLLO_API_KEY" ] && missing="$missing APOLLO_API_KEY"
           [ -z "$EXPLORIUM_API_KEY" ] && missing="$missing EXPLORIUM_API_KEY"
           if [ -n "$missing" ]; then
-            echo "::error::Missing API key secret(s):$missing. The sync reads them from the crm-sync environment (Settings -> Environments -> crm-sync -> Environment secrets) or from repository secrets (Settings -> Secrets and variables -> Actions); it found them in neither."
+            echo "::error::Missing API key secret(s):$missing. Add them as repository secrets: Settings -> Secrets and variables -> Actions -> Secrets tab -> New repository secret, names exactly APOLLO_API_KEY and EXPLORIUM_API_KEY."
             if [ "$APOLLO_IN_VARS" = "true" ] || [ "$EXPLORIUM_IN_VARS" = "true" ]; then
               echo "::error::Found under the VARIABLES tab instead (Apollo: $APOLLO_IN_VARS, Explorium: $EXPLORIUM_IN_VARS). Variables are plaintext and are read as vars.*, not secrets.*. Delete them there and re-add under the Secrets tab."
             else
-              echo "Not found under Variables either. Add them as Environment secrets of crm-sync (names exactly APOLLO_API_KEY and EXPLORIUM_API_KEY); Dependabot and Codespaces secrets are separate stores the sync cannot read."
+              echo "Not found under Variables either. Environment, Dependabot and Codespaces secrets are separate stores the sync does not read."
             fi
             exit 1
           fi
@@ -96,7 +93,6 @@ jobs:
   pull-apollo:
     name: Pull Apollo contacts
     runs-on: ubuntu-latest
-    environment: crm-sync
     needs: preflight
     if: ${{ !inputs.check_keys }}
     env:
@@ -128,7 +124,6 @@ jobs:
   pull-explorium:
     name: Enrich via Explorium
     runs-on: ubuntu-latest
-    environment: crm-sync
     # Default mode: enriches the previous master, so it needs nothing from
     # pull-apollo and the two run side by side. Skipped in serial mode.
     needs: preflight
@@ -151,7 +146,6 @@ jobs:
   pull-explorium-serial:
     name: Enrich via Explorium (serial, this week's Apollo pull)
     runs-on: ubuntu-latest
-    environment: crm-sync
     # Opt-in via workflow_dispatch: waits for pull-apollo and enriches that
     # pull, so new contacts are enriched the same week at the cost of parallelism.
     needs: pull-apollo
@@ -227,7 +221,6 @@ jobs:
   writeback:
     name: Push to Apollo
     runs-on: ubuntu-latest
-    environment: crm-sync
     needs: merge
     if: ${{ inputs.writeback == true }}
     env:

@@ -44,11 +44,12 @@ def test_the_sync_never_pushes_to_the_default_branch():
     assert sum("scripts/open_data_pr.sh" in r for r in runs) == 2
 
 
-def test_every_job_that_reads_a_key_runs_in_the_protected_environment():
+def test_keys_come_from_repository_secrets_only():
+    # Private on GitHub Free: no environment secrets, so no job may depend on one.
     jobs = load(SYNC)["jobs"]
     readers = {name for name, job in jobs.items() if "secrets." in yaml.safe_dump(job)}
     assert readers == {"preflight", "pull-apollo", "pull-explorium", "pull-explorium-serial", "writeback"}
-    assert all(jobs[name].get("environment") == "crm-sync" for name in readers)
+    assert not any("environment" in job for job in jobs.values())
 
 
 def test_the_sync_refuses_to_run_from_another_branch():
@@ -73,9 +74,9 @@ def test_python_ci_can_be_dispatched_onto_a_data_branch():
     assert set(ci["jobs"]) >= {"test", "architecture"}
 
 
-def test_a_missing_key_names_both_places_the_sync_reads_from():
+def test_a_missing_key_says_where_to_add_it():
     step = next(s for s in load(SYNC)["jobs"]["preflight"]["steps"] if s["name"] == "Verify the API keys are present")
-    assert "crm-sync" in step["run"] and "Secrets and variables -> Actions" in step["run"]
+    assert "New repository secret" in step["run"] and "Secrets and variables -> Actions" in step["run"]
     assert "APOLLO_API_KEY" in step["run"] and "EXPLORIUM_API_KEY" in step["run"]
 
 
