@@ -1,0 +1,121 @@
+name: Promote data
+
+# The owner's merge of a weekly sync data PR is the acceptance: this workflow
+# promotes that run's candidate master to data/store (scripts/data_candidate.py
+# close). Closing the PR unmerged rejects the candidate; data/store is then
+# left as it was. Promotion is refused, and data/store left as it was, unless
+# the merged head is the head the sync recorded and Python CI's `test` and
+# `architecture` passed on exactly that commit, and unless data/store still
+# holds the master the run started from (compare-and-swap).
+#
+# Apollo writeback runs here, after the promotion, when the sync was
+# dispatched with writeback: true. It never runs from an unaccepted candidate.
+#
+# Dispatch: `pr` re-runs the close handling for a data PR (idempotent);
+# `reject_run` rejects a candidate whose PR never opened or was closed.
+
+on:
+  # pull_request_target, not pull_request: it runs this file as it is on the
+  # default branch, and nothing below checks out the PR's head.
+  pull_request_target:
+    types: [closed]
+    branches: [ "claude/explorium-docs-mcp-brregp" ]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "Data PR number to promote (merged) or reject (closed)"
+        required: false
+        type: string
+      reject_run:
+        description: "Weekly sync run id whose candidate to reject (no open or merged PR)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+# The same group as the weekly sync: a promotion and a sync never overlap.
+concurrency:
+  group: crm-sync
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    name: Promote or reject the candidate
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch' ||
+      (startsWith(github.event.pull_request.head.ref, 'data/weekly-sync-') &&
+      github.event.pull_request.head.repo.full_name == github.repository) }}
+    outputs:
+      run_id: ${{ steps.close.outputs.run_id }}
+      writeback: ${{ steps.close.outputs.writeback }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR: ${{ github.event.pull_request.number || inputs.pr }}
+      REJECT_RUN: ${{ inputs.reject_run }}
+    steps:
+      - name: Run only from the default branch
+        if: ${{ github.ref != format('refs/heads/{0}', github.event.repository.default_branch) }}
+        run: |
+          echo "::error::Promotion runs only from the default branch, not $GITHUB_REF."
+          exit 1
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Reject a candidate
+        if: ${{ env.REJECT_RUN != '' }}
+        run: python scripts/data_candidate.py reject --run-id "$REJECT_RUN"
+      - name: Promote on merge, reject on close
+        id: close
+        if: ${{ env.PR != '' }}
+        run: python scripts/data_candidate.py close --pr "$PR"
+      - name: Report master, data PR and CRM reconciliation
+        if: ${{ always() && (env.PR != '' || env.REJECT_RUN != '') }}
+        run: |
+          if [ -n "$PR" ]; then
+            python scripts/data_candidate.py status --pr "$PR"
+          else
+            python scripts/data_candidate.py status --run-id "$REJECT_RUN"
+          fi
+
+  writeback:
+    name: Push to Apollo
+    runs-on: ubuntu-latest
+    needs: promote
+    if: ${{ needs.promote.outputs.writeback == 'true' }}
+    env:
+      APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
+      APOLLO_WRITEBACK_ENABLED: "true"
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ needs.promote.outputs.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      # Exit 9 unless the run is promoted and data/store holds its master;
+      # restores that accepted master.
+      - name: Restore the accepted master
+        run: python scripts/data_candidate.py writeback-gate --run-id "$RUN_ID"
+      - name: Push
+        id: push
+        run: python scripts/push_apollo.py --apply
+      - name: Record the writeback on the candidate
+        if: ${{ always() && steps.push.outcome != 'skipped' }}
+        env:
+          RESULT: ${{ steps.push.outcome }}
+        run: python scripts/data_candidate.py mark-writeback --run-id "$RUN_ID" --result "$RESULT"
+      - name: Open the run line PR
+        if: ${{ always() && steps.push.outcome != 'skipped' }}
+        run: >-
+          scripts/open_data_pr.sh "data/writeback-$RUN_ID"
+          "chore(crm): Apollo writeback run line $(date -u +%Y-%m-%d)"
+          data/runlog

@@ -3,6 +3,14 @@ name: Weekly CRM sync
 # Two source pulls run as parallel jobs; the merge waits on both. A failure in
 # one source does not block the other from staging, and the merge still runs
 # with whatever staged successfully (it refuses only when *both* failed).
+#
+# The run proposes; the owner accepts (scripts/data_candidate.py). data/store
+# holds the accepted master only, and nothing here writes it: the merge job
+# persists an immutable candidate (data/candidate-<run_id>) and opens a data
+# PR awaiting the owner's merge. That merge promotes the candidate (Promote
+# data workflow), which then runs the optional Apollo writeback. A new sync
+# holds while an earlier candidate or data PR is unresolved, and a re-run of
+# the same run resumes its candidate instead of pulling or merging again.
 
 on:
   schedule:
@@ -26,7 +34,7 @@ on:
         required: false
         type: string
       writeback:
-        description: "Push master-resolved fields back to Apollo"
+        description: "After the owner merges this run's data PR, push master-resolved fields back to Apollo"
         required: false
         default: false
         type: boolean
@@ -56,6 +64,8 @@ jobs:
   preflight:
     name: Check secrets
     runs-on: ubuntu-latest
+    outputs:
+      resume: ${{ steps.hold.outputs.resume }}
     # Fail here, in one place, with a message that says what to fix -- rather
     # than three jobs each dying on an empty env var.
     env:
@@ -86,6 +96,21 @@ jobs:
             exit 1
           fi
           echo "Both secrets present (APOLLO_API_KEY: ${#APOLLO_API_KEY} chars, EXPLORIUM_API_KEY: ${#EXPLORIUM_API_KEY} chars)."
+      - uses: actions/checkout@v4
+        if: ${{ !inputs.check_keys }}
+      - uses: actions/setup-python@v5
+        if: ${{ !inputs.check_keys }}
+        with:
+          python-version: "3.11"
+      # HOLD (exit 3) while another run's candidate or data PR is unresolved,
+      # before anything is pulled. resume=true: this run already persisted a
+      # candidate, so the pulls and the merge are skipped.
+      - name: Hold on an unresolved earlier run
+        id: hold
+        if: ${{ !inputs.check_keys }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/data_candidate.py preflight --run-id "${{ github.run_id }}"
       - name: Key check only
         if: ${{ inputs.check_keys }}
         run: echo "Key check passed - both API keys reach the sync. Nothing pulled or written (check_keys)." | tee -a "$GITHUB_STEP_SUMMARY"
@@ -94,7 +119,7 @@ jobs:
     name: Pull Apollo contacts
     runs-on: ubuntu-latest
     needs: preflight
-    if: ${{ !inputs.check_keys }}
+    if: ${{ !inputs.check_keys && needs.preflight.outputs.resume != 'true' }}
     env:
       APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
     steps:
@@ -127,7 +152,7 @@ jobs:
     # Default mode: enriches the previous master, so it needs nothing from
     # pull-apollo and the two run side by side. Skipped in serial mode.
     needs: preflight
-    if: ${{ !inputs.check_keys && inputs.explorium_roster != 'apollo' }}
+    if: ${{ !inputs.check_keys && needs.preflight.outputs.resume != 'true' && inputs.explorium_roster != 'apollo' }}
     env:
       EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
     steps:
@@ -173,94 +198,85 @@ jobs:
           retention-days: 14
 
   merge:
-    name: Merge into master
+    name: Merge into a candidate master
     runs-on: ubuntu-latest
-    needs: [pull-apollo, pull-explorium, pull-explorium-serial]
+    needs: [preflight, pull-apollo, pull-explorium, pull-explorium-serial]
     # Run even if one pull failed or was skipped; merge_master.py handles a
-    # missing staging file and refuses only when nothing staged at all.
-    if: ${{ !cancelled() && (needs.pull-apollo.result == 'success' || needs.pull-explorium.result == 'success' || needs.pull-explorium-serial.result == 'success') }}
-    outputs:
-      branch: ${{ steps.commit.outputs.branch }}
+    # missing staging file and refuses only when nothing staged at all. A
+    # resumed run pulled nothing and needs no pull.
+    if: ${{ !cancelled() && !inputs.check_keys && needs.preflight.result == 'success' && (needs.preflight.outputs.resume == 'true' || needs.pull-apollo.result == 'success' || needs.pull-explorium.result == 'success' || needs.pull-explorium-serial.result == 'success') }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ github.run_id }}
     steps:
       - uses: actions/checkout@v4
-      # The previous master: without it every contact would count as new.
-      - name: Restore the master from data/store
-        run: scripts/data_store.sh restore data/master
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      # The accepted master (without it every contact would count as new), or,
+      # on a re-run, this run's persisted candidate: never recomputed.
+      - name: Restore the accepted master or this run's candidate
+        id: begin
+        run: python scripts/data_candidate.py begin --run-id "$RUN_ID"
       - uses: actions/download-artifact@v4
+        if: ${{ steps.begin.outputs.resume != 'true' }}
         with:
           pattern: staging-*
           path: data/staging
           merge-multiple: true
       - name: Run tests
+        if: ${{ steps.begin.outputs.done != 'true' }}
         run: pip install -q pytest pyyaml && python -m pytest tests -q
       - name: Merge
         # Holds instead of writing master when a run would create more than
         # crm.runlog.HOLD_OVER contacts; allow_created applies exactly that count.
+        if: ${{ steps.begin.outputs.resume != 'true' }}
         env:
           ALLOW_CREATED: ${{ inputs.allow_created }}
         run: python scripts/merge_master.py
-      # Refuse to commit a master that names an unknown source or carries a
-      # duplicate identity. Master-only here (no CRM dump in CI); the Monday
-      # routine runs the same gate with --crm-dump before it pushes anything.
+      # Refuse a master that names an unknown source or carries a duplicate
+      # identity. Master-only here (no CRM dump in CI); the Monday routine runs
+      # the same gate with --crm-dump before it pushes anything.
       - name: Validate data layer
+        if: ${{ steps.begin.outputs.done != 'true' }}
         run: python scripts/validate_sync.py
+      # Immutable: data/candidate-<run_id>, parented on the accepted data/store
+      # commit this run started from. data/store itself is not touched.
+      - name: Persist the candidate
+        id: persist
+        if: ${{ steps.begin.outputs.resume != 'true' }}
+        env:
+          INPUT_COMMIT: ${{ steps.begin.outputs.input_commit }}
+          WRITEBACK: ${{ inputs.writeback == true && '--writeback' || '' }}
+        run: python scripts/data_candidate.py persist --run-id "$RUN_ID" --input-commit "$INPUT_COMMIT" $WRITEBACK
       - name: Open the data PR
         id: commit
+        if: ${{ steps.begin.outputs.done != 'true' }}
         env:
-          GH_TOKEN: ${{ github.token }}
+          PR_NOTE: >-
+            Merging this PR promotes candidate data/candidate-${{ github.run_id }}
+            (${{ steps.persist.outputs.candidate_sha || steps.begin.outputs.candidate_sha }}) to the accepted
+            master on data/store; closing it rejects the candidate and leaves data/store as it is.
         run: >-
           scripts/open_data_pr.sh "data/weekly-sync-${{ github.run_id }}"
           "chore(crm): weekly sync $(date -u +%Y-%m-%d)"
           data/CHANGELOG.md data/runlog
-      # Last, so a run that failed earlier leaves the stored master as it was
-      # and a re-run computes from the same starting point. A held run wrote
-      # no master, so there is nothing to save.
-      - name: Save the master to data/store
-        run: >-
-          scripts/data_store.sh save
-          "data: weekly sync master $(date -u +%Y-%m-%d) (run ${{ github.run_id }}, attempt ${{ github.run_attempt }})"
-          data/master
-      - name: Upload master snapshot
+      - name: Record the PR on the candidate
+        if: ${{ steps.begin.outputs.done != 'true' }}
+        env:
+          PR: ${{ steps.commit.outputs.pr }}
+          HEAD: ${{ steps.commit.outputs.head }}
+          STATUS: ${{ steps.commit.outputs.status }}
+        run: python scripts/data_candidate.py record-pr --run-id "$RUN_ID" --pr "$PR" --head "$HEAD" --status "$STATUS"
+      - name: Report master, data PR and CRM reconciliation
+        if: ${{ always() }}
+        run: python scripts/data_candidate.py status --run-id "$RUN_ID"
+      - name: Upload candidate snapshot
+        if: ${{ steps.begin.outputs.done != 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: master-contacts
+          name: candidate-master-contacts
           path: |
             data/master/contacts.json
             data/CHANGELOG.md
           retention-days: 90
-
-  writeback:
-    name: Push to Apollo
-    runs-on: ubuntu-latest
-    needs: merge
-    if: ${{ inputs.writeback == true }}
-    env:
-      APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
-      APOLLO_WRITEBACK_ENABLED: "true"
-    steps:
-      # Write back from the master this run produced (the merge job saved it to
-      # data/store); the run line PR is cut from the merge job's data PR
-      # branch, which may not have merged yet.
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.merge.outputs.branch || github.ref }}
-      - name: Restore the master from data/store
-        run: scripts/data_store.sh restore data/master
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - run: python scripts/push_apollo.py --apply
-      - name: Open the run line PR
-        if: ${{ always() }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          # Cut from the merge job's data branch: this PR carries that PR's
-          # commit too, and its body says so.
-          STACKED_ON: ${{ needs.merge.outputs.branch }}
-        run: >-
-          scripts/open_data_pr.sh "data/writeback-${{ github.run_id }}"
-          "chore(crm): Apollo writeback run line $(date -u +%Y-%m-%d)"
-          data/runlog

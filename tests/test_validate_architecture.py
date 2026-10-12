@@ -249,13 +249,14 @@ def test_owners_for_follows_github_precedence():
 def test_the_weekly_sync_data_pr_paths_are_not_code_owned():
     """The paths the workflow hands scripts/open_data_pr.sh are all outside CODEOWNERS."""
     import re
-    wf = (ROOT / ".github" / "workflows" / "weekly-crm-sync.yml").read_text()
+    wf = "".join((ROOT / ".github" / "workflows" / f).read_text() for f in ("weekly-crm-sync.yml", "data-promote.yml"))
     paths = set()
     for block in re.findall(r"scripts/open_data_pr\.sh .*?\n(?:.*\n){2}", wf):
         paths.update(t for t in block.split() if t.startswith("data/") and "${{" not in t)
-    # data/master left the tree (#26) and is saved to the data/store branch, never a data PR.
+    # data/master left the tree (#26): it lives on data/store, promoted there from a candidate, never a data PR.
     assert paths >= {"data/CHANGELOG.md", "data/runlog"} and "data/master" not in paths
     stored = set(re.findall(r"scripts/data_store\.sh (?:restore|save)[^\n]*?(data/[\w/.-]+)\s*$", wf, re.M))
+    assert "data_store.sh save" not in wf                  # the sync never writes data/store
     assert stored == {"data/master"}
     rules = va.codeowners_rules((ROOT / ".github" / "CODEOWNERS").read_text())
     assert not any(va.owners_for(p, rules) or va.owners_for(p + "/x", rules) for p in paths | stored)

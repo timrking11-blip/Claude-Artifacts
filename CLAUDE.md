@@ -158,16 +158,18 @@ Don't work around them.
   CRM dump, so they belong in a scheduled runtime audit.
 - Code reaches the default branch by pull request with the `architecture` and
   `test` checks passing. No broad GitHub Actions bypass: the weekly sync's
-  master and run lines go out through `scripts/open_data_pr.sh` (a
-  `data/weekly-sync-<run>` or `data/writeback-<run>` branch, a PR, Python CI
-  dispatched on that branch because PRs opened with GITHUB_TOKEN trigger no
-  workflows, and auto-merge). Composition runs from a session push a
-  `data/runs` branch and open an auto-merging PR the same way.
-- That script commits only the data paths it is given, resumes on a re-run
-  (the branch name is fixed per run; an open PR is reused, a merged one ends
-  the run, a closed one is never reopened) and fails the run unless the PR is
-  queued to auto-merge. A writeback PR is cut from the sync's data branch and
-  says so in its body: the two are dependent. `tests/test_open_data_pr.py` and
+  CHANGELOG and run lines go out through `scripts/open_data_pr.sh` (a
+  `data/weekly-sync-<run>` or `data/writeback-<run>` branch, a PR, and Python
+  CI dispatched on that branch with `expected_sha`, because PRs opened with
+  GITHUB_TOKEN trigger no workflows). Composition-run data is Workstream B,
+  unresolved; leave it separate.
+- Data PRs are merged by the owner, by hand (decided 10 Oct 2026; auto-merge
+  stays off). `open_data_pr.sh` never merges: it pushes, opens or reuses the
+  PR, dispatches CI with `expected_sha` = the pushed head (each CI job fails
+  unless it checked out exactly that commit), and reports
+  `awaiting_owner_merge`. A failed PR creation or dispatch fails the run. A
+  re-run reuses the branch and an open PR; a merged one ends the run, and a
+  closed one is never reopened. `tests/test_open_data_pr.py` and
   `tests/test_workflows.py` pin all of it.
 - The repository went private on GitHub Free in Oct 2026. Free offers no
   rulesets, environment secrets or deployment branch policies for private
@@ -192,9 +194,29 @@ Don't work around them.
   "message" PATH...` commits only those paths to the branch, only if they
   changed, retrying over a concurrent push. Every job, routine or session that
   reads the master restores it first; nothing writes the master to the default
-  branch. The weekly sync saves it last, after its data PR (CHANGELOG and run
-  lines, which stay on the default branch) is queued, so a failed run leaves
-  the stored master as it was. `tests/test_data_store.py` pins the script.
+  branch. `tests/test_data_store.py` pins the script.
+- `data/store` holds the accepted master only (the owner's decision, 12 Oct
+  2026). The lifecycle (`scripts/data_candidate.py`): accepted master →
+  compute → validate → immutable candidate (`data/candidate-<run_id>`,
+  parented on the data/store commit it started from) → data PR + exact-head
+  CI → the owner's merge → promotion (the Promote data workflow, on the PR's
+  close) → accepted master → optional Apollo writeback → CRM reconciliation
+  (the Monday enrichment push). The ledger branch `data/candidates` records
+  each run: run_id, attempt, input commit and master tree, candidate SHA and
+  master tree, PR number, branch and head SHA, and state.
+  - The weekly sync never writes data/store. Promotion is a compare-and-swap
+    on the master tree, and only if the merged head is the recorded head and
+    `test` and `architecture` passed on exactly it. Otherwise it is refused
+    (`promotion_refused`, or `stale` when the accepted master moved), and
+    data/store is left as it was. Closing the PR unmerged rejects the
+    candidate.
+  - A new sync HOLDS (exit 3, before any pull) while another run's candidate
+    or any weekly or writeback data PR is unresolved. A re-run of the same
+    run resumes its candidate and never pulls or merges again.
+  - Writeback runs only from a promoted candidate (`writeback-gate`), in the
+    Promote data workflow.
+  - Every run reports three states separately: master, data PR, and CRM
+    reconciliation. `tests/test_data_candidate.py` pins it.
 
 ## Unified Architecture Blueprint (24 Sep 2026)
 

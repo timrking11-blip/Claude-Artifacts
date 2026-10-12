@@ -3,9 +3,9 @@
 # the documentation and the artifact pages that probes read.
 #
 # Automated data stays outside: no data/ path is listed. The weekly sync's
-# data PRs (scripts/open_data_pr.sh: data/master, data/CHANGELOG.md,
-# data/runlog) and composition-run data (data/runs, data/proposals) are not
-# code-owned. scripts/validate_architecture.py fails if a required path is
+# data PRs (scripts/open_data_pr.sh: data/CHANGELOG.md, data/runlog), the
+# master it promotes to the data/store branch, and composition-run data
+# (data/runs, data/proposals) are not code-owned. scripts/validate_architecture.py fails if a required path is
 # unowned or a data path becomes owned.
 #
 # Limit: GitHub never counts a pull request author's own approval. Pull

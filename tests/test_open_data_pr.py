@@ -2,8 +2,9 @@
 
 Each test runs the real script against a local bare remote, with a stub `gh`
 that keeps PRs in a JSON file. It pins the controls the live run cannot prove:
-data-only commits, re-runs that resume instead of colliding, a run that fails
-when its PR is not queued to land, and the stacked-PR dependency written down.
+data-only commits, re-runs that resume instead of colliding, a run that never
+merges and says its PR awaits the owner, CI dispatched on the exact head, and
+the failures that stop it.
 """
 
 import json
@@ -26,6 +27,13 @@ state["calls"].append(args)
 def opt(name):
     return args[args.index(name) + 1] if name in args else None
 out, code = "", 0
+if args[:2] == ["pr", "create"] and os.environ.get("GH_STUB_CREATE_FAIL"):
+    json.dump(state, open(state_path, "w")); sys.exit(1)
+if args[:2] == ["workflow", "run"] and os.environ.get("GH_STUB_MOVE_TO"):
+    # someone else moves the branch between the push and the dispatch
+    import subprocess
+    subprocess.run(["git", "--git-dir", os.environ["GH_STUB_REMOTE"], "update-ref",
+                    "refs/heads/" + opt("--ref"), os.environ["GH_STUB_MOVE_TO"]], check=True)
 if args[:2] == ["pr", "list"]:
     prs = [p for p in state["prs"] if p["head"] == opt("--head")]
     if "number,state" in args:
@@ -36,8 +44,8 @@ elif args[:2] == ["pr", "create"]:
     n = 100 + len(state["prs"])
     state["prs"].append({"number": n, "head": opt("--head"), "state": "OPEN", "body": opt("--body")})
     out = f"https://github.com/o/r/pull/{n}"
-elif args[:2] == ["pr", "merge"]:
-    code = 1 if os.environ.get("GH_STUB_MERGE_FAIL") else 0
+elif args[:2] == ["workflow", "run"]:
+    code = 1 if os.environ.get("GH_STUB_DISPATCH_FAIL") else 0
 json.dump(state, open(state_path, "w"))
 if out:
     print(out)
@@ -70,7 +78,8 @@ def env(tmp_path):
     state.write_text(json.dumps({"prs": [], "calls": []}))
     e = {**os.environ, "PATH": f"{bindir}{os.pathsep}{os.environ['PATH']}", "GH_STUB_STATE": str(state),
          "BASE_BRANCH": "main", "GITHUB_RUN_ID": "42", "GITHUB_OUTPUT": str(tmp_path / "out")}
-    e.pop("GH_STUB_MERGE_FAIL", None)
+    for k in ("GH_STUB_DISPATCH_FAIL", "GH_STUB_CREATE_FAIL", "GH_STUB_MOVE_TO"):
+        e.pop(k, None)
     return {"tmp": tmp_path, "remote": remote, "env": e, "state": state}
 
 
@@ -101,13 +110,17 @@ def test_the_script_parses():
     subprocess.run(["bash", "-n", str(SCRIPT)], check=True)
 
 
-def test_happy_path_pushes_the_branch_opens_a_pr_dispatches_ci_and_queues_auto_merge(env):
+def test_happy_path_opens_the_pr_dispatches_ci_on_its_head_and_never_merges(env):
     r = run(env, runner(env, "w1"))
     assert r.returncode == 0, r.stderr + r.stdout
     calls = gh_state(env)["calls"]
-    assert ["workflow", "run", "python-ci.yml", "--ref", "data/weekly-sync-42"] in calls
-    assert ["pr", "merge", "100", "--auto", "--merge"] in calls
-    assert remote_sha(env) and (env["tmp"] / "out").read_text().splitlines() == ["branch=data/weekly-sync-42", "pr=100"]
+    head = remote_sha(env)
+    assert ["workflow", "run", "python-ci.yml", "--ref", "data/weekly-sync-42", "-f", f"expected_sha={head}"] in calls
+    assert not any(c[:2] == ["pr", "merge"] for c in calls)
+    assert "awaiting owner merge" in r.stdout
+    out = dict(l.split("=", 1) for l in (env["tmp"] / "out").read_text().splitlines())
+    assert out == {"branch": "data/weekly-sync-42", "pr": "100", "head": remote_sha(env),
+                   "status": "awaiting_owner_merge"}
 
 
 def test_no_data_change_opens_nothing(env):
@@ -159,16 +172,39 @@ def test_a_rerun_never_reopens_a_pr_the_owner_closed(env):
     assert r.returncode == 4 and len(gh_state(env)["prs"]) == 1
 
 
-def test_a_run_whose_pr_cannot_be_queued_fails(env):
-    r = run(env, runner(env, "w1"), extra={"GH_STUB_MERGE_FAIL": "1"})
-    assert r.returncode == 5 and "will not land" in r.stdout + r.stderr
+def test_a_failed_pr_creation_fails_the_run(env):
+    r = run(env, runner(env, "w1"), extra={"GH_STUB_CREATE_FAIL": "1"})
+    assert r.returncode != 0 and "status=" not in (env["tmp"] / "out").read_text()
+    assert not any(c[:2] == ["workflow", "run"] for c in gh_state(env)["calls"])
 
 
-def test_a_stacked_pr_names_its_dependency(env):
-    s = gh_state(env); s["prs"].append({"number": 7, "head": "data/weekly-sync-42", "state": "OPEN", "body": ""})
-    env["state"].write_text(json.dumps(s))
-    r = run(env, runner(env, "w1"), branch="data/writeback-42",
-            extra={"STACKED_ON": "data/weekly-sync-42"})
+def test_a_failed_ci_dispatch_fails_the_run(env):
+    r = run(env, runner(env, "w1"), extra={"GH_STUB_DISPATCH_FAIL": "1"})
+    assert r.returncode == 6 and "could not dispatch" in r.stdout + r.stderr
+    assert "status=" not in (env["tmp"] / "out").read_text()
+
+
+def test_a_branch_moved_before_the_dispatch_fails_the_run(env):
+    other = git(env["tmp"], "--git-dir", str(env["remote"]), "rev-parse", "main")
+    r = run(env, runner(env, "w1"), extra={"GH_STUB_MOVE_TO": other, "GH_STUB_REMOTE": str(env["remote"])})
+    assert r.returncode == 7 and "moved after the push" in r.stdout + r.stderr
+
+
+def test_a_rerun_after_the_pr_merged_reports_merged(env):
+    assert run(env, runner(env, "w1")).returncode == 0
+    s = gh_state(env); s["prs"][0]["state"] = "MERGED"; env["state"].write_text(json.dumps(s))
+    (env["tmp"] / "out").write_text("")
+    assert run(env, runner(env, "w2")).returncode == 0
+    assert "status=merged" in (env["tmp"] / "out").read_text()
+
+
+def test_the_script_never_merges_anything():
+    text = SCRIPT.read_text()
+    assert "gh pr merge" not in text and "--auto" not in text
+
+
+def test_the_pr_body_says_the_owner_merges_and_carries_the_note(env):
+    r = run(env, runner(env, "w1"), extra={"PR_NOTE": "Merging promotes candidate X."})
     assert r.returncode == 0, r.stderr + r.stdout
     body = gh_state(env)["prs"][-1]["body"]
-    assert "Stacked on #7 (`data/weekly-sync-42`)" in body and "also carries its commits" in body
+    assert "Nothing merges it automatically" in body and body.endswith("Merging promotes candidate X.")

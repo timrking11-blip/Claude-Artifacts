@@ -5,8 +5,10 @@
 # `test` checks passing; no workflow bypasses that. A PR opened with the
 # workflow's GITHUB_TOKEN does not trigger other workflows, so this script
 # dispatches Python CI on the data branch itself (workflow_dispatch is the
-# exception), and the checks land on the PR's head commit. Auto-merge then
-# merges the PR once they pass.
+# exception), and the checks land on the PR's head commit. The PR then waits
+# for the owner: the repository is private on GitHub Free, with no rulesets or
+# branch protection to gate a merge, so the owner merges data PRs by hand
+# (decided 10 Oct 2026). This script never merges.
 #
 # Usage: scripts/open_data_pr.sh BRANCH "commit message" PATH...
 #
@@ -15,12 +17,17 @@
 #   re-run), so a re-run finds what an earlier attempt pushed and resumes. An
 #   open PR is reused, a merged one ends the run, a closed one fails it (the
 #   owner closed it; a re-run never reopens it).
-# - Fails unless the PR is queued to land: a green run means auto-merge is on.
-# - STACKED_ON=<branch>: this branch was cut from that data branch, so its PR
-#   carries that PR's commits too; the body names the dependency.
+# - A green run means: the branch is pushed, the PR is open, and Python CI was
+#   dispatched on the PR's exact head commit. It does not mean the data landed;
+#   the PR awaits the owner's merge.
+# - Python CI gets expected_sha = the pushed head, and fails unless the commit
+#   it checked out is exactly that one.
+# - PR_NOTE=<text>: appended to a new PR's body (the weekly sync names the
+#   candidate the merge promotes).
 #
 # Needs GH_TOKEN, and permissions contents/pull-requests/actions: write.
-# Writes `branch` and `pr` to $GITHUB_OUTPUT.
+# Writes `branch`, `pr`, `head` and `status` (awaiting_owner_merge | merged)
+# to $GITHUB_OUTPUT.
 set -euo pipefail
 
 branch="$1"; message="$2"; shift 2
@@ -78,6 +85,7 @@ case "$pr" in
   *" MERGED")
     echo "PR #${pr%% *} from $branch already merged; nothing left to do."
     output pr "${pr%% *}"
+    output status merged
     exit 0 ;;
   *" CLOSED")
     echo "::error::PR #${pr%% *} from $branch was closed without merging; a re-run does not reopen it."
@@ -86,23 +94,28 @@ case "$pr" in
     number="${pr%% *}"
     echo "Reusing open PR #$number." ;;
   *)
-    body="Automated data commit from workflow run $run_url (attempt $attempt). Merges itself once \`architecture\` and \`test\` pass."
-    if [ -n "${STACKED_ON:-}" ]; then
-      dep=$(gh pr list --head "$STACKED_ON" --state all --json number --jq '.[0].number // empty')
+    body="Automated data commit from workflow run $run_url (attempt $attempt). Nothing merges it automatically: the owner merges it after \`architecture\` and \`test\` pass on its exact head commit."
+    if [ -n "${PR_NOTE:-}" ]; then
       body="$body
 
-Stacked on ${dep:+#$dep }(\`$STACKED_ON\`): this branch was cut from it, so this PR also carries its commits. Whichever merges first lands them; the other then merges only its own remainder."
+$PR_NOTE"
     fi
     url=$(gh pr create --base "$base" --head "$branch" --title "$message" --body "$body")
     number="${url##*/}" ;;
 esac
 output pr "$number"
 
-gh workflow run python-ci.yml --ref "$branch"
-# Auto-merge waits for the checks the default branch's ruleset requires. A run
-# that cannot queue its PR fails, so a green run always means "will land".
-if ! gh pr merge "$number" --auto --merge; then
-  echo "::error::auto-merge could not be enabled on PR #$number; the data will not land until it is merged"
-  exit 5
+head=$(git rev-parse HEAD)
+output head "$head"
+if ! gh workflow run python-ci.yml --ref "$branch" -f expected_sha="$head"; then
+  echo "::error::could not dispatch Python CI on $branch; PR #$number has no checks"
+  exit 6
 fi
-echo "PR #$number from $branch is queued to merge once its checks pass."
+# The dispatch runs on the branch's head when it starts, and CI itself fails
+# unless that is $head; fail here too if anything moved the branch.
+if [ "$(git ls-remote --heads origin "refs/heads/$branch" | cut -f1)" != "$head" ]; then
+  echo "::error::$branch moved after the push; CI was dispatched on a head other than $head"
+  exit 7
+fi
+output status awaiting_owner_merge
+echo "PR #$number from $branch: awaiting owner merge (head $head; Python CI dispatched on it)."

@@ -11,8 +11,14 @@ on:
     branches: [ "claude/explorium-docs-mcp-brregp" ]
   # Data PRs opened by a workflow's GITHUB_TOKEN do not trigger pull_request;
   # scripts/open_data_pr.sh dispatches this on the data branch instead, so the
-  # required checks land on the PR's head commit.
+  # checks land on the PR's head commit. It passes that commit as
+  # expected_sha, and each job fails unless it checked out exactly that commit.
   workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: "Fail unless the commit checked out is exactly this one"
+        required: false
+        type: string
 
 # Least privilege, and explicit: without this the workflow inherits whatever
 # the repository default happens to be. It only reads code and runs tests.
@@ -24,6 +30,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check the commit is the one requested
+        if: ${{ inputs.expected_sha }}
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: |
+          actual=$(git rev-parse HEAD)
+          if [ "$actual" != "$EXPECTED_SHA" ] || [ "$GITHUB_SHA" != "$EXPECTED_SHA" ]; then
+            echo "::error::Checked out $actual (GITHUB_SHA $GITHUB_SHA), not the requested $EXPECTED_SHA; these checks do not describe that commit."
+            exit 1
+          fi
+          echo "Checking exactly $EXPECTED_SHA."
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -43,6 +60,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check the commit is the one requested
+        if: ${{ inputs.expected_sha }}
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: |
+          actual=$(git rev-parse HEAD)
+          if [ "$actual" != "$EXPECTED_SHA" ] || [ "$GITHUB_SHA" != "$EXPECTED_SHA" ]; then
+            echo "::error::Checked out $actual (GITHUB_SHA $GITHUB_SHA), not the requested $EXPECTED_SHA; these checks do not describe that commit."
+            exit 1
+          fi
+          echo "Checking exactly $EXPECTED_SHA."
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
