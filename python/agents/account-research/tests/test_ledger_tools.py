@@ -120,5 +120,7 @@ def test_missing_ledger_is_empty_not_crash(tmp_path, monkeypatch):
 def test_default_ledger_path_points_at_repo_master(monkeypatch):
     monkeypatch.delenv("ACCOUNT_RESEARCH_LEDGER", raising=False)
     p = ledger.default_ledger_path()
+    # The path is the contract. Whether the file is there depends on the checkout:
+    # data/master left the committed tree in #26 (a missing ledger reads as
+    # NOT_FOUND, see test_missing_ledger_is_empty_not_crash).
     assert p.parts[-3:] == ("data", "master", "contacts.json")
-    assert p.exists(), "should resolve to this repo's committed master"

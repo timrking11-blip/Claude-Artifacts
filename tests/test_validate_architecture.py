@@ -282,6 +282,7 @@ def test_files_beneath_a_tree_are_checked_through_bare_directory_rules(repo):
 def test_the_committed_tree_has_every_file_owned_and_no_data_file_owned():
     rules = va.codeowners_rules((ROOT / ".github" / "CODEOWNERS").read_text())
     files = va.repository_files(ROOT)
-    assert any(f.startswith("data/master/") for f in files) and any(f.startswith("scripts/") for f in files)
+    # data/master and data/runs left the tree in #26; data/runlog and data/proposals remain.
+    assert any(f.startswith("data/") for f in files) and any(f.startswith("scripts/") for f in files)
     assert all("@timrking11-blip" in va.owners_for(f, rules) for f in files if f.startswith(("scripts/", "crm/", ".github/")))
     assert not any(va.owners_for(f, rules) for f in files if f.startswith("data/"))

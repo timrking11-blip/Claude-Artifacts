@@ -27,8 +27,10 @@ corrects something new, add it here in the same change.
 - Claude's own commands in a cloud session still run on Linux; this is about
   what you ask the owner to run.
 
-## This repo is public
+## This repo is shared: treat it as public
 
+- It was public until Oct 2026 and its history is unchanged; it is
+  private now and shared with an advisor.
 - Never commit infrastructure identifiers: GCP project IDs or numbers, HCP
   organization or workspace names. Use placeholders or read them from the
   environment. `.env` and `terraform/terraform.tfvars` are gitignored, the
@@ -167,10 +169,24 @@ Don't work around them.
   queued to auto-merge. A writeback PR is cut from the sync's data branch and
   says so in its body: the two are dependent. `tests/test_open_data_pr.py` and
   `tests/test_workflows.py` pin all of it.
-- The sync runs only from the default branch (a guard step), and its API keys
-  belong in the `crm-sync` environment with a deployment branch policy of the
-  default branch only; until they move there from repository secrets, a
-  branch that edits the workflow can still read them.
+- The repository went private on GitHub Free in Oct 2026. Free offers no
+  rulesets, environment secrets or deployment branch policies for private
+  repositories (the rulesets API answers "Upgrade to GitHub Pro or make this
+  repository public"), so the API keys are repository secrets, no job declares
+  an `environment:`, and the sync's guard step (default branch only) is the
+  branch boundary.
+- The 5 Oct 2026 scheduled sync (run 37313486004) failed in its first job:
+  `APOLLO_API_KEY` and `EXPLORIUM_API_KEY` were in neither the repository's
+  secrets nor any environment's (they worked on 28 Sep). Claude cannot list or
+  set secrets (the session's GitHub proxy refuses those paths) and never
+  handles key values. After the owner adds the keys, a dispatch with
+  `check_keys: true` runs only that check: green means both keys reach the
+  sync, and nothing is pulled or written.
+- #26 (9 Oct 2026, the owner's) took `data/master/` and `data/runs/` out of the
+  committed tree and gitignored them, for advisor sharing; history keeps them.
+  Anything that read the master from a checkout (the weekly sync's previous
+  master, the Monday enrichment push, the account-research ledger) needs a
+  new home for it, which is the owner's decision.
 
 ## Unified Architecture Blueprint (24 Sep 2026)
 

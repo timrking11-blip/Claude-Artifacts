@@ -20,8 +20,27 @@ on:
     - cron: '35 5 * * 3'
 
 jobs:
+  # Code scanning is not available for private repositories on GitHub Free
+  # ("Code scanning is not enabled for this repository"), so the analysis
+  # skips while the repository is private and runs again if it goes public.
+  # Visibility is read from the API: a scheduled run's event may carry no
+  # repository object to read it from.
+  visibility:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      private: ${{ steps.read.outputs.private }}
+    steps:
+      - id: read
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "private=$(gh api "repos/$GITHUB_REPOSITORY" --jq .private)" >> "$GITHUB_OUTPUT"
+
   analyze:
     name: Analyze (${{ matrix.language }})
+    needs: visibility
+    if: ${{ needs.visibility.outputs.private == 'false' }}
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql
     #   - https://gh.io/supported-runners-and-hardware-resources

@@ -41,7 +41,7 @@ log = logging.getLogger("pull_explorium")
 def explorium_headers() -> dict[str, str]:
     if not config.EXPLORIUM_API_KEY:
         raise SystemExit(
-            "EXPLORIUM_API_KEY is not set. In CI this comes from the repository "
+            "EXPLORIUM_API_KEY is not set. In CI it comes from the repository "
             "secret of the same name; locally, export it before running."
         )
     return {"API_KEY": config.EXPLORIUM_API_KEY}

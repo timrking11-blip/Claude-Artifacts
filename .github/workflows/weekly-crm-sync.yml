@@ -30,6 +30,11 @@ on:
         required: false
         default: false
         type: boolean
+      check_keys:
+        description: "Only check that both API keys reach the sync; pull and write nothing"
+        required: false
+        default: false
+        type: boolean
 
 # contents/pull-requests/actions: write let scripts/open_data_pr.sh push a
 # data branch, open its PR, dispatch Python CI on it and enable auto-merge.
@@ -39,10 +44,10 @@ permissions:
   pull-requests: write
   actions: write
 
-# The API keys belong in the `crm-sync` environment, whose deployment branch
-# policy admits only the default branch: a job from any other branch, or one
-# edited to drop `environment:`, then gets no key. The guard step in preflight
-# says the same thing early for an unmodified workflow dispatched on a branch.
+# The API keys are repository secrets. The repository is private on GitHub
+# Free, which offers no environment secrets or deployment branch policies for
+# private repositories, so the guard step in preflight is the branch boundary:
+# the sync refuses to run from any branch but the default.
 concurrency:
   group: crm-sync
   cancel-in-progress: false
@@ -51,11 +56,8 @@ jobs:
   preflight:
     name: Check secrets
     runs-on: ubuntu-latest
-    environment: crm-sync
     # Fail here, in one place, with a message that says what to fix -- rather
-    # than three jobs each dying on an empty env var. The keys are read from the
-    # `crm-sync` environment's secrets, or from repository secrets until they
-    # move there (every job sees those too, which is why they should move).
+    # than three jobs each dying on an empty env var.
     env:
       APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
       EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
@@ -69,28 +71,30 @@ jobs:
         run: |
           echo "::error::The weekly sync runs only from the default branch, not $GITHUB_REF: it holds the API keys and opens data PRs."
           exit 1
-      - name: Verify repository secrets are present
+      - name: Verify the API keys are present
         run: |
           missing=""
           [ -z "$APOLLO_API_KEY" ] && missing="$missing APOLLO_API_KEY"
           [ -z "$EXPLORIUM_API_KEY" ] && missing="$missing EXPLORIUM_API_KEY"
           if [ -n "$missing" ]; then
-            echo "::error::Missing repository secret(s):$missing"
+            echo "::error::Missing API key secret(s):$missing. Add them as repository secrets: Settings -> Secrets and variables -> Actions -> Secrets tab -> New repository secret, names exactly APOLLO_API_KEY and EXPLORIUM_API_KEY."
             if [ "$APOLLO_IN_VARS" = "true" ] || [ "$EXPLORIUM_IN_VARS" = "true" ]; then
               echo "::error::Found under the VARIABLES tab instead (Apollo: $APOLLO_IN_VARS, Explorium: $EXPLORIUM_IN_VARS). Variables are plaintext and are read as vars.*, not secrets.*. Delete them there and re-add under the Secrets tab."
             else
-              echo "Not found under Variables either. Check: Settings -> Secrets and variables -> Actions -> *Secrets* tab -> Repository secrets."
-              echo "Environment secrets live under Settings -> Environments -> crm-sync; Dependabot and Codespaces secrets are separate stores."
+              echo "Not found under Variables either. Environment, Dependabot and Codespaces secrets are separate stores the sync does not read."
             fi
             exit 1
           fi
           echo "Both secrets present (APOLLO_API_KEY: ${#APOLLO_API_KEY} chars, EXPLORIUM_API_KEY: ${#EXPLORIUM_API_KEY} chars)."
+      - name: Key check only
+        if: ${{ inputs.check_keys }}
+        run: echo "Key check passed - both API keys reach the sync. Nothing pulled or written (check_keys)." | tee -a "$GITHUB_STEP_SUMMARY"
 
   pull-apollo:
     name: Pull Apollo contacts
     runs-on: ubuntu-latest
-    environment: crm-sync
     needs: preflight
+    if: ${{ !inputs.check_keys }}
     env:
       APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
     steps:
@@ -120,11 +124,10 @@ jobs:
   pull-explorium:
     name: Enrich via Explorium
     runs-on: ubuntu-latest
-    environment: crm-sync
     # Default mode: enriches the previous master, so it needs nothing from
     # pull-apollo and the two run side by side. Skipped in serial mode.
     needs: preflight
-    if: ${{ inputs.explorium_roster != 'apollo' }}
+    if: ${{ !inputs.check_keys && inputs.explorium_roster != 'apollo' }}
     env:
       EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
     steps:
@@ -143,11 +146,10 @@ jobs:
   pull-explorium-serial:
     name: Enrich via Explorium (serial, this week's Apollo pull)
     runs-on: ubuntu-latest
-    environment: crm-sync
     # Opt-in via workflow_dispatch: waits for pull-apollo and enriches that
     # pull, so new contacts are enriched the same week at the cost of parallelism.
     needs: pull-apollo
-    if: ${{ inputs.explorium_roster == 'apollo' }}
+    if: ${{ !inputs.check_keys && inputs.explorium_roster == 'apollo' }}
     env:
       EXPLORIUM_API_KEY: ${{ secrets.EXPLORIUM_API_KEY }}
     steps:
@@ -187,7 +189,7 @@ jobs:
           path: data/staging
           merge-multiple: true
       - name: Run tests
-        run: pip install -q pytest && python -m pytest tests -q
+        run: pip install -q pytest pyyaml && python -m pytest tests -q
       - name: Merge
         # Holds instead of writing master when a run would create more than
         # crm.runlog.HOLD_OVER contacts; allow_created applies exactly that count.
@@ -219,7 +221,6 @@ jobs:
   writeback:
     name: Push to Apollo
     runs-on: ubuntu-latest
-    environment: crm-sync
     needs: merge
     if: ${{ inputs.writeback == true }}
     env:

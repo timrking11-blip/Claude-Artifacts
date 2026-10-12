@@ -4,6 +4,7 @@ A plain YAML load accepts a duplicated key and keeps the last one, so the
 workflows are loaded strictly here first.
 """
 
+import re
 from pathlib import Path
 
 import pytest
@@ -44,11 +45,12 @@ def test_the_sync_never_pushes_to_the_default_branch():
     assert sum("scripts/open_data_pr.sh" in r for r in runs) == 2
 
 
-def test_every_job_that_reads_a_key_runs_in_the_protected_environment():
+def test_keys_come_from_repository_secrets_only():
+    # Private on GitHub Free: no environment secrets, so no job may depend on one.
     jobs = load(SYNC)["jobs"]
     readers = {name for name, job in jobs.items() if "secrets." in yaml.safe_dump(job)}
     assert readers == {"preflight", "pull-apollo", "pull-explorium", "pull-explorium-serial", "writeback"}
-    assert all(jobs[name].get("environment") == "crm-sync" for name in readers)
+    assert not any("environment" in job for job in jobs.values())
 
 
 def test_the_sync_refuses_to_run_from_another_branch():
@@ -71,3 +73,45 @@ def test_python_ci_can_be_dispatched_onto_a_data_branch():
     ci = load(ROOT / ".github" / "workflows" / "python-ci.yml")
     assert "workflow_dispatch" in ci[True]  # YAML 1.1 reads the bare key `on` as True
     assert set(ci["jobs"]) >= {"test", "architecture"}
+
+
+def test_a_missing_key_says_where_to_add_it():
+    step = next(s for s in load(SYNC)["jobs"]["preflight"]["steps"] if s["name"] == "Verify the API keys are present")
+    assert "New repository secret" in step["run"] and "Secrets and variables -> Actions" in step["run"]
+    assert "APOLLO_API_KEY" in step["run"] and "EXPLORIUM_API_KEY" in step["run"]
+
+
+def test_check_keys_stops_after_the_key_check():
+    wf = load(SYNC)
+    assert wf[True]["workflow_dispatch"]["inputs"]["check_keys"]["default"] is False
+    jobs = wf["jobs"]
+    # every pull is skipped in check mode; merge and writeback need a pull, so they skip too
+    for name in ("pull-apollo", "pull-explorium", "pull-explorium-serial"):
+        assert jobs[name]["if"].startswith("${{ !inputs.check_keys"), name
+    assert "needs.pull-apollo.result == 'success'" in jobs["merge"]["if"]
+    assert jobs["writeback"]["needs"] == "merge"
+    last = jobs["preflight"]["steps"][-1]
+    assert last["if"] == "${{ inputs.check_keys }}" and "Nothing pulled or written" in last["run"]
+
+
+def test_codeql_skips_while_the_repository_is_private():
+    jobs = load(ROOT / ".github" / "workflows" / "codeql.yml")["jobs"]
+    assert jobs["analyze"]["needs"] == "visibility"
+    # runs only on an explicit "false": an unreadable visibility skips rather than fails
+    assert jobs["analyze"]["if"] == "${{ needs.visibility.outputs.private == 'false' }}"
+    assert "gh api" in jobs["visibility"]["steps"][0]["run"] and ".private" in jobs["visibility"]["steps"][0]["run"]
+
+
+@pytest.mark.parametrize("path", WORKFLOWS, ids=lambda p: p.name)
+def test_every_job_that_runs_pytest_installs_pyyaml_first(path):
+    # Several test modules import yaml when pytest collects them, so a job that
+    # runs pytest without PyYAML fails before any test runs (the weekly sync's
+    # merge job did until 10 Oct 2026). Commands are read in order across steps.
+    for name, job in (load(path).get("jobs") or {}).items():
+        commands = [c.strip() for s in job.get("steps") or [] for c in s.get("run", "").split("&&")]
+        runs_pytest = [i for i, c in enumerate(commands)
+                       if not c.startswith("pip ") and re.search(r"(^|\s)(python -m )?pytest\b", c)]
+        if not runs_pytest:
+            continue
+        installs = [i for i, c in enumerate(commands) if c.startswith("pip install") and "pyyaml" in c.split()]
+        assert installs and min(installs) < min(runs_pytest), f"{path.name}: job {name} runs pytest before installing pyyaml"
