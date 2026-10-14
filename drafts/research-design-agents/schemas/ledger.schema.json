@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "research-design-agents/ledger.schema.json",
+  "title": "Research evidence ledger",
+  "description": "Brief, source register, claim ledger and search log for one research project. Kept separate from the narrative so it can be reviewed and reused.",
+  "type": "object",
+  "required": ["brief", "sources", "claims", "search_log"],
+  "properties": {
+    "brief": {
+      "type": "object",
+      "required": ["version", "date", "research_question", "decision_supported"],
+      "properties": {
+        "version": {"type": "integer", "minimum": 1},
+        "date": {"type": "string", "format": "date"},
+        "project": {"type": "string"},
+        "research_question": {"type": "string"},
+        "decision_supported": {"type": "string"},
+        "decision_owner": {"type": "string"},
+        "jurisdictions": {"type": "array", "items": {"type": "string"}},
+        "time_period": {"type": "string"},
+        "data_involved": {"type": "string"},
+        "out_of_scope": {"type": "array", "items": {"type": "string"}},
+        "reviewers": {"type": "array", "items": {"type": "string"}},
+        "assumptions": {"type": "array", "items": {"type": "string"}},
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from_version", "what", "why"],
+            "properties": {
+              "from_version": {"type": "integer"},
+              "what": {"type": "string"},
+              "why": {"type": "string"},
+              "claims_to_recheck": {"type": "array", "items": {"$ref": "#/$defs/claimId"}}
+            }
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "issuer", "source_type", "locator_url", "accessed", "excerpt", "supports", "reviewed"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^SRC-[0-9]{3,}$"},
+          "title": {"type": "string"},
+          "issuer": {"type": "string"},
+          "source_type": {"enum": ["primary", "peer_reviewed", "institutional_report", "journalism", "commentary_or_marketing"]},
+          "locator_url": {"type": "string"},
+          "published": {"type": ["string", "null"]},
+          "accessed": {"type": "string", "format": "date"},
+          "locator": {"type": "string", "description": "Page, section, table, endpoint or figure"},
+          "excerpt": {"type": "string", "description": "Short quotation or faithful description of the passage relied on"},
+          "supports": {"type": "string"},
+          "does_not_establish": {"type": "string"},
+          "limits": {"type": "string", "description": "Access, version, licence or coverage limits actually verified"},
+          "reviewed": {"type": "boolean", "description": "false when only a search snippet or listing was seen"},
+          "checksum_or_archive": {"type": ["string", "null"], "description": "Only if a tool produced one"}
+        }
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "claim", "status", "confidence", "confidence_reason"],
+        "properties": {
+          "id": {"$ref": "#/$defs/claimId"},
+          "claim": {"type": "string"},
+          "status": {"enum": ["FACT", "INFERENCE", "ASSUMPTION", "UNVERIFIED_LEAD"]},
+          "source_ids": {"type": "array", "items": {"type": "string", "pattern": "^SRC-[0-9]{3,}$"}},
+          "evidence_type": {"enum": ["causal", "quasi_experimental", "descriptive", "qualitative", "expert_guidance", "legal_text", "other"]},
+          "scope_covered": {"type": "string", "description": "Population, market, place and period the evidence covers"},
+          "applies": {"enum": ["directly", "extrapolated"]},
+          "conflicts": {"type": "string"},
+          "confidence": {"enum": ["high", "medium", "low"]},
+          "confidence_reason": {"type": "string"},
+          "recheck_by": {"type": ["string", "null"], "format": "date"},
+          "superseded_by": {"oneOf": [{"$ref": "#/$defs/claimId"}, {"type": "null"}]}
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"status": {"const": "FACT"}}},
+            "then": {"required": ["source_ids"], "properties": {"source_ids": {"minItems": 1}}}
+          }
+        ]
+      }
+    },
+    "search_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "tool", "query"],
+        "properties": {
+          "date": {"type": "string", "format": "date"},
+          "tool": {"type": "string"},
+          "query": {"type": "string"},
+          "filters": {"type": "string"},
+          "kept": {"type": "string"},
+          "excluded": {"type": "string"},
+          "not_accessible": {"type": "string"}
+        }
+      }
+    },
+    "gaps": {"type": "array", "items": {"type": "string"}}
+  },
+  "$defs": {
+    "claimId": {"type": "string", "pattern": "^CLAIM-[0-9]{3,}$"}
+  }
+}

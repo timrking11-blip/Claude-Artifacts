@@ -1,0 +1,10 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "research-design-agents",
+  "version": "0.1.0",
+  "description": "Evidence-governed market research design: a primary research designer, a custom study designer, and the portable skills they share (research brief, evidence ledger, study design, study scoping).",
+  "author": {
+    "name": "Tim King"
+  },
+  "keywords": ["market-research", "research-design", "survey", "evidence", "agent-skills"]
+}
