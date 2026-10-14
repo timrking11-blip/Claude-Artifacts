@@ -1,12 +1,16 @@
-# drafts/ (staging only, never merge)
+# drafts/
 
-Work written before its own repository existed. It is held here so another
-session can read it, and it moves to its own repository once that repository
-is created and its PROBLEM.md is confirmed. This folder is not part of the
-SMI stack and must not be merged into the default branch.
+Work written before its own repository existed. It was staged on a side
+branch so another session could read it, and the owner merged it into the
+default branch on 14 Oct 2026 (PR #28, merge commit 037b6a8). It is not part
+of the SMI stack: nothing in `crm/`, `scripts/`, `architecture/` or the
+workflows reads it. It moves to its own repository once that repository is
+created and its PROBLEM.md is confirmed, and is removed from here in the same
+change.
 
 - `research-design-agents/`: draft Claude Code plugin (two research design
   agents, four Agent Skills, a ledger schema, eval cases, docs), 14 Oct 2026.
   First eval run (one run per case, with and without the plugin): no net
-  gain. pricing-study-design failed with the plugin; unverified-market-size
-  failed in both arms.
+  gain. pricing-study-design failed with the plugin and passed without it;
+  unverified-market-size failed in both arms; vague-request-brief passed only
+  with the plugin; health-app-custom-study passed in both.
