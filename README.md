@@ -1,11 +1,14 @@
 # Claude Artifacts — CRM master ledger
 
 A weekly, two-way contact data exchange between **Apollo** and **Explorium**,
-reconciled into one master database that lives in a Claude artifact and is
-mirrored in this repo.
+reconciled into one master database whose system of record is the CRM
+artifact. The checkout's `data/master/` path is gitignored and is not a
+committed mirror; a fresh checkout does not contain the current master.
 
 **System of record:** the CRM System, https://claude.ai/artifact/8GigYGeoefKqxEptmeCHWG. The Master Contact Ledger page (https://claude.ai/artifact/VcbjegQv71QGNveHtt415f) is archived: since 25 Sep 2026 it points to the CRM's Sources section.
-**Committed mirror:** [`data/master/contacts.json`](data/master/contacts.json)
+**Master data:** `data/master/contacts.json` is a local working file, excluded
+from Git. The current source for workflows that need a checkout copy has not
+yet been selected.
 **Change history:** [`data/CHANGELOG.md`](data/CHANGELOG.md). What to look at is the CRM page's **Last runs** strip: one line per run that created or changed records, with any run that would create more than 5 records held there for your check (`crm/runlog.py`).
 
 ## What runs, and when
@@ -58,6 +61,10 @@ original ledger artifact, which has been superseded; they stay for history.
 Prequalification proposals are composed by the account-research agent
 (`prequal <account>: <request>`, see `python/agents/account-research/`) on the
 Anthropic API -- nothing in this loop touches Google Cloud.
+
+The scripts still use `data/master/` as their default working path, but that
+directory is gitignored. Do not treat a clean checkout as containing the
+master: the source for restoring it to checkout-based workflows is unresolved.
 
 The two pulls are independent jobs in
 [`.github/workflows/weekly-crm-sync.yml`](.github/workflows/weekly-crm-sync.yml).
@@ -251,8 +258,8 @@ crm/note_to_founder.py        the cover note to the founder (= the requester) th
 crm/http.py                   retrying stdlib JSON client
 scripts/                      the entrypoints above
 tests/test_merge.py           merge behaviour
-data/master/contacts.json     committed mirror of the artifact database
-data/master/review.json       held conflicts and ambiguous matches from the latest applied merge
+data/master/contacts.json     local working copy; gitignored, not present in a fresh checkout
+data/master/review.json       local review output; gitignored
 data/CHANGELOG.md             per-run record of what changed
 data/runlog/                  one line per Actions run, posted to the CRM's Last runs strip by the Monday 11:30 routine
 crm/runlog.py                 the run line, the created-count hold (HOLD_OVER = 5), and its CLI
@@ -262,7 +269,7 @@ scripts/validate_architecture.py  manifest, ADRs, matrix, invariants and code ag
 scripts/check_architecture.py  the invariant probes (docs/architecture-invariants.md is rendered from them)
 scripts/cost_report.py        price basis, routine routing, this month's composition runs against the cap
 data/proposals/               prequalification proposals the agent wrote (committed)
-data/runs/<id>/               what each Intake-page composition run saw and produced (committed) -- the only proposal path
+data/runs/<id>/               composition-run evidence (gitignored by default; the run flow publishes its run explicitly)
 docs/composition-run.md       the one-button flow: page → routine → scripts → CRM
 artifact/intake.html          source of the Account Composition Intake page (v2, one button)
 artifact/crm.html             the archived ledger page: a pointer to the CRM's Sources section since 25 Sep 2026

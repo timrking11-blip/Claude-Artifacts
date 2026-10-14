@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bring edits made in the CRM artifact back into the repo mirror.
+"""Bring edits made in the CRM artifact into the local master working copy.
 
 Reads a dump of the artifact's `contacts` collection -- the directory layout
 ArtifactData writes with `out_dir`, i.e. <dump>/contacts/<doc_id>.json -- and

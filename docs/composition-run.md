@@ -29,7 +29,7 @@ press Run ──► db  runs/<run_id> = {manifest, status: queued}
                                    ArtifactData batch: ONE merged note into the CRM record's pre-qual
                                      phase — proposal · note to the founder · review · research coverage · sync schedule
                                    ArtifactData update runs/<id> ◄── run_final.json (review, note to the founder, proposal, ids)
-                                   git commit data/runs/<id> + data/proposals · push
+                                   publish an explicit data PR with data/runs/<id> + data/proposals
 page renders live: sequence lamps · review · note to the founder · proposal (Download PDF) · CRM ids
 ```
 
@@ -252,6 +252,10 @@ data/runs/<run_id>/
 data/proposals/<slug>-<date>-<run_id>.json|md   the filed proposal (push_proposals_to_crm.py reads the JSON)
 data/artifact/crm/compose_<run_id>/    the ArtifactData batch (gitignored)
 ```
+
+`data/runs/` is gitignored by default, so ordinary Git status and commits omit
+the run evidence. The composition flow publishes its run explicitly; proposal
+files under `data/proposals/` are tracked.
 
 ## Running it by hand
 

@@ -56,7 +56,8 @@ LINKEDIN_STAGING = STAGING_DIR / "linkedin.json"
 #: reads them.
 PROPOSALS_DIR = DATA_DIR / "proposals"
 #: One directory per button-driven composition run (manifest, state, review,
-#: prompts). Committed: it is the audit trail of what the run saw.
+#: prompts). Gitignored by default; the composition flow publishes each run
+#: explicitly as its audit trail.
 RUNS_DIR = DATA_DIR / "runs"
 #: The account-research agent package; its ledger/fetch/write_proposal tools
 #: are pure Python and scripts/compose_account.py imports them from here.

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Turn the repo's master file into write batches for the CRM artifact database.
 
-The artifact's database is the master; this repo's data/master/contacts.json
-is its committed mirror. After a weekly merge, this script prepares the
-writes that push the mirror back into the artifact -- one JSON file per
+The artifact's database is the master; data/master/contacts.json is a local
+working copy and is gitignored. After a weekly merge, this script prepares the
+writes that push the working copy back into the artifact -- one JSON file per
 batch of at most 50 documents, which is the platform's batch ceiling.
 
 A Claude session applies them with the ArtifactData tool:
