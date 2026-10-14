@@ -86,6 +86,8 @@ def dump(tmp_path):
     (d / "ap_zed.json").write_text(json.dumps(_doc(
         email="zed@example.com", qualified=True, flags=["disqualified"],
         activity=[{"ts": "t", "type": "call", "text": "spoke"}], website="other.example")))
+    # The routine writes the listing's versions beside the dump; every update pins to them (GAP-007).
+    (tmp_path / "dump" / "versions.json").write_text(json.dumps({"ap_ada": 1, "ap_bob": 1, "ap_zed": 1}))
     return tmp_path / "dump"
 
 
@@ -271,12 +273,26 @@ def test_write_batches_splits_at_fifty_and_clears_stale(tmp_path):
 
 
 def test_writes_are_pinned_when_the_dump_knows_versions(master, dump):
-    (dump / "versions.json").write_text(json.dumps({"ap_ada": 7}))
+    (dump / "versions.json").write_text(json.dumps({"ap_ada": 7, "ap_bob": 2, "ap_zed": 5}))
     from crm.master import load_master
     writes = push_enrichment.plan(load_master(master), load_crm_dump(dump))
     by_id = {w["doc_id"]: w for w in writes}
     assert by_id["ap_ada"]["if_version"] == 7
     assert "_version" not in by_id["ap_ada"]["data"]          # never written to the document
+    assert all(isinstance(w.get("if_version"), int) for w in writes if w["op"] == "update")
+
+
+def test_an_update_without_a_known_version_is_refused(master, dump):
+    """GAP-007: a dump taken without its versions file stops the plan; nothing is emitted unpinned."""
+    from crm.crm_sync import UnpinnedWrite, pinned
+    from crm.master import load_master
+    (dump / "versions.json").unlink()
+    with pytest.raises(UnpinnedWrite, match="unpinned update"):
+        push_enrichment.plan(load_master(master), load_crm_dump(dump))
+    with pytest.raises(UnpinnedWrite):
+        pinned({"name": "no version"}, {"op": "update", "collection": "accounts", "doc_id": "a1", "data": {}})
+    create = {"op": "create", "collection": "accounts", "doc_id": "a2", "data": {}}
+    assert pinned({}, create) is create and "if_version" not in create   # a create has no version to pin
 
 
 def test_prospect_proposal_lands_on_the_account(master, dump):

@@ -1,0 +1,73 @@
+{
+  "profile": "full",
+  "brief": {
+    "version": 1,
+    "date": "2026-10-14",
+    "project": "Example Co prequalification",
+    "research_question": "Is Example Co's second-location decision one SMI can help with in the next quarter?",
+    "decision_supported": "Whether to send a prequalification proposal",
+    "decision_owner": "Timothy King",
+    "jurisdictions": ["US"],
+    "time_period": "2025-2026",
+    "data_involved": "Public company pages and public statistics; no personal data beyond business contacts",
+    "out_of_scope": ["pricing"],
+    "reviewers": ["Timothy King"],
+    "assumptions": ["The careers page is current"]
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "title": "Careers",
+      "issuer": "Example Co",
+      "source_type": "primary",
+      "locator_url": "https://example.com/careers",
+      "published": null,
+      "accessed": "2026-10-14",
+      "locator": "Open roles list",
+      "quote": "We are hiring three field technicians",
+      "excerpt": "Lists three open field technician roles",
+      "supports": "Example Co is hiring for field capacity",
+      "does_not_establish": "Why it is hiring, or where the roles are based",
+      "reviewed": true
+    },
+    {
+      "id": "SRC-002",
+      "title": "Current Employment Statistics",
+      "issuer": "U.S. Bureau of Labor Statistics",
+      "source_type": "primary",
+      "locator_url": "https://www.bls.gov/ces",
+      "accessed": "2026-10-14",
+      "excerpt": "Search listing for the CES program page; the table itself was not opened",
+      "supports": "Where regional service employment figures are published",
+      "reviewed": false
+    }
+  ],
+  "claims": [
+    {
+      "id": "CLAIM-001",
+      "claim": "Example Co is hiring field technicians",
+      "status": "FACT",
+      "source_ids": ["SRC-001"],
+      "evidence_type": "descriptive",
+      "applies": "directly",
+      "confidence": "high",
+      "confidence_reason": "First-party page read on the access date"
+    },
+    {
+      "id": "CLAIM-002",
+      "claim": "Capacity, not demand, limits Example Co's growth",
+      "status": "INFERENCE",
+      "source_ids": ["SRC-001", "SRC-002"],
+      "evidence_type": "other",
+      "applies": "extrapolated",
+      "confidence": "low",
+      "confidence_reason": "Hiring alone does not show the constraint; regional demand data was not reviewed"
+    }
+  ],
+  "contradictions": [],
+  "search_log": [
+    {"date": "2026-10-14", "tool": "web_fetch", "query": "https://example.com/careers", "kept": "SRC-001"},
+    {"date": "2026-10-14", "tool": "web_search", "query": "regional service employment 2026", "kept": "SRC-002 (listing only)", "not_accessible": "BLS table not opened"}
+  ],
+  "gaps": ["Regional demand figures"]
+}

@@ -8,6 +8,13 @@ workflows reads it. It moves to its own repository once that repository is
 created and its PROBLEM.md is confirmed, and is removed from here in the same
 change.
 
+One link runs the other way. Since 14 Oct 2026 the plugin's
+`schemas/ledger.schema.json` is a byte-identical copy of the SMI evidence
+ledger schema, `architecture/schemas/evidence-ledger.schema.json`, so that
+there is one schema. `tests/test_ledger.py` checks the two are identical. When
+the plugin moves out, that test goes with it, and the new repository takes the
+schema from Claude-Artifacts.
+
 - `research-design-agents/`: draft Claude Code plugin (two research design
   agents, four Agent Skills, a ledger schema, eval cases, docs), 14 Oct 2026.
   First eval run (one run per case, with and without the plugin): no net

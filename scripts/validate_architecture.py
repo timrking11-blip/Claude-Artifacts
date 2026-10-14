@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-"""Validate architecture/: manifest, ADR files, system-of-record matrix, invariants and code agree.
+"""Validate architecture/: manifest, decisions index, system-of-record matrix, invariants and code agree.
+
+ADR texts live on their Notion 02 pages (ADR-014). This repository keeps no
+ADR copies; the manifest's `decisions` is the index. CI cannot read Notion, so
+whether a page and its index row agree is checked by the reconciliation audit,
+not here.
 
 Checks (each failure is an error unless marked warning):
-  decisions    every ADR file is indexed and every index row has its file;
-               the file's Status line matches the index; accepted ADRs carry a
-               Decided date; the invariants' decision statuses agree, and a
-               normative invariant's ADR is Accepted
-  authority    ADR-007's transition: while pending, its status reads
-               "Accepted; transition pending merge" and no effective commit
-               is set; once effective, the status, commit and date agree in
-               the ADR and the manifest, the date is not before the decision,
-               and (when git is available) the commit is in this history
+  decisions    every row has an id, a title and a status from the vocabulary;
+               a written ADR has a Notion page URL and no `file`; an accepted
+               one carries its Decided date; no architecture/adr/ copies exist;
+               the invariants' decision statuses and URLs agree with the index,
+               and a normative invariant's ADR is Accepted
+  authority    ADR-007's transition, recorded in the manifest: while pending,
+               no effective commit or date is set; once effective, the commit
+               is a full SHA, the date is ISO and not before the decision, and
+               (when git is available) the commit is in this history
   matrix       store ids are manifest systems; each current object appears
                once; nothing proposed holds current authority; the current
                owner of architecture decisions follows the transition; field
@@ -64,8 +69,7 @@ DECISION_STATUSES = ("Proposed", "Accepted", "Superseded", "Deferred", "Not writ
 IMPLEMENTATION_STATES = ("none", "DESIGNED", "CODE_EXISTS", "CONFIGURED", "EXECUTED", "PRODUCTION_VERIFIED", "RETIRED")
 DEPLOYMENTS = ("none", "branch", "default-branch", "routine", "artifact", "external", "github-actions")
 TRANSITIONS = ("pending_merge", "effective")
-ADR7_PENDING = "Accepted; transition pending merge"
-ADR7_EFFECTIVE = "Accepted; effective"
+NOTION_PAGE = re.compile(r"^https://(app\.notion\.com|www\.notion\.so)/p/[0-9a-f]{32}$")
 SHA = re.compile(r"^[0-9a-f]{40}$")
 LIGHT_MODELS = re.compile(r"sonnet|haiku", re.I)
 EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
@@ -90,11 +94,6 @@ def _yaml(path: Path) -> Any:
     return yaml.safe_load(path.read_text())
 
 
-def _field(text: str, name: str) -> str | None:
-    m = re.search(rf"^{re.escape(name)}:\s*(.+?)\s*$", text, re.M)
-    return m.group(1) if m else None
-
-
 def digest(manifest: dict[str, Any], matrix: dict[str, Any]) -> str:
     """SHA-256 over the protected sections, canonical JSON (dates as ISO strings)."""
     payload = {"authority": manifest.get("authority"), "decisions": manifest.get("decisions"),
@@ -112,37 +111,35 @@ def check_decisions(arch: Path, manifest: dict[str, Any], invariants: dict[str, 
         if d["id"] in by_id:
             r.err(f"decisions: {d['id']} listed twice")
         by_id[d["id"]] = d
+        if not d.get("title"):
+            r.err(f"decisions: {d['id']} has no title")
         if d.get("status") not in DECISION_STATUSES:
             r.err(f"decisions: {d['id']} status {d.get('status')!r} not in {DECISION_STATUSES}")
-        f = d.get("file")
-        if not f:
-            if d.get("status") != "Not written":
-                r.err(f"decisions: {d['id']} has no file but is {d.get('status')}")
-            continue
-        path = arch / f
-        if not path.exists():
-            r.err(f"decisions: {d['id']} file {f} does not exist")
-            continue
-        text = path.read_text()
-        if not text.startswith(f"# {d['id']} "):
-            r.err(f"{f}: first line must be '# {d['id']} — …'")
-        status = _field(text, "Status") or ""
-        if status.split(";")[0].strip() != d["status"]:
-            r.err(f"{f}: Status {status!r} disagrees with the manifest ({d['status']})")
-        if d["status"] == "Accepted":
-            decided = _field(text, "Decided")
-            if not decided or str(d.get("decided")) != decided:
-                r.err(f"{f}: an accepted ADR needs 'Decided: {d.get('decided')}' matching the manifest")
-    for path in sorted((arch / "adr").glob("ADR-*.md")):
-        aid = path.name[:7]
-        if aid not in by_id or by_id[aid].get("file") != f"adr/{path.name}":
-            r.err(f"adr/{path.name} is not indexed under decisions")
+        if "file" in d:
+            r.err(f"decisions: {d['id']} names a file; ADR texts live in Notion 02 and the index holds only its URL (ADR-014)")
+        url = d.get("notion")
+        if d.get("status") == "Not written":
+            if url:
+                r.err(f"decisions: {d['id']} is Not written but has a Notion page; give it its status")
+        elif not (isinstance(url, str) and NOTION_PAGE.match(url)):
+            r.err(f"decisions: {d['id']} is {d.get('status')} but has no Notion page URL")
+        if d.get("status") == "Accepted":
+            try:
+                date.fromisoformat(str(d.get("decided")))
+            except ValueError:
+                r.err(f"decisions: {d['id']} is Accepted and needs an ISO 'decided' date")
+    copies = sorted(p.name for p in (arch / "adr").glob("*")) if (arch / "adr").is_dir() else []
+    if copies:
+        r.err(f"architecture/adr/ holds {len(copies)} file(s); ADR texts live in Notion 02, not here (ADR-014)")
     for d in (invariants or {}).get("decisions") or []:
         row = by_id.get(d["id"])
         if row is None:
             r.err(f"invariants.yaml: {d['id']} is not in the manifest's decisions")
-        elif not str(d.get("status", "")).startswith(row["status"]):
+            continue
+        if not str(d.get("status", "")).startswith(row["status"]):
             r.err(f"invariants.yaml: {d['id']} status {d.get('status')!r} disagrees with the manifest ({row['status']})")
+        if (d.get("url") or None) != (row.get("notion") or None):
+            r.err(f"invariants.yaml: {d['id']} url {d.get('url')!r} is not the manifest's Notion page {row.get('notion')!r}")
     for inv in (invariants or {}).get("invariants") or []:
         row = by_id.get(inv.get("adr"))
         if inv.get("standing") == "normative" and (row is None or row["status"] != "Accepted"):
@@ -172,23 +169,17 @@ def check_authority(arch: Path, root: Path, manifest: dict[str, Any], decisions:
     if not row or row.get("status") != "Accepted" or a.get("decision_status") != "Accepted":
         r.err("authority: its decision must be an Accepted ADR in the index")
         return
-    text = (arch / row["file"]).read_text()
-    status, commit, when = _field(text, "Status"), _field(text, "Effective commit"), _field(text, "Effective date")
     if t == "pending_merge":
-        if status != ADR7_PENDING:
-            r.err(f"{row['file']}: while pending, Status must read {ADR7_PENDING!r}")
-        if a.get("effective_commit") or a.get("effective_date") or commit != "pending" or when != "pending":
-            r.err("authority: pending, so no effective commit or date may be recorded anywhere")
+        if a.get("effective_commit") or a.get("effective_date"):
+            r.err("authority: pending, so no effective commit or date may be recorded")
         r.warn("authority: ADR-007's transition is pending merge; Notion remains the effective authority")
         return
-    if status != ADR7_EFFECTIVE:
-        r.err(f"{row['file']}: once effective, Status must read {ADR7_EFFECTIVE!r}")
     sha, eff = str(a.get("effective_commit") or ""), str(a.get("effective_date") or "")
-    if not SHA.match(sha) or commit != sha:
-        r.err("authority: effective_commit must be a full commit SHA, the same in the ADR and the manifest")
+    if not SHA.match(sha):
+        r.err("authority: effective_commit must be a full commit SHA")
     try:
-        if date.fromisoformat(eff) < date.fromisoformat(str(row.get("decided"))) or when != eff:
-            r.err("authority: effective_date must match the ADR and may not precede the decision")
+        if date.fromisoformat(eff) < date.fromisoformat(str(row.get("decided"))):
+            r.err("authority: effective_date may not precede the decision")
     except ValueError:
         r.err("authority: effective_date must be an ISO date")
     if SHA.match(sha):

@@ -91,25 +91,46 @@ Don't work around them.
 - The internal check before a proposal goes out is "Review before sending"
   (`crm/review.py`). It's for SMI and is never shown to the prospect.
 
+## Research profiles and the evidence ledger
+
+Every research task writes its evidence to `ledger.json` under one schema,
+`architecture/schemas/evidence-ledger.schema.json` (`docs/research-profiles.md`
+holds the full-profile prompt):
+- **full** for legal, health, privacy, market sizing, or any claim shown
+  outside SMI, a proposal included: brief, source register, claim ledger,
+  search log;
+- **lean** for development research: sources and claims only.
+
+`scripts/validate_ledger.py` (rules in `crm/ledger.py`) fails a ledger when
+a claim cites a source id not in the register, a quote has no locator, a
+source has no access date, or a FACT rests only on unopened search snippets.
+The composition run is full: `prepare` asks for `ledger.json`, and
+`finalize` refuses a run whose ledger is missing or fails. Ledgers are files;
+nothing writes them into the CRM. Never invent a quotation, page number or
+date to make a ledger pass.
+
 ## Architecture authority (ADR-007) and the invariants
 
-- **ADR-007 is Accepted (1 Oct 2026, reaffirmed by the owner 9 Oct: "Repo
-  governs").** `architecture/` becomes the architecture authority when the
-  change carrying it merges into the default branch; until then Notion
-  (INTEGRATED GTM ARCHITECTURE) is the effective authority, and afterwards
-  its readable view. A blocked push never rescinded the decision. Never say
-  authority has moved before the merge, and never backdate it: after the
-  merge, a follow-up commit records the merge commit and date in ADR-007 and
-  the manifest's `authority` block.
-- Start at `architecture/README.md`. The ADRs are in `architecture/adr/`
-  (ADR-001…006 imported verbatim from Notion 02 with their statuses; ADR-007
-  and ADR-008 Accepted; ADR-009…012 Proposed, from page 14, revised; ADR-009
-  as drafted, which would have restored Notion authority, is not accepted).
-  Accepted text is never edited: dated annotations or a new ADR. Ownership
-  has one definition, `architecture/system-of-record.yaml`; open questions
-  are gaps in `architecture/gaps/README.md`, never guesses.
+- **ADR-007 is Accepted (1 Oct 2026) and effective since 9 Oct 2026**, when
+  PR #24 merged (merge commit `1e8104b`, recorded 14 Oct, not backdated).
+  `architecture/` is the architecture authority; the other Notion pages are
+  its readable view.
+- **ADR texts live in Notion 02, not here (ADR-014, Accepted 14 Oct).** The
+  manifest's `decisions` indexes every ADR by id, title, status, decided
+  date and Notion URL; the validator refuses any `architecture/adr/` copy. A
+  decision is made on its Notion page by the owner, and the index is updated
+  in the same session. CI cannot read Notion: page and index agreement is the
+  reconciliation audit's job (GAP-020). Accepted text is never edited: dated
+  annotations or a new ADR. Statuses: ADR-001, 006, 007, 008 and 014
+  Accepted; ADR-002…005 and 009…012 Proposed; ADR-013 not written.
+- Start at `architecture/README.md`. Ownership has one definition,
+  `architecture/system-of-record.yaml`; open questions are gaps in
+  `architecture/gaps/README.md`, never guesses. Specifications are in
+  `architecture/specs/` (SPEC-002 Signal Model, Proposed; SPEC-003 AI Action
+  Contract, Accepted with ADR-006).
 - `scripts/validate_architecture.py` (CI job `architecture`) fails when:
-  - the manifest, ADR files, matrix, invariants and code disagree;
+  - the manifest's decisions index, the matrix, invariants and code disagree,
+    or an ADR copy appears in the repository;
   - CODEOWNERS stops covering the enforcement paths, or starts covering a
     data path;
   - the protected digest is stale.
@@ -140,9 +161,10 @@ Don't work around them.
   it; never edit it by hand). An improvement prints "raise `expected`".
 - A rule is `normative` only when its ADR is Accepted. While its ADR is
   Proposed or not written, it is a `candidate`, reported but never held to
-  `expected`. On 9 Oct all sixteen rules are candidates: ADR-006 and
-  ADR-012 are Proposed, and ADR-013 is not written. A Notion URL or an ADR
-  filed in `architecture/adr/` is an index, never acceptance; the checker
+  `expected`. Since 14 Oct, ADR-006 is Accepted, so its six rules (INV-06
+  to INV-10, INV-16) are normative and CI holds each at `expected`; the
+  rules for ADR-012 (Proposed) and ADR-013 (not written) are candidates. A
+  Notion URL or a filed proposal is an index, never acceptance; the checker
   and the validator refuse a normative rule whose ADR is not Accepted. A
   decision is the owner's: no script, CI run or merge creates or accepts
   one.

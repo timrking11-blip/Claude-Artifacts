@@ -67,6 +67,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from crm import config, costs, runlog  # noqa: E402
+from crm import ledger as evidence_ledger  # noqa: E402
 from crm.crm_sync import load_crm_dump, pinned, system_activity, utcnow_iso  # noqa: E402
 from crm.guardrails import check_run, credit_spend_allowed, found_on_intake_domain, urls_in  # noqa: E402
 from crm.master import load_master  # noqa: E402
@@ -359,9 +360,15 @@ def _founder_label(founder: dict[str, Any] | None) -> str:
     return " ".join(x for x in (f.get("name"), f"({f['linkedin_url']})" if f.get("linkedin_url") else None) if x)
 
 
+#: A proposal goes to a prospect, so its research is externally shown: the full profile (docs/research-profiles.md).
+LEDGER_PROFILE = "full"
+
+
 def write_prepare(run_dir: Path, manifest: dict[str, Any], result: dict[str, Any], run_id: str, now: datetime) -> None:
     state = dict(result["state"])
     page = state.pop("page_contents", None)
+    # Runs prepared from here on must file an evidence ledger; finalize refuses one that fails validation.
+    state["evidence_ledger"] = {"required": True, "profile": LEDGER_PROFILE}
     _write_json(run_dir / "manifest.json", manifest)
     _write_json(run_dir / "state.json", state)
     if page:
@@ -406,6 +413,15 @@ def write_prepare(run_dir: Path, manifest: dict[str, Any], result: dict[str, Any
         "## 2 · Summarise the page → website_summary.txt\n\n"
         + ("(fetch_page did not run; skip this leg — the research memo covers the site)\n" if not page
            else summary_prompt(result["state"]).strip() + "\n")
+        + "\n## 2b · Evidence ledger → ledger.json (" + LEDGER_PROFILE + " profile)\n\n"
+        "Record what the proposal will rest on as ledger.json, following "
+        "architecture/schemas/evidence-ledger.schema.json and docs/research-profiles.md: a brief (version 1, today's "
+        "date, the research question, the decision it supports), a source register (SRC-001…), a claim ledger "
+        "(CLAIM-001…: FACT only with a reviewed source; INFERENCE or ASSUMPTION otherwise), any contradictions, "
+        "and the search log. Every claim cites only sources in the register; every quote has its locator; every "
+        "source has the date you accessed it; a search snippet you did not open is reviewed: false. Never invent "
+        "a quotation, page number or date. Check it with `scripts/validate_ledger.py ledger.json --profile "
+        + LEDGER_PROFILE + "`; finalize refuses the run if it fails.\n"
         + "\n## 3 · Draft the proposal\n\nRun `scripts/compose_account.py brief " + run_id
         + " --web-research ... --web-sources ... --data-sources ... --coverage ... [--website-summary ...]`; "
         "it writes proposal_prompt.md with the research filled in. Answer that prompt and save the Markdown "
@@ -668,6 +684,7 @@ def finalize(run_dir: Path, proposal_md: str, website_summary: str | None, compo
     problems = check_run(manifest, state.get("coverage"), research, sources_md, proposal_md, cited_links(proposal_md))
     if problems:
         raise GateError("guardrail: " + " | ".join(problems))
+    state["evidence_ledger"] = check_ledger(run_dir, state.get("evidence_ledger"))
     record = proposal_record(state, manifest, run_id, proposal_md, review, composer_flags, now,
                              founder_lines=founder_lines)
     writes, log = push_proposals_to_crm.plan([record], master, docs, now=_iso(now))
@@ -679,6 +696,34 @@ def finalize(run_dir: Path, proposal_md: str, website_summary: str | None, compo
     return {"record": record, "state": state, "writes": writes, "log": log, "contact_ids": contact_ids,
             "account_id": account_write["doc_id"] if account_write else None,
             "runlog": run_line(record, contact_ids, account_write, now, run_id=run_id, cap=cap)}
+
+
+def check_ledger(run_dir: Path, wanted: dict[str, Any] | None) -> dict[str, Any]:
+    """Validate ledger.json against the evidence-ledger schema and its integrity rules.
+
+    A ledger that is present must pass, in the profile prepare asked for. One that is
+    absent is refused only for runs prepared after the ledger became part of the run
+    (state.evidence_ledger.required); older runs record that they had none.
+    """
+    wanted = wanted or {}
+    path = run_dir / "ledger.json"
+    if not path.exists():
+        if wanted.get("required"):
+            raise GateError("evidence ledger: ledger.json is missing; this run was prepared to file one "
+                            f"({wanted.get('profile')} profile)")
+        return {**wanted, "status": "absent: run prepared before the evidence ledger"}
+    try:
+        data = evidence_ledger.load(path)
+    except (OSError, ValueError) as exc:
+        raise GateError(f"evidence ledger: ledger.json is not valid JSON ({exc})")
+    errors = evidence_ledger.validate(data)
+    profile = evidence_ledger.profile_of(data)
+    if wanted.get("profile") and profile != wanted["profile"]:
+        errors.append(f"profile is {profile!r}; this run needs {wanted['profile']!r}")
+    if errors:
+        raise GateError("evidence ledger: " + " | ".join(errors))
+    return {**wanted, "status": f"valid: {len(data.get('sources') or [])} sources, "
+                                f"{len(data.get('claims') or [])} claims", "profile": profile}
 
 
 def run_line(record: dict[str, Any], contact_ids: list[str], account_write: dict[str, Any] | None,
@@ -749,6 +794,7 @@ def write_finalize(run_dir: Path, result: dict[str, Any], batch_dir: Path, json_
         "proposal_id": record["proposal_id"],
         "sources": record["sources"],
         "coverage": record["coverage"],
+        "evidence_ledger": result["state"].get("evidence_ledger"),
         "sync_schedule": sync_schedule_lines(now),
         "proposal_markdown": record["proposal_markdown"],
         "proposal_path": str(json_path.relative_to(ROOT)) if json_path.is_relative_to(ROOT) else str(json_path),

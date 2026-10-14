@@ -15,7 +15,7 @@
 # under ADR-007 that needs an accepted ADR, and the protected digest in the
 # manifest must be updated in the same reviewed pull request.
 schema: 1
-as_of: 2026-10-09
+as_of: 2026-10-14
 
 field_groups:
   crm_owned:
@@ -110,10 +110,17 @@ current:
     writers: [{writer: owner, note: no routine ticks an item}]
 
   - object: architecture decision
+    store: repository-architecture
+    location: architecture/ on the default branch (manifest, this matrix, invariants, current and target state, gaps)
+    decision: ADR-007
+    role: the architecture authority since ADR-007 took effect on 2026-10-09 (merge commit 1e8104b)
+    evidence: [ADR-007 page in Notion 02, "PR #24 merge 1e8104b"]
+
+  - object: ADR text and status
     store: notion-architecture
-    location: Notion INTEGRATED GTM ARCHITECTURE, 02 — Architecture Decision Records
-    role: effective until ADR-007's transition condition is met; see accepted_target
-    evidence: [architecture/adr/ADR-007-architecture-authority-in-the-repository.md]
+    location: Notion INTEGRATED GTM ARCHITECTURE, 02 — Architecture Decision Records, one page per ADR
+    decision: ADR-014
+    role: the owner decides on the ADR's page; the manifest's decisions index mirrors it in the same session
 
   - object: architecture catalog
     store: notion-architecture-registry
@@ -125,10 +132,6 @@ current:
     location: default branch claude/explorium-docs-mcp-brregp
 
 accepted_target:
-  - object: architecture decision
-    store: repository-architecture
-    decision: ADR-007
-    condition: the authority change merges into the default branch
   - object: signed proposals and commercial terms
     store: pandadoc
     decision: 01 — Living Reference Model, system-of-record policy
@@ -146,7 +149,11 @@ proposed:
   - object: signal, observation, evidence, claim, hypothesis, contradiction, snapshot, recommendation, decision, authorization, action, outcome, evaluation, provenance edge
     store: intelligence-core
     decision: ADR-012
-    note: no write authority until ADR-012 is accepted and verified; WP-IC-1 would extend existing records first
+    note: >-
+      no write authority until ADR-012 is accepted and verified; WP-IC-1 would extend existing records first.
+      Executable shapes with no store: crm/signal.py (SPEC-002), crm/decision.py (ADR-006, Accepted), and the
+      evidence ledger files (architecture/schemas/evidence-ledger.schema.json), which research runs write as
+      JSON and never into the CRM
   - object: opportunity
     store: custom-crm
     decision: blueprint decision D5 (not decided)

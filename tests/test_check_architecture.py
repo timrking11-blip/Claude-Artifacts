@@ -106,23 +106,29 @@ def test_a_candidate_is_promoted_once_its_adr_is_accepted():
 
 
 def test_the_committed_rules_are_candidates_while_their_adrs_are_not_accepted():
+    """ADR-006 was accepted on 14 Oct 2026, so its rules are normative; ADR-012 and ADR-013 stay candidates."""
     s = ca.load()
     not_accepted = {d["id"] for d in s["decisions"] if not ca.accepted(d)}
-    assert not_accepted == {"ADR-006", "ADR-012", "ADR-013"}
+    assert not_accepted == {"ADR-012", "ADR-013"}
     assert all(i["standing"] == "candidate" for i in s["invariants"] if i["adr"] in not_accepted)
-    assert {i["standing"] for i in s["invariants"]} == {"candidate"}
+    assert {i["id"] for i in s["invariants"] if i["standing"] == "normative"} == {
+        "INV-06", "INV-07", "INV-08", "INV-09", "INV-10", "INV-16"}
 
 
 def test_hard_controls_hold_under_candidate_rules_in_the_committed_source():
-    """Moving every rule to candidate keeps each existing control a CI failure if it regresses."""
+    """Every existing control is a CI failure if it regresses, under candidate and normative rules alike;
+    a normative rule (its ADR Accepted) also fails CI when it falls below its expected status."""
     s = ca.load()
     mnr = [p["id"] for i in s["invariants"] for p in i["probes"] if p.get("must_not_regress")]
     assert len(mnr) >= 25
     broken = {pid: bad for pid in ca.PROBES}
     regressions, _ = ca.verdict(ca.run(s, probes=broken))
-    failed = {r.split()[1] for r in regressions}
+    failed = {r.split()[1] for r in regressions if "MUST_NOT_REGRESS" in r}
     offline = {p["id"] for i in s["invariants"] for p in i["probes"] if p.get("must_not_regress") and p["kind"] != "runtime"}
     assert failed == offline
+    below = {r.split()[0] for r in regressions if "below its expected" in r}
+    normative = {i["id"] for i in s["invariants"] if i["standing"] == "normative" and not i["requires_runtime"]}
+    assert below == normative
 
 
 def test_status_vocabulary_and_duplicates():

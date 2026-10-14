@@ -1,6 +1,6 @@
 # Architecture manifest: the machine-readable index of architecture/.
 #
-# Sections: authority (ADR-007's transition), decisions (index of adr/),
+# Sections: authority (ADR-007's transition), decisions (index of the ADR pages in Notion 02, ADR-014),
 # systems (ids used by system-of-record.yaml), capabilities (four facts kept
 # apart: decision_status, implementation_state, deployment, evidence),
 # routines and connectors (ADR-008 cost basis), cost_basis (dated prices),
@@ -10,34 +10,36 @@
 # definition. scripts/validate_architecture.py checks this file against the
 # ADR files, the matrix, architecture/invariants.yaml and the code.
 schema: 1
-as_of: 2026-10-09
-baseline_commit: 5cd30d3705dacbc0e60d4734d4d510eceddbe4ed
+as_of: 2026-10-14
+baseline_commit: 6bee998900b9d4488169ed3474e4887690af9184
 default_branch: claude/explorium-docs-mcp-brregp
 
 authority:
   decision: ADR-007
   decision_status: Accepted
-  transition: pending_merge          # pending_merge | effective
+  transition: effective              # pending_merge | effective
   condition: the pull request carrying this folder merges into the default branch
-  effective_commit: null             # the merge commit, recorded after the merge; never backdated
-  effective_date: null
+  effective_commit: 1e8104bad9fff2ebb43883f99ccc12798e522ea1   # merge of pull request #24, 2026-10-09 21:04 UTC; recorded 2026-10-14
+  effective_date: 2026-10-09
   until_effective: notion-architecture
   after_effective: repository-architecture
 
 decisions:
-  - {id: ADR-001, title: Atlas as GTM System of Record, status: Accepted, decided: 2026-09-29, file: adr/ADR-001-atlas-as-gtm-system-of-record.md, notion: https://app.notion.com/p/1b180e2e00d4473f97bb754b5b9b45c4}
-  - {id: ADR-002, title: Journey Graph, status: Proposed, file: adr/ADR-002-journey-graph.md, notion: https://app.notion.com/p/05fdf7a1c99c4c59b9bfd2cf1ec4bbd8}
-  - {id: ADR-003, title: Measurement Plane, status: Proposed, file: adr/ADR-003-measurement-plane.md, notion: https://app.notion.com/p/dd5cfa9c7a8b488ab04522c938482219}
-  - {id: ADR-004, title: Fit / Intent / Engagement Scoring, status: Proposed, file: adr/ADR-004-fit-intent-engagement-scoring.md, notion: https://app.notion.com/p/493a3c3abad24c45948658d759bc44eb}
-  - {id: ADR-005, title: Attribution Model, status: Proposed, file: adr/ADR-005-attribution-model.md, notion: https://app.notion.com/p/c24070214a644c9b86f3c2b9d2e29672}
-  - {id: ADR-006, title: AI Action Contract, status: Proposed, file: adr/ADR-006-ai-action-contract.md, notion: https://app.notion.com/p/a749895b8af44375a86cba7edd7c298f}
-  - {id: ADR-007, title: Architecture authority moves to the repository, status: Accepted, decided: 2026-10-01, file: adr/ADR-007-architecture-authority-in-the-repository.md, notion: null}
-  - {id: ADR-008, title: Connector cost basis and model routing, status: Accepted, decided: 2026-10-01, file: adr/ADR-008-connector-cost-basis-and-model-routing.md, notion: null}
-  - {id: ADR-009, title: Authority roles under ADR-007, status: Proposed, file: adr/ADR-009-authority-roles.md, notion: https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6}
-  - {id: ADR-010, title: Naming, status: Proposed, file: adr/ADR-010-naming.md, notion: https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6}
-  - {id: ADR-011, title: Capability lifecycle and reconciliation, status: Proposed, file: adr/ADR-011-capability-lifecycle.md, notion: https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6}
-  - {id: ADR-012, title: AI-Native Intelligence Core (target), status: Proposed, file: adr/ADR-012-ai-native-intelligence-core.md, notion: https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6}
-  - {id: ADR-013, title: Learning and research optimisation (future), status: Not written, file: null, notion: null}
+  # ADR texts and statuses live on their Notion 02 pages (ADR-014); this is the index. No ADR copies here.
+  - {id: ADR-001, title: Atlas as GTM System of Record, status: Accepted, decided: 2026-09-29, notion: https://app.notion.com/p/1b180e2e00d4473f97bb754b5b9b45c4}
+  - {id: ADR-002, title: Journey Graph, status: Proposed, notion: https://app.notion.com/p/05fdf7a1c99c4c59b9bfd2cf1ec4bbd8}
+  - {id: ADR-003, title: Measurement Plane, status: Proposed, notion: https://app.notion.com/p/dd5cfa9c7a8b488ab04522c938482219}
+  - {id: ADR-004, title: Fit / Intent / Engagement Scoring, status: Proposed, notion: https://app.notion.com/p/493a3c3abad24c45948658d759bc44eb}
+  - {id: ADR-005, title: Attribution Model, status: Proposed, notion: https://app.notion.com/p/c24070214a644c9b86f3c2b9d2e29672}
+  - {id: ADR-006, title: AI Action Contract, status: Accepted, decided: 2026-10-14, notion: https://app.notion.com/p/a749895b8af44375a86cba7edd7c298f}
+  - {id: ADR-007, title: Architecture authority moves to the repository, status: Accepted, decided: 2026-10-01, notion: https://app.notion.com/p/3f97ecee36a98160b7a2c2afd2091fba}
+  - {id: ADR-008, title: Connector cost basis and model routing, status: Accepted, decided: 2026-10-01, notion: https://app.notion.com/p/3f97ecee36a981f9b7a3f06b17786193}
+  - {id: ADR-009, title: Authority roles under ADR-007, status: Proposed, notion: https://app.notion.com/p/3f97ecee36a981f09b82e0b9e0b5b52f}
+  - {id: ADR-010, title: Naming, status: Proposed, notion: https://app.notion.com/p/3f97ecee36a981d8be52fd08d7c4eb92}
+  - {id: ADR-011, title: Capability lifecycle and reconciliation, status: Proposed, notion: https://app.notion.com/p/3f97ecee36a98166bc7de373ee34f77b}
+  - {id: ADR-012, title: AI-Native Intelligence Core (target), status: Proposed, notion: https://app.notion.com/p/3f97ecee36a98176a614c34d98b66706}
+  - {id: ADR-013, title: Learning and research optimisation (future), status: Not written, notion: null}
+  - {id: ADR-014, title: ADR texts live in Notion; the repository indexes them, status: Accepted, decided: 2026-10-14, notion: https://app.notion.com/p/3f97ecee36a98189aa89ed9dff5e5063}
 
 # stage: proposed marks a system that may hold no current or accepted-target authority.
 systems:
@@ -60,17 +62,25 @@ systems:
 # deployment: none | branch | default-branch | routine | artifact | external | github-actions
 capabilities:
   - {id: CAP-authority, name: Architecture authority in the repository, decision: ADR-007, decision_status: Accepted,
-     implementation_state: CODE_EXISTS, deployment: branch, evidence: [branch claude/architecture-authority-cost-basis], gap: GAP-001}
+     implementation_state: EXECUTED, deployment: default-branch, evidence: ["PR #24 merge 1e8104b, 2026-10-09"]}
+  - {id: CAP-adr-index, name: ADR texts in Notion, indexed here, decision: ADR-014, decision_status: Accepted,
+     implementation_state: CODE_EXISTS, deployment: default-branch, evidence: [architecture-manifest.yaml decisions, Notion 02 pages ADR-007 to ADR-014], gap: GAP-020}
   - {id: CAP-validator, name: Architecture validator and protected digest, decision: ADR-007, decision_status: Accepted,
-     implementation_state: CODE_EXISTS, deployment: branch, evidence: [scripts/validate_architecture.py, tests/test_validate_architecture.py], gap: GAP-001}
-  - {id: CAP-invariants, name: Invariant checker (CI gate), decision: ADR-006, decision_status: Proposed,
+     implementation_state: EXECUTED, deployment: github-actions, evidence: [scripts/validate_architecture.py, tests/test_validate_architecture.py, "CI job architecture on the default branch since 1e8104b"]}
+  - {id: CAP-invariants, name: Invariant checker (CI gate), decision: ADR-006, decision_status: Accepted,
      implementation_state: EXECUTED, deployment: github-actions, evidence: [scripts/check_architecture.py, "PR #22 merge 28948f3"]}
   - {id: CAP-cost-basis, name: Cost basis, cost report and composition cap, decision: ADR-008, decision_status: Accepted,
-     implementation_state: CODE_EXISTS, deployment: branch, evidence: [crm/costs.py, scripts/cost_report.py, tests/test_costs.py], gap: GAP-012}
+     implementation_state: CODE_EXISTS, deployment: default-branch, evidence: [crm/costs.py, scripts/cost_report.py, tests/test_costs.py], gap: GAP-012}
   - {id: CAP-model-routing, name: Routine model routing, decision: ADR-008, decision_status: Accepted,
      implementation_state: EXECUTED, deployment: routine, evidence: ["morning brief on claude-sonnet-5-5, run 2026-10-09", "atlas refresh on claude-opus-5-5, run 2026-10-01"], gap: GAP-013}
   - {id: CAP-crm-records, name: Custom CRM records and pinned writes, decision: ADR-001, decision_status: Accepted,
-     implementation_state: EXECUTED, deployment: artifact, evidence: [crm/crm_sync.py, CRM runlog 21–28 Sep], gap: GAP-007}
+     implementation_state: EXECUTED, deployment: artifact, evidence: [crm/crm_sync.py, CRM runlog 21–28 Sep, "pinned() refuses an unversioned update (GAP-007, 14 Oct)"]}
+  - {id: CAP-decision-record, name: AI Action Contract and decision record, decision: ADR-006, decision_status: Accepted,
+     implementation_state: CODE_EXISTS, deployment: default-branch, evidence: [crm/decision.py, tests/test_decision.py, architecture/specs/SPEC-003-ai-action-contract.md]}
+  - {id: CAP-signal, name: Signal record (SPEC-002), decision: ADR-012, decision_status: Proposed,
+     implementation_state: CODE_EXISTS, deployment: default-branch, evidence: [crm/signal.py, tests/test_signal.py, architecture/specs/SPEC-002-signal-model.md], gap: GAP-021}
+  - {id: CAP-evidence-ledger, name: Evidence ledger and its validator (research profiles), decision: n/a, decision_status: n/a,
+     implementation_state: CODE_EXISTS, deployment: default-branch, evidence: [architecture/schemas/evidence-ledger.schema.json, crm/ledger.py, scripts/validate_ledger.py, tests/test_ledger.py, docs/research-profiles.md], gap: GAP-022}
   - {id: CAP-journey, name: Journey and evidence graph, decision: ADR-002, decision_status: Proposed,
      implementation_state: DESIGNED, deployment: none, evidence: [], gap: GAP-003}
   - {id: CAP-stored-keys, name: Stored keys (master_id, org_id), decision: n/a, decision_status: n/a,
@@ -159,4 +169,4 @@ composition:
 
 protected:
   sections: [authority, decisions, system-of-record.yaml]
-protected_digest: b8e109fb67917f9b1c3cdf02dc6d575ed496b10664ada75f5b6d2861d8364a6d
+protected_digest: 71f6afa2d516d5094f5dffd8a5fab0f57863ed2c86d569592d71eace3da4596d

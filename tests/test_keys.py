@@ -56,7 +56,9 @@ def _master():
 
 
 def _doc(**kw):
-    base = {"stage": "new", "flags": [], "activity": [], "notes": "", "email": "", "website": "", "company": ""}
+    # _version: the dump's versions file, as the Monday routine takes it (GAP-007 refuses an unpinned update).
+    base = {"stage": "new", "flags": [], "activity": [], "notes": "", "email": "", "website": "", "company": "",
+            "_version": 1}
     base.update(kw)
     return base
 

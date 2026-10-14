@@ -148,7 +148,8 @@ def main() -> int:
     log.info("loaded %s existing master contacts", len(master))
 
     reports: list[tuple[str, MergeReport]] = []
-    # Apollo first: it is the system of record for who is in the CRM at all.
+    # Apollo first: it decides who is in the master at all (the identity source).
+    # The commercial system of record is the CRM System, not Apollo.
     # Explorium second: it enriches whatever Apollo established.
     # LinkedIn last and OPTIONAL: there is no automated LinkedIn pull (scraping
     # it breaches their terms), so this file only exists when someone has
