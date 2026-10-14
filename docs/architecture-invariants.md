@@ -2,7 +2,7 @@
 
 Rendered by `scripts/check_architecture.py --render-md` from `architecture/invariants.yaml`; CI fails when this file and the YAML disagree. Do not edit by hand.
 
-ADR-007 (Accepted 1 Oct 2026) makes `architecture/` the architecture authority when it merges; until then Notion governs. ADR texts are in `architecture/adr/` and Notion 02; this file is their executable form. Conformance is ENFORCED, PARTIAL, MISSING, or UNVERIFIED (needs `--crm-dump`). Maturity uses ADR-011's evidence levels; this check never claims PRODUCTION_VERIFIED. Status below is the offline run.
+ADR-007 (Accepted 1 Oct 2026) made `architecture/` the architecture authority on 9 Oct 2026 (merge commit 1e8104b). ADR texts live in Notion 02 (ADR-014); this file is their executable form. Conformance is ENFORCED, PARTIAL, MISSING, or UNVERIFIED (needs `--crm-dump`). Maturity uses ADR-011's evidence levels; this check never claims PRODUCTION_VERIFIED. Status below is the offline run.
 
 A normative rule's ADR is Accepted, and CI holds it at its expected status. A candidate rule's ADR is Proposed or not written: a Notion URL or a filed proposal confers no policy standing, so it is reported and never held to its expected status (shown as the line it would be held to on acceptance). MUST_NOT_REGRESS probes are independent of standing: they fail CI under a candidate rule too, because they protect controls that exist today.
 
@@ -10,30 +10,30 @@ A normative rule's ADR is Accepted, and CI holds it at its expected status. A ca
 
 | ADR | Title | Status (as of) |
 |---|---|---|
-| ADR-006 | [AI Action Contract](https://app.notion.com/p/a749895b8af44375a86cba7edd7c298f) | Proposed (2026-10-02) |
-| ADR-012 | [AI-Native Intelligence Core (target)](https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6) | Proposed (architecture/adr/ADR-012; drafted in 14 — Governance Amendment; not filed in Notion 02) (2026-10-09) |
+| ADR-006 | [AI Action Contract](https://app.notion.com/p/a749895b8af44375a86cba7edd7c298f) | Accepted (14 Oct 2026, owner's instruction; its rules below are normative) (2026-10-14) |
+| ADR-012 | [AI-Native Intelligence Core (target)](https://app.notion.com/p/3f97ecee36a98176a614c34d98b66706) | Proposed (filed in Notion 02 on 14 Oct 2026; drafted in 14 — Governance Amendment) (2026-10-14) |
 | ADR-013 | Learning and research optimisation (future) | Not written (2026-10-02) |
 
 ## Invariants
 
 | ID | Decision | ADR | Standing | Rule | Expected | Offline | Maturity |
 |---|---|---|---|---|---|---|---|
-| INV-01 | Signal is first-class | ADR-012 | candidate | ∀ s ∈ Signal: s.id ∧ s.subject ∧ s.source ∧ s.observed_at ∧ s.kind ∈ SignalKinds, stored as a record of its own, never only as text inside another record | MISSING | MISSING | DESIGNED |
+| INV-01 | Signal is first-class | ADR-012 | candidate | ∀ s ∈ Signal: s.id ∧ s.subject ∧ s.source ∧ s.observed_at ∧ s.kind ∈ SignalKinds, stored as a record of its own, never only as text inside another record | MISSING | ENFORCED | CODE_EXISTS |
 | INV-02 | Observation is not interpretation | ADR-012 | candidate | an Observation records only what a source reported (value, source, observed_at); stance and meaning attach only through Evidence(observation, hypothesis, stance) | PARTIAL | PARTIAL | CODE_EXISTS |
 | INV-03 | Hypotheses are explicit | ADR-012 | candidate | Hypothesis is versioned: an edit creates version v+1 with parent = v, and no version is ever overwritten or deleted | MISSING | MISSING | DESIGNED |
 | INV-04 | Negative evidence counts | ADR-012 | candidate | Evidence.stance ∈ {supports, contradicts}; contradicting evidence is preserved, never silently discarded, and is surfaced wherever the hypothesis's support is reported; unresolved contradiction is shown alongside the assessment, it does not by itself forbid one | PARTIAL | PARTIAL | CODE_EXISTS |
 | INV-05 | Temporal intelligence | ADR-012 | candidate | the state recorded at time t is an immutable snapshot: no write at t' > t alters what t recorded | PARTIAL | PARTIAL | CODE_EXISTS |
-| INV-06 | Decisions are reproducible | ADR-006 | candidate | Decision.id is unique and opaque; Decision.fingerprint = H(inputs, policy_version, model, prompt) is stored separately; equal fingerprints yield equal outcomes; the ledger is append-only | PARTIAL | PARTIAL | CODE_EXISTS |
-| INV-07 | Human in the loop is required | ADR-006 | candidate | ∀ action a with risk(a) ≥ threshold(kind(a)): executed(a) ⇒ ∃ authorization(a) by a human that records the check performed and covers exactly a | PARTIAL | UNVERIFIED | CODE_EXISTS |
-| INV-08 | Policies are enforced | ADR-006 | candidate | every consequential action (a change to a canonical or protected field, an external action such as outreach or a vendor write, or a spend) is preceded by exactly one verdict ∈ {allow, hold, refuse} from a single policy gate, recorded with the policy version; audit and telemetry records of those actions are not themselves gated | PARTIAL | PARTIAL | CODE_EXISTS |
-| INV-09 | Agents cannot bypass gates | ADR-006 | candidate | the executor refuses any action that does not carry a valid authorization id bound to that action | PARTIAL | PARTIAL | CODE_EXISTS |
-| INV-10 | Execution is verified | ADR-006 | candidate | each action kind declares postconditions; after execution they are read back from the target and must hold, else the action is marked failed | PARTIAL | PARTIAL | CODE_EXISTS |
+| INV-06 | Decisions are reproducible | ADR-006 | normative | Decision.id is unique and opaque; Decision.fingerprint = H(inputs, policy_version, model, prompt) is stored separately; equal fingerprints yield equal outcomes; the ledger is append-only | PARTIAL | PARTIAL | CODE_EXISTS |
+| INV-07 | Human in the loop is required | ADR-006 | normative | ∀ action a with risk(a) ≥ threshold(kind(a)): executed(a) ⇒ ∃ authorization(a) by a human that records the check performed and covers exactly a | PARTIAL | UNVERIFIED | CODE_EXISTS |
+| INV-08 | Policies are enforced | ADR-006 | normative | every consequential action (a change to a canonical or protected field, an external action such as outreach or a vendor write, or a spend) is preceded by exactly one verdict ∈ {allow, hold, refuse} from a single policy gate, recorded with the policy version; audit and telemetry records of those actions are not themselves gated | PARTIAL | PARTIAL | CODE_EXISTS |
+| INV-09 | Agents cannot bypass gates | ADR-006 | normative | the executor refuses any action that does not carry a valid authorization id bound to that action | PARTIAL | PARTIAL | CODE_EXISTS |
+| INV-10 | Execution is verified | ADR-006 | normative | each action kind declares postconditions; after execution they are read back from the target and must hold, else the action is marked failed | PARTIAL | PARTIAL | CODE_EXISTS |
 | INV-11 | Outcomes are captured | ADR-012 | candidate | Outcome(action_ref, effect, observed_at) is append-only and every outcome references the action or decision it follows | PARTIAL | PARTIAL | CODE_EXISTS |
 | INV-12 | Learning is measured | ADR-012 | candidate | Evaluation(subject, metric, method ∈ {computed, human_labeled, model_judged}, method provenance, cohort, window, value, n, baseline); an observed performance metric is computed from Outcome records only, never typed in; a human-labeled or model-judged evaluation records who or which model judged, and how | PARTIAL | PARTIAL | CODE_EXISTS |
 | INV-13 | Signal performance is learned | ADR-013 | candidate | signal performance is computed per (signal kind, cohort, time window) with n ≥ n_min against a baseline by a scheduled job, and stored as Evaluation records | MISSING | MISSING | DESIGNED |
 | INV-14 | Research is optimized | ADR-013 | candidate | research steps are chosen by an explicit, versioned value-of-information policy that weighs expected information against cost and risk within the authorized budget, and each step records the policy version and the reason it was chosen | MISSING | MISSING | DESIGNED |
 | INV-15 | Provenance is preserved | ADR-012 | candidate | every canonical, intelligence-bearing or decision-relevant value has a path value → transform* → source, with observation time at the source; operational metadata (timestamps, versions, view state) is out of scope | PARTIAL | UNVERIFIED | CODE_EXISTS |
-| INV-16 | Auditability | ADR-006 | candidate | every decision, output and consequential write carries what produced it (model and prompt hash when a model did, otherwise the deterministic rule's id and version) plus the policy version and code version; a deterministic write never names a model | PARTIAL | PARTIAL | CODE_EXISTS |
+| INV-16 | Auditability | ADR-006 | normative | every decision, output and consequential write carries what produced it (model and prompt hash when a model did, otherwise the deterministic rule's id and version) plus the policy version and code version; a deterministic write never names a model | PARTIAL | PARTIAL | CODE_EXISTS |
 
 ## Probes
 
@@ -53,6 +53,7 @@ MNR = MUST_NOT_REGRESS: an existing hard control that CI never lets weaken.
 | P-05c | INV-05 | static | core |  | a StateSnapshot record exists | `crm.snapshot.StateSnapshot` |
 | P-06a | INV-06 | unit | core | yes | the same inputs give the same proposal id | `scripts/compose_account.py proposal_record` |
 | P-06b | INV-06 | static | core |  | decision records carry a fingerprint separate from their id | `proposal record key "fingerprint"` |
+| P-06c | INV-06 | unit | core | yes | a decision record has an opaque id and a separate fingerprint over inputs | `crm.decision.DecisionRecord / crm.decision.append` |
 | P-07a | INV-07 | unit | core | yes | bulk creation over the threshold holds until that exact count is confirmed | `crm.runlog.held` |
 | P-07b | INV-07 | unit | core | yes | credit spend needs an approved job and a passing budget; settling an unapproved job is refused | `crm.broker.approve / crm.broker.settle` |
 | P-07c | INV-07 | unit | core | yes | a HOLD names the independent check that clears it | `crm.review.with_check` |
@@ -68,7 +69,7 @@ MNR = MUST_NOT_REGRESS: an existing hard control that CI never lets weaken.
 | P-09a | INV-09 | unit | core | yes | settling a job that was not approved raises | `crm.broker.settle` |
 | P-09b | INV-09 | unit | core | yes | a merge that would create more than the threshold writes no master | `scripts/merge_master.py` |
 | P-09c | INV-09 | static | core |  | an executor that requires an authorization id exists | `crm.executor.execute` |
-| P-10a | INV-10 | unit | core | yes | a write to a document of known version is pinned to that version | `crm.crm_sync.pinned` |
+| P-10a | INV-10 | unit | core | yes | a write to a document of known version is pinned to that version and an update with no known version is refused | `crm.crm_sync.pinned` |
 | P-10b | INV-10 | unit | core | yes | the data-layer validator fails on a duplicate identity | `scripts/validate_sync.py check_master` |
 | P-10c | INV-10 | static | core |  | action kinds declare postconditions checked by read-back | `crm.executor.POSTCONDITIONS` |
 | P-11a | INV-11 | static | core | yes | outcome kinds exist (replies | `crm.activity.TYPES / crm.crm_sync.PROPOSAL_STATUSES` |
@@ -86,7 +87,7 @@ MNR = MUST_NOT_REGRESS: an existing hard control that CI never lets weaken.
 
 ## Gaps to ENFORCED
 
-- **INV-01** (ADR-012): no Signal record type or store; signals exist only as rows in proposal prose and vendor fields
+- **INV-01** (ADR-012): the Signal record type exists (SPEC-002) but has no store and no producer; signals still reach the CRM only as proposal prose and vendor fields
 - **INV-02** (ADR-012): no Evidence link; stances exist only as prose tags in proposals
 - **INV-03** (ADR-012): no Hypothesis record; qualification reasoning lives in proposal prose
 - **INV-04** (ADR-012): no evidence edges or stance; contradictions are held only for field values and domains

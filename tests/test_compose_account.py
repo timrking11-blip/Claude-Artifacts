@@ -28,6 +28,23 @@ def _load_script(name):
 
 
 compose = _load_script("compose_account")
+FULL_LEDGER = ROOT / "tests" / "fixtures" / "evidence_ledger_full.json"
+LEAN_LEDGER = ROOT / "tests" / "fixtures" / "evidence_ledger_lean.json"
+
+
+@pytest.fixture(autouse=True)
+def run_files_a_valid_ledger(monkeypatch):
+    """Every run prepared in these tests files a valid full-profile ledger, as the session is told to.
+
+    Tests about the ledger itself remove or replace it.
+    """
+    real = compose.write_prepare
+
+    def write_prepare(run_dir, *args, **kw):
+        real(run_dir, *args, **kw)
+        (run_dir / "ledger.json").write_text(FULL_LEDGER.read_text(encoding="utf-8"), encoding="utf-8")
+
+    monkeypatch.setattr(compose, "write_prepare", write_prepare)
 NOW = datetime(2026, 9, 24, 20, 0, tzinfo=timezone.utc)
 
 PROPOSAL = """# Example Co -- Prequalification Proposal
@@ -182,7 +199,9 @@ def test_write_prepare_emits_prompts_and_run_update(ledger, dump, tmp_path):
     r = compose.prepare(manifest(), "run_t", compose.load_crm_dump(dump), NOW, fetch=False)
     run_dir = tmp_path / "runs" / "run_t"
     compose.write_prepare(run_dir, manifest(), r, "run_t", NOW)
-    assert {p.name for p in run_dir.iterdir()} == {"manifest.json", "state.json", "review.json", "prompts.md", "run_update.json"}
+    # ledger.json is the session's, filed here by the run_files_a_valid_ledger fixture.
+    assert {p.name for p in run_dir.iterdir()} - {"ledger.json"} == {"manifest.json", "state.json", "review.json",
+                                                                       "prompts.md", "run_update.json"}
     prompts = (run_dir / "prompts.md").read_text()
     assert "research desk" in prompts and "Website: https://example.com" in prompts, "crawler brief is prompt 1"
     assert "skip this leg" in prompts, "no page fetched -> summariser leg skipped"
@@ -569,3 +588,59 @@ def test_under_the_cap_the_run_line_carries_its_run_id(ledger, dump, tmp_path):
     mpath.write_text(json.dumps(manifest()))
     assert _prepare(mpath, dump, runs) == 0
     assert json.loads((runs / "run_t" / "cap.json").read_text())["status"] == "ok"
+
+
+# ---------- evidence ledger (docs/research-profiles.md) --------------------------
+
+def test_prepare_tells_the_session_to_file_a_full_ledger(ledger, dump, tmp_path):
+    run_dir = _prepared(ledger, dump, tmp_path)
+    prompts = (run_dir / "prompts.md").read_text(encoding="utf-8")
+    assert "ledger.json (full profile)" in prompts and "validate_ledger.py" in prompts
+    state = json.loads((run_dir / "state.json").read_text())
+    assert state["evidence_ledger"] == {"required": True, "profile": "full"}
+
+
+def test_finalize_records_a_valid_ledger(ledger, dump, tmp_path):
+    run_dir = _prepared(ledger, dump, tmp_path)
+    res = compose.finalize(run_dir, PROPOSAL, None, [], load_master(ledger), compose.load_crm_dump(dump), {}, NOW)
+    assert res["state"]["evidence_ledger"]["status"] == "valid: 2 sources, 2 claims"
+    jp, mp = compose.write_proposal_files(res["record"], tmp_path / "proposals", NOW)
+    compose.write_finalize(run_dir, res, tmp_path / "batch", jp, mp, NOW)
+    final = json.loads((run_dir / "run_final.json").read_text())
+    assert final["evidence_ledger"]["profile"] == "full"
+
+
+def test_finalize_refuses_a_missing_ledger(ledger, dump, tmp_path, capsys):
+    run_dir = _prepared(ledger, dump, tmp_path)
+    (run_dir / "ledger.json").unlink()
+    with pytest.raises(SystemExit):
+        compose.finalize(run_dir, PROPOSAL, None, [], load_master(ledger), compose.load_crm_dump(dump), {}, NOW)
+    assert "ledger.json is missing" in capsys.readouterr().err
+
+
+def test_finalize_refuses_a_ledger_that_breaks_an_integrity_rule(ledger, dump, tmp_path, capsys):
+    run_dir = _prepared(ledger, dump, tmp_path)
+    bad = json.loads(FULL_LEDGER.read_text(encoding="utf-8"))
+    bad["claims"][0]["source_ids"] = ["SRC-009"]
+    (run_dir / "ledger.json").write_text(json.dumps(bad))
+    with pytest.raises(SystemExit):
+        compose.finalize(run_dir, PROPOSAL, None, [], load_master(ledger), compose.load_crm_dump(dump), {}, NOW)
+    assert "SRC-009, which is not in the source register" in capsys.readouterr().err
+
+
+def test_a_proposal_run_needs_the_full_profile(ledger, dump, tmp_path, capsys):
+    run_dir = _prepared(ledger, dump, tmp_path)
+    (run_dir / "ledger.json").write_text(LEAN_LEDGER.read_text(encoding="utf-8"))
+    with pytest.raises(SystemExit):
+        compose.finalize(run_dir, PROPOSAL, None, [], load_master(ledger), compose.load_crm_dump(dump), {}, NOW)
+    assert "this run needs 'full'" in capsys.readouterr().err
+
+
+def test_a_run_prepared_before_the_ledger_still_finalizes(ledger, dump, tmp_path):
+    run_dir = _prepared(ledger, dump, tmp_path)
+    state = json.loads((run_dir / "state.json").read_text())
+    del state["evidence_ledger"]
+    (run_dir / "state.json").write_text(json.dumps(state))
+    (run_dir / "ledger.json").unlink()
+    res = compose.finalize(run_dir, PROPOSAL, None, [], load_master(ledger), compose.load_crm_dump(dump), {}, NOW)
+    assert res["state"]["evidence_ledger"]["status"].startswith("absent")

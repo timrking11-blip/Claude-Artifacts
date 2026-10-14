@@ -4,7 +4,7 @@ A weekly, two-way contact data exchange between **Apollo** and **Explorium**,
 reconciled into one master database that lives in a Claude artifact and is
 mirrored in this repo.
 
-**System of record:** the CRM System, https://claude.ai/artifact/8GigYGeoefKqxEptmeCHWG. The Master Contact Ledger page (https://claude.ai/artifact/VcbjegQv71QGNveHtt415f) is archived: since 25 Sep 2026 it points to the CRM's Sources section.
+**Commercial system of record:** the CRM System (the Custom CRM: contacts, accounts, activity), https://claude.ai/artifact/8GigYGeoefKqxEptmeCHWG. The map of the stack is the CRM Systems Atlas; ownership of every object is in `architecture/system-of-record.yaml`. The Master Contact Ledger page (https://claude.ai/artifact/VcbjegQv71QGNveHtt415f) is archived: since 25 Sep 2026 it points to the CRM's Sources section.
 **Committed mirror:** [`data/master/contacts.json`](data/master/contacts.json)
 **Change history:** [`data/CHANGELOG.md`](data/CHANGELOG.md). What to look at is the CRM page's **Last runs** strip: one line per run that created or changed records, with any run that would create more than 5 records held there for your check (`crm/runlog.py`).
 

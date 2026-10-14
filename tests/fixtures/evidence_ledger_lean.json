@@ -1,0 +1,22 @@
+{
+  "profile": "lean",
+  "sources": [
+    {
+      "id": "SRC-001",
+      "title": "Agent Skills specification",
+      "locator_url": "https://agentskills.io",
+      "accessed": "2026-10-14",
+      "excerpt": "Defines name, description and a Markdown body for a skill",
+      "reviewed": true
+    }
+  ],
+  "claims": [
+    {
+      "id": "CLAIM-001",
+      "claim": "A SKILL.md needs only a name, a description and a body",
+      "status": "FACT",
+      "source_ids": ["SRC-001"],
+      "confidence": "medium"
+    }
+  ]
+}

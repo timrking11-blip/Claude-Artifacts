@@ -2,7 +2,7 @@
 """Check the system against architecture/invariants.yaml.
 
 The YAML is the machine-readable source: one implementation-independent rule
-per architecture decision (ADR texts in architecture/adr/ and Notion 02,
+per architecture decision (ADR texts live in Notion 02 under ADR-014,
 indexed by Notion URL under `decisions`), each with probes that test how far today's code meets it. This
 script runs the probes and reports, per rule:
 
@@ -18,9 +18,9 @@ controls: they must pass but do not move the status.
 
 Standing. A rule is `normative` only when its ADR's status is Accepted; CI
 then holds it at `expected`. A rule whose ADR is Proposed or not written is a
-`candidate`: reported, never held to `expected`. A Notion URL or an ADR file
-filed in architecture/adr/ is an index entry, not acceptance, so neither
-confers policy standing. must_not_regress probes are independent of standing:
+`candidate`: reported, never held to `expected`. A Notion URL or a filed
+proposal is an index entry, not acceptance, so neither confers policy
+standing. must_not_regress probes are independent of standing:
 they protect controls that exist today and fail CI under a candidate rule too.
 
 Exit 1 only on a regression: a must_not_regress probe fails, a normative
@@ -161,10 +161,26 @@ def p05b() -> str:
     import compose_account as compose
     record = {"account": {"name": "Acme", "domain": "acme.example"}, "proposal_id": "prq_new", "run_id": "run_x",
               "proposal_markdown": "# P", "notes_appendix": "", "lead_source": None}
-    accounts = {"acc_1": {"name": "Acme", "domain": "acme.example", "notes": "keep this", "activity": []}}
+    accounts = {"acc_1": {"name": "Acme", "domain": "acme.example", "notes": "keep this", "activity": [], "_version": 2}}
     w = compose.plan_account_write(record, {"state": {"account": {"crm_account_id": None}}}, accounts, [], NOW)
     ensure(w is not None and w["data"]["notes"].startswith("keep this"), "existing notes were not kept as the prefix")
     return "notes appended after the existing text"
+
+
+def p06c() -> str:
+    from crm import decision as dc
+    c = dc.ActionContract(inputs={"run": "r"}, evidence=("SRC-001",), confidence=None, interpretation="i",
+                          proposed_action={"kind": "send"}, write_scope=("gmail:draft",), approval_requirement="human")
+    a = dc.record(c, ["org_x"], "policy:v1", "rule", "rule:v1", "r")
+    b = dc.record(c, ["org_x"], "policy:v1", "rule", "rule:v1", "r")
+    ensure(a.id != b.id and a.fingerprint == b.fingerprint and a.id != a.fingerprint,
+           "ids are not opaque or the fingerprint is not separate")
+    ledger = dc.append([], a)
+    try:
+        dc.append(ledger, a)
+    except ValueError:
+        return "opaque id, separate fingerprint, append-only ledger"
+    raise ProbeFailed("the decision ledger accepted the same record twice")
 
 
 def p06a() -> str:
@@ -309,9 +325,13 @@ def p09b() -> str:
 
 
 def p10a() -> str:
-    from crm.crm_sync import pinned
+    from crm.crm_sync import UnpinnedWrite, pinned
     ensure(pinned({"_version": 4}, {"op": "update"}).get("if_version") == 4, "a known version was not pinned")
-    return "write pinned to the version read"
+    try:
+        pinned({}, {"op": "update", "collection": "contacts", "doc_id": "x"})
+    except UnpinnedWrite:
+        return "write pinned to the version read; an update with no version is refused"
+    raise ProbeFailed("an update with no known version was emitted unpinned")
 
 
 def p10b() -> str:
@@ -404,7 +424,7 @@ PROBES: dict[str, Callable[..., str]] = {
     "P-03a": lambda: absent("crm.hypothesis", "Hypothesis"),
     "P-04a": p04a, "P-04b": p04b, "P-04c": lambda: absent("crm.evidence", "Evidence"),
     "P-05a": p05a, "P-05b": p05b, "P-05c": lambda: absent("crm.snapshot", "StateSnapshot"),
-    "P-06a": p06a, "P-06b": p06b,
+    "P-06a": p06a, "P-06b": p06b, "P-06c": p06c,
     "P-07a": p07a, "P-07b": p07b, "P-07c": p07c, "P-07d": p07d, "P-07e": p07e,
     "P-07f": lambda: absent("crm.authorization", "ActionAuthorization"),
     "P-08a": p04b, "P-08b": p08b, "P-08c": p08c, "P-08d": p08d, "P-08e": p08e,
@@ -562,8 +582,8 @@ def render_md(spec: dict[str, Any], results: list[RuleResult]) -> str:
     out = ["# Architecture invariants", "",
            "Rendered by `scripts/check_architecture.py --render-md` from `architecture/invariants.yaml`; "
            "CI fails when this file and the YAML disagree. Do not edit by hand.", "",
-           "ADR-007 (Accepted 1 Oct 2026) makes `architecture/` the architecture authority when it merges; until "
-           "then Notion governs. ADR texts are in `architecture/adr/` and Notion 02; this file is their "
+           "ADR-007 (Accepted 1 Oct 2026) made `architecture/` the architecture authority on 9 Oct 2026 (merge "
+           "commit 1e8104b). ADR texts live in Notion 02 (ADR-014); this file is their "
            "executable form. Conformance is "
            "ENFORCED, PARTIAL, MISSING, or UNVERIFIED (needs `--crm-dump`). Maturity uses ADR-011's "
            "evidence levels; this check never claims PRODUCTION_VERIFIED. Status below is the offline run.", "",

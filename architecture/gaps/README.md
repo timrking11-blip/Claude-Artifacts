@@ -16,19 +16,17 @@ The manifest's `capabilities[].gap` and the matrix point here.
 `scripts/validate_architecture.py` fails on a reference to a gap that is not
 listed.
 
-Status as of 9 Oct 2026.
+Status as of 14 Oct 2026. A closed gap stays listed, with what closed it.
 
-## GAP-001 — ADR-007 transition pending merge
+## GAP-001 — ADR-007 transition pending merge (closed 14 Oct 2026)
 
 - **Governs:** ADR-007 (Accepted 1 Oct 2026).
-- **Now:** this folder exists on branch `claude/architecture-authority-cost-basis` and in its pull request. Notion is the effective authority.
-- **Target:** this folder governs on the default branch; Notion is the readable view.
-- **Closes when:**
-  - the pull request is merged by the owner;
-  - a follow-up commit records the merge commit and date in ADR-007 and in `authority.effective_commit` and `effective_date`, and sets `transition: effective`;
-  - the validator passes;
-  - Notion 00 and 10 get a dated line naming the effective commit.
-- **Needs:** the owner's review and merge. Claude does not merge.
+- **Closed by:** pull request #24 merged into the default branch on 9 Oct 2026 at 21:04 UTC (merge commit `1e8104bad9fff2ebb43883f99ccc12798e522ea1`). The follow-up the gap called for was made on 14 Oct 2026:
+  - the manifest's `authority` reads `transition: effective` with that commit and the date 2026-10-09;
+  - ADR-007's page in Notion 02 records the same;
+  - the matrix gives architecture decisions to `repository-architecture`;
+  - the validator passes and checks that the commit is in this history.
+- **Notion 00 and 10** carry dated lines naming the effective commit (14 Oct 2026).
 
 ## GAP-002 — "Atlas" naming
 
@@ -46,14 +44,15 @@ Status as of 9 Oct 2026.
   - SPEC-002 Signal Model: Current / Implemented, with a blank specification and no Signal records (INV-01 MISSING).
   - ADR-001: Implemented, though only its commercial part is EXECUTED.
   - ADR-002: In Progress, though it is DESIGNED.
-- **Prepared 9 Oct, not applied (pending the owner's approval).** These are Implementation Status corrections only, supported by current evidence. If approved, each row's page records the prior value and the evidence:
-  - ARC-001: In Progress.
-  - SPEC-002: In Design.
-  - ADR-001: In Progress.
+- **Applied 14 Oct 2026, on the owner's direction ("relabelling Notion as proposed or in progress").** Each row's prior value is kept on its page:
+  - SPEC-002: Proposed / In Progress (record type `crm/signal.py` on this change; no store or producer).
+  - ARC-001: Accepted / In Progress.
+  - ADR-001: In Progress (Architecture Status stays Accepted).
   - ADR-002: In Design.
-- **Still open: Architecture Status.** "Current" on ARC-001 and SPEC-002 means "implemented and authoritative" under the Hub convention, and the evidence does not support it. Changing a decision status is the owner's call.
-- **Closes when:** the Implementation Status corrections are approved and applied with their prior values recorded; and the owner sets the Architecture Status of ARC-001 and SPEC-002, or accepts ADR-011's mapping.
-- **Needs:** the owner: approval to apply the prepared corrections, and the decision-status part of page 14's A6. As of 9 Oct no registry row has been changed.
+  - ADR-006: Accepted (owner, 14 Oct). SPEC-003: Accepted / In Progress.
+- **Still open:** the Architecture Registry is not the authority (ADR-007), so its rows can drift again. Nothing checks them automatically.
+- **Closes when:** the next reconciliation audit finds every row matching the manifest's capabilities.
+- **Needs:** a reconciliation audit; no owner decision.
 
 ## GAP-004 — WP-IC-1, one narrow evidence loop
 
@@ -85,13 +84,14 @@ Status as of 9 Oct 2026.
   - a reviewer is named.
 - **Needs:** the scheduled routines, then the owner's review.
 
-## GAP-007 — Pinned writes not universal
+## GAP-007 — Pinned writes not universal (closed 14 Oct 2026)
 
 - **Governs:** CLAUDE.md (version-pinned CRM writes); INV-10.
-- **Now:** `crm.crm_sync.pinned` attaches `if_version` only when a version is supplied (audit 12).
-- **Target:** every apply path refuses a write with no version.
-- **Closes when:** a test proves each apply path rejects a missing version.
-- **Needs:** a code change in a future pull request.
+- **Was:** `crm.crm_sync.pinned` attached `if_version` only when a version was supplied (audit 12).
+- **Closed by:** `pinned` raises `UnpinnedWrite` for an update with no known version. Every apply path builds its updates through it: enrichment push, proposal push, key backfill, activity capture and the composition run's account write. A dump taken without its versions file therefore stops the plan before any batch is written.
+  - `tests/test_crm_sync.py::test_an_update_without_a_known_version_is_refused`.
+  - Probe P-10a (must not regress) now also checks the refusal.
+  - A create is not pinned; it has no version.
 
 ## GAP-008 — 34-account promotion held
 
@@ -136,9 +136,9 @@ Status as of 9 Oct 2026.
 ## GAP-012 — ADR-008: confirmation and landing the cost code
 
 - **Governs:** ADR-008 (Accepted 1 Oct, recorded by Claude in session).
-- **Now:** the status is kept as recorded on the owner's 9 Oct direction. The cost code is in this pull request.
-- **Target:** the cost code is on the default branch.
-- **Closes when:** this pull request merges. If the owner wants an owner-written acceptance record beyond the 9 Oct direction, page 14's A5 stays open until they give it.
+- **Now:** the status is kept as recorded on the owner's 9 Oct direction. The cost code reached the default branch with pull request #24 (1e8104b, 9 Oct 2026). ADR-008 has its own page in Notion 02 since 14 Oct 2026.
+- **Target:** an owner-written acceptance record, if the owner wants one beyond the 9 Oct direction.
+- **Closes when:** the owner confirms ADR-008 on its Notion page (page 14's A5), or says the 9 Oct direction suffices.
 - **Needs:** the owner.
 
 ## GAP-013 — Routine settings that need the owner
@@ -159,6 +159,7 @@ Status as of 9 Oct 2026.
   - The branch-protection API is not readable from this session (403).
   - `allow_auto_merge` is false.
   - `.github/CODEOWNERS` assigns the owner, but no rule requires its review.
+  - Observed 14 Oct: the repository is private on GitHub Free, and the rulesets API answers 403 ("Upgrade to GitHub Pro or make this repository public"). Required checks and code-owner review cannot be enforced on this plan.
   - Pull requests from this session are authored by the owner's own account (#24: `timrking11-blip`). GitHub does not count an author's approval, so the owner cannot approve them. The session's credential is the owner's, so GitHub cannot tell the owner's merge from the session's.
 - **Target:** an approval arrangement the owner chooses from `architecture/README.md` (Approval and identity), with the checks `test` and `architecture` required on the default branch.
 - **Closes when:**
@@ -189,10 +190,9 @@ Status as of 9 Oct 2026.
 ## GAP-017 — Notion pages ahead of the transition
 
 - **Governs:** ADR-007.
-- **Now:** on 1 Oct, the 00 Hub callout and Governance Authority bullet, the AI retrieval contract, and pages 10 and 13 described the repository as already authoritative, citing the unpushed commit 5613bc9 and "172 tests".
-- **Target:** Notion states the transition as pending until merge.
-- **Closes when:** dated corrections are on 00, 01, 10, 12, 13 and 14 (and an index note on 02), and, after the merge, a line names the effective commit.
-- **Needs:** the owner's approval. The corrections are prepared, not applied: as of 9 Oct no Notion page has been changed by this work. The post-merge line also waits on GAP-001.
+- **Was:** on 1 Oct, the 00 Hub callout and Governance Authority bullet, the AI retrieval contract, and pages 10 and 13 described the repository as already authoritative, citing the unpushed commit 5613bc9 and "172 tests".
+- **Now (14 Oct 2026):** the condition was met on 9 Oct, so those 1 Oct statements are now true from 9 Oct, not from 1 Oct. Dated corrections are applied to 00, 10, 12, 13 and 14 on the owner's direction of 14 Oct. They state the effective commit and date, and they correct the earlier claims rather than rewrite them.
+- **Closes when:** those corrections are on the pages, which was done on 14 Oct 2026; this entry stays as the record.
 
 ## GAP-018 — ADR-007 and ADR-008 texts were reconstructed
 
@@ -209,3 +209,32 @@ Status as of 9 Oct 2026.
 - **Target:** on exit 3, the routine writes `cap_hold.json` to the CRM runlog and tells the owner. After confirmation it re-runs `prepare` with `--cap-confirmation`.
 - **Closes when:** the routine prompt carries those steps, read back with `get_trigger`.
 - **Needs:** the owner's go to change the routine prompt.
+
+## GAP-020 — ADR texts move to Notion (ADR-014)
+
+- **Governs:** ADR-014 (Accepted 14 Oct 2026); ADR-007.
+- **Now:** ADR-007 to ADR-012 and ADR-014 have pages in Notion 02, created 14 Oct 2026 from the repository files at `6bee998`. The 9 Oct annotations of ADR-001 to ADR-003 were added to their pages. The change that removes `architecture/adr/` and makes the manifest's `decisions` a Notion-URL index is in an open pull request.
+- **Limit:** CI cannot read Notion. Agreement between an ADR page and its index row is checked by the reconciliation audit, not by the validator.
+- **Closes when:**
+  - the pull request merges;
+  - ADR-014's page records its merge commit and date;
+  - the next reconciliation audit finds every page and index row in agreement.
+- **Needs:** the owner's merge.
+
+## GAP-021 — Signal record without a store or producer
+
+- **Governs:** SPEC-002, under ADR-012 (Proposed).
+- **Now:** `crm/signal.py` defines and validates the record (CODE_EXISTS; `tests/test_signal.py`). Nothing produces or stores signals; they reach the CRM only as proposal prose and vendor fields.
+- **Target:** a producer writes signal files (the Enrichment Broker on Vibe business events, or a research run), and ADR-012 decides where they are kept.
+- **Closes when:** a dated run writes signal files that pass `validate`, and ADR-012 or SPEC-002 is accepted.
+- **Needs:** the owner's decision on ADR-012; a producer in a later pull request.
+
+## GAP-022 — Evidence ledger: first real runs
+
+- **Governs:** the research profiles (`docs/research-profiles.md`), adopted on the owner's direction of 14 Oct 2026.
+- **Now:** the schema, the validator and the composition-run gate exist (CODE_EXISTS). No real run has filed a ledger yet.
+  - Runs prepared before this change record "absent".
+  - The routine prompt was not changed: `prepare` itself tells the session to write `ledger.json`.
+- **Target:** every composition run files a full-profile ledger that passes, and lean ledgers accompany development research.
+- **Closes when:** a dated composition run finalizes with `evidence_ledger.status` "valid", and its ledger is reviewed by the owner.
+- **Needs:** the next composition run; the owner's review of its ledger.

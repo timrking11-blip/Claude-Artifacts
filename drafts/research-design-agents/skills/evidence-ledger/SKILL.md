@@ -9,7 +9,22 @@ A deliverable is only as good as the ledger behind it. Every material factual
 statement traces to a source record or is labelled as something other than
 fact. The ledger is kept separate from the narrative so it can be reviewed and
 reused. The machine-readable shape is in `schemas/ledger.schema.json` at the
-root of this plugin.
+root of this plugin, a copy of `architecture/schemas/evidence-ledger.schema.json`
+in Claude-Artifacts (one schema; a test keeps the two identical).
+
+## Profiles
+
+Set `profile` in the ledger:
+
+- `full`: legal, health, privacy, market sizing, or any claim that will be
+  published or shown outside the team. Brief, source register, claim ledger,
+  search log, and every field below.
+- `lean`: development research. Sources and claims only.
+
+An unlabelled ledger is read as `full`. In both profiles, every claim cites
+only source IDs in the register, every quote has its locator, every source
+has its access date, and a `FACT` rests on a source you actually opened.
+`scripts/validate_ledger.py` in Claude-Artifacts checks all of it.
 
 ## Source register
 
@@ -41,14 +56,14 @@ One record per important claim:
 - Applies directly, or needs extrapolation (say how far)
 - Conflicting or qualifying evidence
 - Confidence high, medium or low, with the reason
-- Status: `FACT` (sourced), `INFERENCE`, `ASSUMPTION`, or `UNVERIFIED LEAD`
+- Status: `FACT` (sourced), `INFERENCE`, `ASSUMPTION`, or `UNVERIFIED_LEAD`
 
 ## Hard rules
 
 1. Never invent a quotation, page number, statistic, API field, licence term,
    study result or date. If a tool could not open a source, say so.
 2. A search-result snippet is a lead, not a reviewed source. Open the page
-   before quoting it, or label the claim `UNVERIFIED LEAD`.
+   before quoting it, or label the claim `UNVERIFIED_LEAD`.
 3. Keep these apart, always:
    - correlation and causation;
    - a list price and a completed transaction;

@@ -1,6 +1,6 @@
 # Target state
 
-As of 9 Oct 2026. Ownership targets are in `system-of-record.yaml`
+As of 14 Oct 2026. Ownership targets are in `system-of-record.yaml`
 (`accepted_target` and `proposed`). This page gives the accepted target, the
 proposals kept apart from it, and the work packages that replace phase
 numbers.
@@ -9,8 +9,11 @@ numbers.
 
 Each of these is accepted. None is a claim that it is built.
 
-- **Architecture authority** is this folder (ADR-007). It takes effect on
-  merge (GAP-001).
+- **Architecture authority** is this folder (ADR-007, effective 9 Oct 2026).
+  ADR texts live on their Notion 02 pages and are indexed here (ADR-014).
+- **AI Action Contract** (ADR-006, accepted 14 Oct 2026): every agent action
+  uses the versioned contract, and every decision on one leaves a decision
+  record (SPEC-003, `crm/decision.py`). There is no store or executor yet.
 - **Commercial records** live in one Custom CRM, with field-level ownership,
   stored keys, reviewed merges and no silent overwrite. Source tools enrich,
   activate, measure or execute; they are never competing authorities
@@ -34,14 +37,42 @@ Each of these is accepted. None is a claim that it is built.
 
 ## Proposed target (not in force)
 
-- **ADR-002 to ADR-006**: journey graph, measurement plane, scoring,
-  attribution, AI action contract.
+- **ADR-002 to ADR-005**: journey graph, measurement plane, scoring,
+  attribution.
 - **ADR-009**: authority roles under ADR-007.
 - **ADR-010**: naming.
 - **ADR-011**: capability lifecycle, with four separate status facts.
 - **ADR-012**: AI-Native Intelligence Core, and WP-IC-1 below.
 - **ADR-013**: learning and research optimisation (not written).
-- **Candidate invariants** INV-13 and INV-14 in `invariants.yaml`.
+- **SPEC-002 Signal Model** (under ADR-012): the record type exists
+  (`crm/signal.py`), with no store and no producer (GAP-021).
+- **Candidate invariants** for ADR-012 and ADR-013 in `invariants.yaml`.
+
+## Evidence graph: references for the evidence half
+
+ADR-002's journey graph links accounts, contacts, signals and outcomes. Its
+evidence half now has an executable shape that needs no store: the evidence
+ledger (`schemas/evidence-ledger.schema.json`, `crm/ledger.py`,
+`docs/research-profiles.md`). Each research run writes one ledger file:
+- Observations: the source register;
+- Evidence, with a stance: a claim citing a source;
+- Claims and Hypotheses: FACT versus INFERENCE or ASSUMPTION;
+- Contradictions;
+- ProvenanceEdges: citations and supersessions.
+
+The design draws on the research-design work staged in
+`drafts/research-design-agents/`:
+- `docs/intelligence-layer.md` maps the ledger onto ADR-012's objects.
+- `docs/hermes-runtime.md` records Hermes Agent as a candidate runtime, not
+  adopted. Its adoption check needs a demonstrated gap, an owner, a boundary,
+  a cost and an acceptance test.
+- `schemas/ledger.schema.json` is identical to the schema here.
+
+The agents are given one role. They are research assistants that produce
+traceable, reviewable records, and they do not replace subject-matter
+experts, counsel, privacy or security reviewers, clinicians or regulators.
+They write ledger files and never a system of record. Linking ledgers to the
+journey (account to signal to outcome) waits for ADR-002 and ADR-012.
 
 ## Work packages (historical phase numbers mapped)
 

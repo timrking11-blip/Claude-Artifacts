@@ -1,7 +1,7 @@
 # Current state
 
-Evidence only, as of 9 Oct 2026. The baseline is default-branch commit
-`5cd30d3705dacbc0e60d4734d4d510eceddbe4ed` (the PR #23 merge, 3 Oct 2026).
+Evidence only, as of 14 Oct 2026. The baseline is default-branch commit
+`6bee998900b9d4488169ed3474e4887690af9184` (the PR #29 merge, 14 Oct 2026).
 Anything not observed is marked as not observed. Ownership is in
 `system-of-record.yaml`. Each capability's four facts are in the manifest's
 `capabilities`.
@@ -10,42 +10,54 @@ Anything not observed is marked as not observed. Ownership is in
 
 - **Default branch.** `claude/explorium-docs-mcp-brregp`. There is no `main`
   branch; some Notion links to `main` do not resolve (audit 12).
-- **Architecture tooling already merged.** From PR #22 (28948f3, 2 Oct):
-  - `architecture/invariants.yaml`;
-  - `scripts/check_architecture.py`;
-  - `docs/architecture-invariants.md`;
-  - CI job `architecture`;
-  - `.github/CODEOWNERS`.
-- **Weekly sync lands data by pull request.** From PR #23 (5cd30d3, 3 Oct);
-  no workflow pushes to the default branch.
-- **Not on the default branch before this change:** `architecture/adr/`, the
-  manifest, the matrix, the cost code and the composition cap. The 1 Oct
-  commit 5613bc9 never reached GitHub.
-- **Invariants, offline run on this branch:** ENFORCED 0, PARTIAL 10,
-  MISSING 4, UNVERIFIED 2 (UNVERIFIED needs a CRM dump); no regressions.
-  All sixteen rules are candidates, because their ADRs are Proposed or not
-  written. CI holds none of them to `expected`. Their must-not-regress
-  probes still fail CI if a control weakens.
+- **Architecture authority.** Effective since 9 Oct 2026. PR #24 merged this
+  folder at 21:04 UTC (merge commit `1e8104b`). This is recorded in the
+  manifest on 14 Oct 2026.
+- **Merged since 9 Oct:** #25 (sync keys), #26 (local data directories
+  untracked), #28 and #29 (`drafts/research-design-agents/`, staging only).
+- **Open:** #27 (weekly sync: the master stays a candidate until the owner
+  merges its data PR).
+- **This change adds:**
+  - ADR texts move to Notion 02 (ADR-014): `architecture/adr/` is removed and
+    the manifest indexes the pages.
+  - ADR-006 accepted: `crm/decision.py`, SPEC-003, and INV-06 to INV-10 and
+    INV-16 normative.
+  - SPEC-002 Signal record (`crm/signal.py`).
+  - GAP-007 closed: unpinned updates are refused.
+  - The evidence ledger (`architecture/schemas/`, `crm/ledger.py`,
+    `scripts/validate_ledger.py`, `docs/research-profiles.md`), with the
+    composition run's gate.
+- **Invariants, offline run on this branch:**
+  - ENFORCED 1 (INV-01: the Signal record type exists), PARTIAL 10,
+    MISSING 3, UNVERIFIED 2. No regressions.
+  - Six rules are normative and held at `expected`: INV-06 to INV-10, and
+    INV-16. Of these, INV-07 needs a CRM dump and is UNVERIFIED offline.
 
-## Tests, run 9 Oct 2026 on this branch (Python 3.11, local)
+## Tests, run 14 Oct 2026 on this branch (Python 3.13, Windows, local)
 
-- **`python -m pytest tests -q`:** 265 passed, 0 skipped. The baseline had
-  192; this branch adds 73:
-  - `tests/test_costs.py`: 25;
-  - `tests/test_validate_architecture.py`: 39;
-  - cap entry points in `tests/test_compose_account.py`: 4;
-  - `tests/test_check_architecture.py`: a net 5 (from 28 to 33). Three
-    URL-based standing tests were replaced by tests that only an Accepted
-    ADR confers standing and that must-not-regress controls hold under
-    candidate rules.
+- **`python -m pytest tests -q`:** 332 passed, 8 failed.
+  - The 8 failures are environment-only. They fail identically on the
+    untouched default branch in this environment, where the same command
+    gives 266 passed and 8 failed. CI on Linux passes them:
+    - the 7 tests in `tests/test_open_data_pr.py` drive a bash script through
+      Git for Windows;
+    - `test_files_beneath_a_tree_are_checked_through_bare_directory_rules`
+      depends on path separators.
+  - New tests:
+    - `test_signal.py`: 18;
+    - `test_decision.py`: 16;
+    - `test_ledger.py`: 20;
+    - `test_compose_account.py`: 6 (ledger gate);
+    - `test_crm_sync.py`: 1 (unpinned update refused);
+    - `test_validate_architecture.py`: net 5.
 - **`python -m pytest python/agents/account-research/tests -q`:** 26 passed,
-  4 skipped. The skips are in `test_model_provider.py`, because the
-  `anthropic` package is not installed locally.
-- **`python scripts/validate_architecture.py`:** 0 errors, 2 warnings:
-  - ADR-007's transition is pending merge;
-  - the daily site check runs on the legacy `claude-opus-5`.
+  4 skipped (the `anthropic` package is not installed locally).
+- **`python scripts/validate_architecture.py`:** 0 errors, 1 warning (the
+  daily site check runs on the legacy `claude-opus-5`).
+- **`python scripts/check_architecture.py --check-md`:** OK, no regressions.
 
-CI on the pull request is the record for its head commit.
+The tests need `PYTHONUTF8=1` and the `tzdata` package on Windows. CI on the
+pull request is the record for its head commit.
 
 ## Runtime (observed read-only on 9 Oct 2026; no setting changed)
 

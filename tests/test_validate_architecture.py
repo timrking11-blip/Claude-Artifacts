@@ -1,4 +1,4 @@
-"""scripts/validate_architecture.py: the manifest, ADR files, matrix, invariants and code agree."""
+"""scripts/validate_architecture.py: the manifest, decisions index, matrix, invariants and code agree."""
 
 import importlib.util
 import shutil
@@ -46,8 +46,11 @@ def errors(root):
     return r.errors
 
 
-def adr7(root):
-    return next((root / "architecture" / "adr").glob("ADR-007-*.md"))
+def make_pending(root):
+    edit_yaml(manifest_path(root), lambda m: m["authority"].update(
+        {"transition": "pending_merge", "effective_commit": None, "effective_date": None}))
+    edit_yaml(root / "architecture" / "system-of-record.yaml", lambda m: next(
+        c for c in m["current"] if c["object"] == "architecture decision").update({"store": "notion-architecture"}))
 
 
 def make_effective(root, sha=SHA, when="2026-10-12"):
@@ -55,30 +58,59 @@ def make_effective(root, sha=SHA, when="2026-10-12"):
         {"transition": "effective", "effective_commit": sha, "effective_date": when}))
     edit_yaml(root / "architecture" / "system-of-record.yaml", lambda m: next(
         c for c in m["current"] if c["object"] == "architecture decision").update({"store": "repository-architecture"}))
-    p = adr7(root)
-    p.write_text(p.read_text().replace("Status: Accepted; transition pending merge", "Status: Accepted; effective")
-                 .replace("Effective commit: pending", f"Effective commit: {sha}")
-                 .replace("Effective date: pending", f"Effective date: {when}"))
+
+
+def decision(root, aid):
+    return next(d for d in yaml.safe_load(manifest_path(root).read_text())["decisions"] if d["id"] == aid)
+
+
+def set_decision(root, aid, **kw):
+    edit_yaml(manifest_path(root), lambda m: next(d for d in m["decisions"] if d["id"] == aid).update(kw))
 
 
 def test_the_repository_validates_clean():
     r, want = va.validate(ROOT)
     assert r.errors == []
-    assert any("pending merge" in w for w in r.warnings)
+    assert not any("pending merge" in w for w in r.warnings)  # ADR-007 took effect on 2026-10-09
 
 
-def test_an_adr_status_that_disagrees_with_the_index_fails(repo):
-    p = next((repo / "architecture" / "adr").glob("ADR-002-*.md"))
-    p.write_text(p.read_text().replace("Status: Proposed", "Status: Accepted"))
-    assert any("ADR-002" in e and "disagrees" in e for e in errors(repo))
+def test_adr_copies_in_the_repository_fail(repo):
+    (repo / "architecture" / "adr").mkdir()
+    (repo / "architecture" / "adr" / "ADR-002-journey-graph.md").write_text("# ADR-002 — Journey Graph\n")
+    assert any("architecture/adr/ holds 1 file" in e for e in errors(repo))
 
 
-def test_an_unindexed_adr_file_fails(repo):
-    (repo / "architecture" / "adr" / "ADR-099-stray.md").write_text("# ADR-099 — Stray\n\nStatus: Proposed\n")
-    assert any("ADR-099-stray.md is not indexed" in e for e in errors(repo))
+def test_an_index_row_naming_a_file_fails(repo):
+    set_decision(repo, "ADR-002", file="adr/ADR-002-journey-graph.md")
+    assert any("ADR-002 names a file" in e for e in errors(repo))
+
+
+def test_a_written_adr_needs_its_notion_page(repo):
+    set_decision(repo, "ADR-009", notion=None)
+    assert any("ADR-009 is Proposed but has no Notion page URL" in e for e in errors(repo))
+    set_decision(repo, "ADR-009", notion="https://example.com/adr-009")
+    assert any("ADR-009 is Proposed but has no Notion page URL" in e for e in errors(repo))
+
+
+def test_an_accepted_adr_needs_its_decided_date(repo):
+    set_decision(repo, "ADR-014", decided=None)
+    assert any("ADR-014 is Accepted and needs an ISO 'decided' date" in e for e in errors(repo))
+
+
+def test_a_not_written_adr_has_no_page(repo):
+    set_decision(repo, "ADR-013", notion="https://app.notion.com/p/" + "0" * 32)
+    assert any("ADR-013 is Not written but has a Notion page" in e for e in errors(repo))
+
+
+def test_invariants_must_name_the_indexed_page(repo):
+    edit_yaml(repo / "architecture" / "invariants.yaml", lambda m: next(
+        d for d in m["decisions"] if d["id"] == "ADR-006").update({"url": "https://app.notion.com/p/" + "1" * 32}))
+    assert any("ADR-006 url" in e and "Notion page" in e for e in errors(repo))
 
 
 def test_pending_transition_may_not_record_an_effective_commit(repo):
+    make_pending(repo)
+    assert not any("authority" in e for e in errors(repo) if "protected_digest" not in e)
     edit_yaml(manifest_path(repo), lambda m: m["authority"].update({"effective_commit": SHA}))
     assert any("pending, so no effective commit" in e for e in errors(repo))
 
@@ -89,19 +121,24 @@ def test_a_consistent_effective_transition_passes_apart_from_the_digest(repo):
     assert errs == []
 
 
-def test_effective_commit_must_match_and_not_be_backdated(repo):
+def test_effective_commit_must_be_a_sha_and_not_be_backdated(repo):
     make_effective(repo, when="2026-09-30")
     assert any("may not precede the decision" in e for e in errors(repo))
-    make_effective(repo)
-    p = adr7(repo)
-    p.write_text(p.read_text().replace(f"Effective commit: {SHA}", f"Effective commit: {'b' * 40}"))
-    assert any("same in the ADR and the manifest" in e for e in errors(repo))
+    make_effective(repo, sha="1e8104b")
+    assert any("full commit SHA" in e for e in errors(repo))
+
+
+def test_the_effective_commit_is_in_this_history():
+    r, _ = va.validate(ROOT)
+    assert not any("not in this branch's history" in e for e in r.errors)
+    sha = yaml.safe_load(manifest_path(ROOT).read_text())["authority"]["effective_commit"]
+    assert va._in_history(sha, ROOT) in (True, None)  # None only where git is unavailable
 
 
 def test_the_architecture_owner_follows_the_transition(repo):
     edit_yaml(repo / "architecture" / "system-of-record.yaml", lambda m: next(
-        c for c in m["current"] if c["object"] == "architecture decision").update({"store": "repository-architecture"}))
-    assert any("architecture decisions are owned by 'repository-architecture'" in e for e in errors(repo))
+        c for c in m["current"] if c["object"] == "architecture decision").update({"store": "notion-architecture"}))
+    assert any("architecture decisions are owned by 'notion-architecture'" in e for e in errors(repo))
 
 
 def test_field_groups_must_equal_the_code(repo):
@@ -155,8 +192,8 @@ def test_a_missing_gap_fails(repo):
 
 def test_invariant_decision_statuses_must_agree(repo):
     edit_yaml(repo / "architecture" / "invariants.yaml",
-              lambda m: next(d for d in m["decisions"] if d["id"] == "ADR-006").update({"status": "Accepted"}))
-    assert any("invariants.yaml: ADR-006" in e for e in errors(repo))
+              lambda m: next(d for d in m["decisions"] if d["id"] == "ADR-012").update({"status": "Accepted"}))
+    assert any("invariants.yaml: ADR-012" in e for e in errors(repo))
 
 
 def test_personal_emails_and_infrastructure_ids_are_refused(repo):

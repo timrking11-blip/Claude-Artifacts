@@ -2,17 +2,21 @@
 
 ## Authority
 
-**ADR-007 is Accepted (1 Oct 2026). Its transition is pending merge.**
+**ADR-007 is Accepted (1 Oct 2026) and effective since 9 Oct 2026.** Pull
+request #24 carried this folder into the default branch
+`claude/explorium-docs-mcp-brregp` on 9 Oct 2026 at 21:04 UTC (merge commit
+`1e8104bad9fff2ebb43883f99ccc12798e522ea1`). That met ADR-007's condition.
+The effective commit and date were recorded on 14 Oct 2026, in the manifest's
+`authority` block and on ADR-007's page, and are not backdated.
 
-- When the pull request carrying this folder merges into the default branch
-  `claude/explorium-docs-mcp-brregp`, this folder becomes the architecture
-  authority. The Notion architecture space (INTEGRATED GTM ARCHITECTURE)
-  becomes its readable view.
-- Until then, Notion remains the effective authority, and this folder is the
-  reviewable form of the change.
-- After the merge, a follow-up commit records the effective commit and date
-  in `adr/ADR-007-…` and in the manifest's `authority` block. Nothing is
-  backdated.
+- This folder is the architecture authority. The Notion architecture space
+  (INTEGRATED GTM ARCHITECTURE) is its readable view.
+- **ADR texts live in Notion 02, not here (ADR-014, Accepted 14 Oct 2026).**
+  The manifest's `decisions` is the index: id, title, status, decided date and
+  Notion URL. The owner decides on an ADR's page, and the index is updated in
+  the same session. Until it is, a disagreement between page and index is a
+  gap. ADR-014 takes effect when the pull request that removes
+  `architecture/adr/` merges.
 
 No change to system-of-record ownership, authority boundaries or canonical
 ontology is made without an accepted ADR (ADR-007).
@@ -27,7 +31,8 @@ ontology is made without an accepted ADR (ADR-007).
 | `architecture-manifest.yaml` | Machine-readable index: authority, decisions, systems, capabilities, routines, cost basis, composition cap, protected digest |
 | `system-of-record.yaml` | **The one ownership definition**: current, accepted target and proposed, with field groups tied to code |
 | `invariants.yaml` | Implementation-independent rules per decision, with probes (`scripts/check_architecture.py`; rendered to `docs/architecture-invariants.md`) |
-| `adr/` | ADR-001 to ADR-012. Accepted text is never edited: changes are dated annotations or new ADRs |
+| `specs/` | Specifications with an executable form: SPEC-002 Signal Model (`crm/signal.py`), SPEC-003 AI Action Contract (`crm/decision.py`) |
+| `schemas/` | `evidence-ledger.schema.json`: the one schema for research ledgers, both profiles (`docs/research-profiles.md`, `crm/ledger.py`) |
 | `audits/README.md` | Audit index |
 | `gaps/README.md` | Gap index: open questions and disagreements, each with what closes it |
 
@@ -152,9 +157,11 @@ Before a change that touches data models, system-of-record boundaries,
 integrations, agents, scoring, attribution, measurement or workflow state:
 
 1. Read this README, the manifest and `system-of-record.yaml`.
-2. Read the relevant ADRs in `adr/`, and the Notion pages for context.
+2. Read the relevant ADRs on their Notion 02 pages (URLs in the manifest's `decisions`), and other Notion pages for context.
 3. Inspect the current implementation and runtime evidence.
 4. Log any disagreement as a gap before changing code.
 5. Record material changes in Notion 10 — Architecture Change Log.
 
-While ADR-007 is pending, Notion governs wherever the two disagree.
+Where this folder and a Notion page disagree, the disagreement is logged as
+a gap and resolved by fixing Notion or by an accepted ADR. ADR text and status
+are the exception: they are made on the ADR's Notion page (ADR-014).

@@ -1,8 +1,8 @@
 # Architecture invariants: the machine-readable source.
 #
-# ADR texts are in architecture/adr/ and Notion 02 — Architecture Decision
-# Records; under ADR-007 (Accepted 1 Oct 2026) architecture/ becomes the
-# authority when it merges, and Notion governs until then. This file is the
+# ADR texts live in Notion 02 — Architecture Decision Records (ADR-014);
+# under ADR-007 (Accepted 1 Oct 2026, effective 9 Oct 2026 at 1e8104b)
+# architecture/ is the architecture authority. This file is the
 # decisions' executable form: one
 # implementation-independent rule per decision, with the probes that test
 # how far today's system meets it. scripts/check_architecture.py runs the
@@ -33,13 +33,13 @@ decisions:
   - id: ADR-006
     title: AI Action Contract
     url: https://app.notion.com/p/a749895b8af44375a86cba7edd7c298f
-    status: Proposed
-    as_of: 2026-10-02
+    status: Accepted (14 Oct 2026, owner's instruction; its rules below are normative)
+    as_of: 2026-10-14
   - id: ADR-012
     title: AI-Native Intelligence Core (target)
-    url: https://app.notion.com/p/3ec7ecee36a9814aa01ffdf64313dfc6
-    status: Proposed (architecture/adr/ADR-012; drafted in 14 — Governance Amendment; not filed in Notion 02)
-    as_of: 2026-10-09
+    url: https://app.notion.com/p/3f97ecee36a98176a614c34d98b66706
+    status: Proposed (filed in Notion 02 on 14 Oct 2026; drafted in 14 — Governance Amendment)
+    as_of: 2026-10-14
   - id: ADR-013
     title: Learning and research optimisation (future)
     url: null
@@ -56,7 +56,7 @@ invariants:
       stored as a record of its own, never only as text inside another record
     expected: MISSING
     requires_runtime: false
-    gaps: [no Signal record type or store; signals exist only as rows in proposal prose and vendor fields]
+    gaps: [the Signal record type exists (SPEC-002) but has no store and no producer; signals still reach the CRM only as proposal prose and vendor fields]
     probes:
       - {id: P-01a, what: a Signal record type with id, subject, source, observed_at and kind exists, kind: static, scope: core, target: crm.signal.Signal, must_not_regress: false}
 
@@ -120,7 +120,7 @@ invariants:
   - id: INV-06
     decision: Decisions are reproducible
     adr: ADR-006
-    standing: candidate
+    standing: normative
     rule: >-
       Decision.id is unique and opaque; Decision.fingerprint = H(inputs, policy_version, model,
       prompt) is stored separately; equal fingerprints yield equal outcomes; the ledger is append-only
@@ -130,11 +130,12 @@ invariants:
     probes:
       - {id: P-06a, what: the same inputs give the same proposal id, kind: unit, scope: core, target: scripts/compose_account.py proposal_record, must_not_regress: true}
       - {id: P-06b, what: decision records carry a fingerprint separate from their id, kind: static, scope: core, target: proposal record key "fingerprint", must_not_regress: false}
+      - {id: P-06c, what: a decision record has an opaque id and a separate fingerprint over inputs, policy, model and prompt, and its ledger is append-only, kind: unit, scope: core, target: crm.decision.DecisionRecord / crm.decision.append, must_not_regress: true}
 
   - id: INV-07
     decision: Human in the loop is required
     adr: ADR-006
-    standing: candidate
+    standing: normative
     rule: >-
       ∀ action a with risk(a) ≥ threshold(kind(a)): executed(a) ⇒ ∃ authorization(a) by a human
       that records the check performed and covers exactly a
@@ -152,7 +153,7 @@ invariants:
   - id: INV-08
     decision: Policies are enforced
     adr: ADR-006
-    standing: candidate
+    standing: normative
     rule: >-
       every consequential action (a change to a canonical or protected field, an external action
       such as outreach or a vendor write, or a spend) is preceded by exactly one verdict ∈ {allow,
@@ -172,7 +173,7 @@ invariants:
   - id: INV-09
     decision: Agents cannot bypass gates
     adr: ADR-006
-    standing: candidate
+    standing: normative
     rule: >-
       the executor refuses any action that does not carry a valid authorization id bound to that action
     expected: PARTIAL
@@ -186,7 +187,7 @@ invariants:
   - id: INV-10
     decision: Execution is verified
     adr: ADR-006
-    standing: candidate
+    standing: normative
     rule: >-
       each action kind declares postconditions; after execution they are read back from the target
       and must hold, else the action is marked failed
@@ -194,7 +195,7 @@ invariants:
     requires_runtime: false
     gaps: [no declared postconditions; written fields are not read back]
     probes:
-      - {id: P-10a, what: a write to a document of known version is pinned to that version, kind: unit, scope: core, target: crm.crm_sync.pinned, must_not_regress: true}
+      - {id: P-10a, what: a write to a document of known version is pinned to that version and an update with no known version is refused, kind: unit, scope: core, target: crm.crm_sync.pinned, must_not_regress: true}
       - {id: P-10b, what: the data-layer validator fails on a duplicate identity, kind: unit, scope: core, target: scripts/validate_sync.py check_master, must_not_regress: true}
       - {id: P-10c, what: action kinds declare postconditions checked by read-back, kind: static, scope: core, target: crm.executor.POSTCONDITIONS, must_not_regress: false}
 
@@ -275,7 +276,7 @@ invariants:
   - id: INV-16
     decision: Auditability
     adr: ADR-006
-    standing: candidate
+    standing: normative
     rule: >-
       every decision, output and consequential write carries what produced it (model and prompt hash
       when a model did, otherwise the deterministic rule's id and version) plus the policy version and

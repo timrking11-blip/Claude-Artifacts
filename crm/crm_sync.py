@@ -86,10 +86,23 @@ def load_crm_dump(dump_dir: Path, collection: str = CONTACTS_COLLECTION) -> dict
     return docs
 
 
+class UnpinnedWrite(ValueError):
+    """An update to an existing document whose version the dump did not record."""
+
+
 def pinned(doc: dict[str, Any], write: dict[str, Any]) -> dict[str, Any]:
-    """Attach if_version to a write when the dump knew the document's version."""
+    """Attach if_version to a write: the version the dump read the document at.
+
+    An update with no known version is refused here (GAP-007, INV-10), before a
+    batch is written, rather than emitted unpinned. A dump taken without its
+    versions.json therefore stops the run instead of risking a write over a
+    newer edit.
+    """
     if isinstance(doc.get("_version"), int):
         write["if_version"] = doc["_version"]
+    elif write.get("op") == "update":
+        raise UnpinnedWrite(f"refusing an unpinned update to {write.get('collection')}/{write.get('doc_id')}: "
+                            "the dump has no version for it (take the dump with its versions file)")
     return write
 
 
