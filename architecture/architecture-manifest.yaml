@@ -64,7 +64,7 @@ capabilities:
   - {id: CAP-authority, name: Architecture authority in the repository, decision: ADR-007, decision_status: Accepted,
      implementation_state: EXECUTED, deployment: default-branch, evidence: ["PR #24 merge 1e8104b, 2026-10-09"]}
   - {id: CAP-adr-index, name: ADR texts in Notion, indexed here, decision: ADR-014, decision_status: Accepted,
-     implementation_state: CODE_EXISTS, deployment: default-branch, evidence: [architecture-manifest.yaml decisions, Notion 02 pages ADR-007 to ADR-014], gap: GAP-020}
+     implementation_state: EXECUTED, deployment: default-branch, evidence: [architecture-manifest.yaml decisions, Notion 02 pages ADR-007 to ADR-014, "PR #30 merge 35c5d9e, 2026-10-14"], gap: GAP-020}
   - {id: CAP-validator, name: Architecture validator and protected digest, decision: ADR-007, decision_status: Accepted,
      implementation_state: EXECUTED, deployment: github-actions, evidence: [scripts/validate_architecture.py, tests/test_validate_architecture.py, "CI job architecture on the default branch since 1e8104b"]}
   - {id: CAP-invariants, name: Invariant checker (CI gate), decision: ADR-006, decision_status: Accepted,
@@ -86,7 +86,7 @@ capabilities:
   - {id: CAP-stored-keys, name: Stored keys (master_id, org_id), decision: n/a, decision_status: n/a,
      implementation_state: EXECUTED, deployment: default-branch, evidence: [3814547, tests/test_keys.py, runlog rl_20260925T194944_phase-2-key-backfill]}
   - {id: CAP-weekly-sync, name: Weekly GitHub sync and bulk-create hold, decision: n/a, decision_status: n/a,
-     implementation_state: EXECUTED, deployment: github-actions, evidence: [data/runlog/rl_20260928T060642_weekly-sync.json, crm/runlog.py, tests/test_runlog.py]}
+     implementation_state: EXECUTED, deployment: github-actions, evidence: [data/runlog/rl_20260928T060642_weekly-sync.json, crm/runlog.py, tests/test_runlog.py, "scheduled runs failed 5 and 12 Oct 2026"], gap: GAP-024}
   - {id: CAP-broker, name: Enrichment Broker, decision: n/a, decision_status: n/a,
      implementation_state: CODE_EXISTS, deployment: default-branch, evidence: [crm/broker.py, tests/test_broker_activity.py], gap: GAP-005}
   - {id: CAP-activity-capture, name: Activity capture, decision: n/a, decision_status: n/a,
@@ -94,7 +94,7 @@ capabilities:
   - {id: CAP-data-sync, name: Monday Data Sync (shadow), decision: n/a, decision_status: n/a,
      implementation_state: EXECUTED, deployment: routine, evidence: ["trig_012qYJ65sLwpVRXWWYrYkvP6 last run 2026-10-05"], gap: GAP-006}
   - {id: CAP-composition, name: Composition run, decision: n/a, decision_status: n/a,
-     implementation_state: EXECUTED, deployment: default-branch, evidence: [scripts/compose_account.py, data/runs/run_20260924_fj2c73, runlog rl_20260924T214000_composition-run]}
+     implementation_state: EXECUTED, deployment: default-branch, evidence: [scripts/compose_account.py, runlog rl_20260924T214000_composition-run, "run folder in history before 91979a0 (data/runs untracked since #26)"], gap: GAP-023}
   - {id: CAP-pandadoc, name: Signed proposals in PandaDoc, decision: n/a, decision_status: Accepted,
      implementation_state: none, deployment: none, evidence: [01 — Living Reference Model, system-of-record policy]}
   - {id: CAP-workbench, name: Operations Workbench as delivery authority, decision: n/a, decision_status: Accepted,

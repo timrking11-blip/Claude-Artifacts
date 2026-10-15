@@ -16,7 +16,7 @@ The manifest's `capabilities[].gap` and the matrix point here.
 `scripts/validate_architecture.py` fails on a reference to a gap that is not
 listed.
 
-Status as of 14 Oct 2026. A closed gap stays listed, with what closed it.
+Status as of 15 Oct 2026. A closed gap stays listed, with what closed it.
 
 ## GAP-001 — ADR-007 transition pending merge (closed 14 Oct 2026)
 
@@ -213,13 +213,13 @@ Status as of 14 Oct 2026. A closed gap stays listed, with what closed it.
 ## GAP-020 — ADR texts move to Notion (ADR-014)
 
 - **Governs:** ADR-014 (Accepted 14 Oct 2026); ADR-007.
-- **Now:** ADR-007 to ADR-012 and ADR-014 have pages in Notion 02, created 14 Oct 2026 from the repository files at `6bee998`. The 9 Oct annotations of ADR-001 to ADR-003 were added to their pages. The change that removes `architecture/adr/` and makes the manifest's `decisions` a Notion-URL index is in an open pull request.
+- **Now:** pull request #30 merged on 14 Oct 2026 at 11:02 UTC (merge commit `35c5d9e1371e082388d553c066034d9311b3231f`). ADR-014 is in effect from that commit:
+  - `architecture/adr/` is gone, and the manifest's `decisions` is a Notion-URL index;
+  - ADR-007 to ADR-012 and ADR-014 have pages in Notion 02;
+  - the merge commit was recorded on ADR-014's page on 15 Oct 2026.
 - **Limit:** CI cannot read Notion. Agreement between an ADR page and its index row is checked by the reconciliation audit, not by the validator.
-- **Closes when:**
-  - the pull request merges;
-  - ADR-014's page records its merge commit and date;
-  - the next reconciliation audit finds every page and index row in agreement.
-- **Needs:** the owner's merge.
+- **Closes when:** the next reconciliation audit finds every ADR page and index row in agreement.
+- **Needs:** a reconciliation audit; no owner decision.
 
 ## GAP-021 — Signal record without a store or producer
 
@@ -238,3 +238,40 @@ Status as of 14 Oct 2026. A closed gap stays listed, with what closed it.
 - **Target:** every composition run files a full-profile ledger that passes, and lean ledgers accompany development research.
 - **Closes when:** a dated composition run finalizes with `evidence_ledger.status` "valid", and its ledger is reviewed by the owner.
 - **Needs:** the next composition run; the owner's review of its ledger.
+
+## GAP-023 — Run evidence is no longer preserved
+
+- **Governs:**
+  - the composition run's evidence copy (blueprint: "git keeps the evidence copy");
+  - the research profiles (`ledger.json` per run);
+  - ADR-012's proposed artifact preservation (V2 build plan R16).
+- **Now:** pull request #26 (9 Oct 2026, `91979a0`, "Stop tracking local data directories") gitignored `data/runs/` and `data/master/` so the repository can be shared with advisors. Earlier runs stay in history. Since then:
+  - a run folder, including its `ledger.json`, exists only in the checkout that ran it;
+  - routine checkouts are discarded;
+  - the manifest's composition evidence pointed at a run folder that is no longer in the tree.
+- **Not the fix:** re-tracking these folders. The repository is shared, and `data/master/` holds contact data.
+- **Target:** a private, durable evidence store for run folders and ledgers. The repository keeps only a manifest (run id, file, SHA-256, date) that points into it.
+- **Closes when:**
+  - the owner picks the store;
+  - the composition run writes each run folder there with a hash manifest;
+  - one run is read back from it.
+- **Options for the owner:**
+  - A: a Storage bucket in the existing, empty Supabase project;
+  - B: a private Google Drive folder.
+
+  Either holds evidence files only, never CRM records.
+- **Needs:** the owner's choice of store.
+
+## GAP-024 — Weekly GitHub sync cannot complete
+
+- **Governs:** the weekly CRM sync workflow (`weekly-crm-sync.yml`), the data-by-PR path (#23).
+- **Now (read 15 Oct 2026, from Actions):** two problems.
+  - **Apollo key rejected.** The scheduled runs of 5 and 12 Oct failed. On 12 Oct, Apollo rejected the API key: `401 … AUTH.AUTHENTICATION.API_KEY_INVALID`. In the same run, the test step lacked PyYAML; that was fixed later the same day by #25.
+  - **Data step blocked by #26.** Even with a valid key, the data step cannot commit the master: `open_data_pr.sh` runs `git add -- data/master …` without `-f`, and #26 made `data/master/` gitignored. A gitignored path makes `git add` exit 1, which was reproduced locally. The master snapshot still uploads as a 90-day workflow artifact.
+- **Target:** the sync completes, and the master lives where GAP-023's store decision puts it.
+- **Closes when:**
+  - a scheduled run succeeds end to end;
+  - its master snapshot is retrievable from the chosen store.
+- **Needs:** the owner:
+  - a valid `APOLLO_API_KEY` repository secret;
+  - the GAP-023 store choice, which decides whether the workflow writes the master to the store or the data PR carries it.

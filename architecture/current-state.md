@@ -33,6 +33,12 @@ Anything not observed is marked as not observed. Ownership is in
   - Six rules are normative and held at `expected`: INV-06 to INV-10, and
     INV-16. Of these, INV-07 needs a CRM dump and is UNVERIFIED offline.
 
+## Since 14 Oct 2026 (read 15 Oct)
+
+- Pull request #30 merged on 14 Oct 2026 at 11:02 UTC (`35c5d9e`), and CI passed on the merge. ADR-014 is in effect from it, and ADR-006's six rules are normative on the default branch.
+- `data/runs/` and `data/master/` have been untracked since #26 (9 Oct), so run evidence and ledgers are no longer preserved (GAP-023).
+- The weekly GitHub sync failed on 5 and 12 Oct. Apollo rejected the API key, and the data step cannot add the now-ignored master (GAP-024).
+
 ## Tests, run 14 Oct 2026 on this branch (Python 3.13, Windows, local)
 
 - **`python -m pytest tests -q`:** 332 passed, 8 failed.
