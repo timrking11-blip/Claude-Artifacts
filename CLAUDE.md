@@ -91,6 +91,27 @@ Don't work around them.
 - The internal check before a proposal goes out is "Review before sending"
   (`crm/review.py`). It's for SMI and is never shown to the prospect.
 
+## Build priorities decided 14 Oct 2026
+
+- "Sweet seats" means the Sweet-Seats repo, never the SWAT Engine. An
+  agenda once read it as the SWAT Engine, which is not a current priority.
+- Fast path or slow path: output that can be deleted without cleanup (files,
+  briefs, ledgers, drafts) takes the fast path; anything that writes a record,
+  sends a message or spends a credit takes the slow path (boundary review,
+  runlog line, hold over 5). Skills write ADR-012-shaped files only; ADR-012
+  stays Proposed. Skills are plain Agent Skills: SKILL.md carries name and
+  description only.
+- Hermes Agent is adopted as a second runtime (the owner's decision). Its
+  owner, boundary (no CRM writes; changes return as a PR), cost and
+  acceptance test (evals score the same as in Claude Code) are still to be
+  stated; `drafts/research-design-agents/docs/hermes-runtime.md` predates the
+  decision.
+- Prospecting is relationship-led: warm intros through mutual LinkedIn
+  connections, not replies to inbound proposal requests.
+- Sweet Seats' stack (Supabase, Google Maps API, Notion, GitHub, Claude Code,
+  Miro, probably MusicBrainz) is for Sweet Seats only. In the SMI stack
+  Supabase stays parked until Phase 5 (registry v1.27).
+
 ## Research profiles and the evidence ledger
 
 Every research task writes its evidence to `ledger.json` under one schema,
