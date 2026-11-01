@@ -160,7 +160,7 @@ controls:
   # .github/CODEOWNERS must give these to code_owner (last matching rule wins) and give no data/ path an owner.
   code_owner: "@timrking11-blip"
   code_owned_paths: [architecture/, crm/, scripts/, .github/, .github/CODEOWNERS, .github/workflows/, tests/, docs/,
-                     artifact/, python/agents/account-research/, CLAUDE.md, README.md]
+                     artifact/, python/agents/account-research/, supabase/, CLAUDE.md, README.md]
   data_paths_not_code_owned: [data/master/, data/CHANGELOG.md, data/runlog/, data/runs/, data/proposals/]
 
 composition:

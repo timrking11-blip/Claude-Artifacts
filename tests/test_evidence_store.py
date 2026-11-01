@@ -125,6 +125,21 @@ def test_evidence_is_never_overwritten(tmp_path):
         store.put("runs/run_x/files/state.json", b"{}")
 
 
+def test_a_missing_registry_entry_is_rejected(tmp_path):
+    store, rec = persisted(tmp_path)
+    (tmp_path / "store" / "_registry" / "run_x.json").unlink()
+    assert any("no registry entry for the run" in e for e in es.gate_record(rec, store))
+
+
+def test_a_registry_entry_that_disagrees_with_the_bucket_is_rejected(tmp_path):
+    store, rec = persisted(tmp_path)
+    path = tmp_path / "store" / "_registry" / "run_x.json"
+    row = json.loads(path.read_text())
+    row["manifest_sha256"] = "0" * 64
+    path.write_text(json.dumps(row))
+    assert any("registry entry's manifest hash does not match" in e for e in es.gate_record(rec, store))
+
+
 # 5. Changed inputs are rejected.
 def test_a_record_edited_after_persisting_is_stale(tmp_path):
     store, rec = persisted(tmp_path)
@@ -173,7 +188,7 @@ def test_the_catch_up_holds_proposals_without_verified_evidence(tmp_path):
     tampered["proposal_id"] = "prop_tampered"
     kept, held = push.gate_proposals([good, legacy, tampered], store)
     assert [p["proposal_id"] for p in kept] == ["prop_x"]
-    assert any(h.startswith("prop_legacy: no evidence receipt") for h in held)
+    assert any(h.startswith("prop_legacy: quarantined: no evidence receipt") for h in held)
     assert any(h.startswith("prop_tampered:") and "changed since" in h for h in held)
 
 
@@ -209,7 +224,21 @@ def test_no_configuration_means_no_store():
     with pytest.raises(es.EvidenceError, match="no evidence store configured"):
         es.store_from_env({})
     with pytest.raises(es.EvidenceError, match="https"):
-        es.store_from_env({"EVIDENCE_STORE": "supabase", "SUPABASE_URL": "http://x", "SUPABASE_SERVICE_ROLE_KEY": "k"})
+        es.store_from_env({"EVIDENCE_STORE": "supabase", "SUPABASE_URL": "http://x"})
+
+
+def test_the_service_role_key_is_never_enough():
+    """Filing runs use the least-privilege writer; an elevated key alone configures nothing."""
+    with pytest.raises(es.EvidenceError, match=r"SUPABASE_PUBLISHABLE_KEY \(or SUPABASE_ANON_KEY\), EVIDENCE_WRITER_EMAIL, EVIDENCE_WRITER_PASSWORD not set"):
+        es.store_from_env({"EVIDENCE_STORE": "supabase", "SUPABASE_URL": "https://example.supabase.co",
+                           "SUPABASE_SERVICE_ROLE_KEY": "elevated"})
+
+
+def test_manifests_carry_the_retention_date_and_nothing_deletes(tmp_path):
+    store, _ = persisted(tmp_path)
+    m = json.loads(store.get("runs/run_x/manifest.json"))
+    assert m["retain_until"] == "2027-11-01" and es.RETENTION_DAYS == 365
+    assert not hasattr(store, "delete") and not hasattr(es.SupabaseStore, "delete")
 
 
 def test_bad_keys_are_refused(tmp_path):
@@ -238,10 +267,27 @@ class FakeResponse:
 def fake_bucket(monkeypatch):
     """A fake Storage API: refuses re-upload like x-upsert: false, serves authenticated downloads."""
     import urllib.error
-    objects, seen = {}, []
+    import urllib.parse
+    objects, seen, registry = {}, [], {}
 
     def urlopen(req, timeout=None):
         seen.append(req)
+        if "/auth/v1/token?grant_type=password" in req.full_url:
+            creds = json.loads(req.data)
+            ok = creds == {"email": "writer@example.com", "password": "writer-pass"} and req.headers.get("Apikey") == "anon"
+            if not ok:
+                raise urllib.error.HTTPError(req.full_url, 400, "bad", {}, _io(b'{"error":"invalid_grant"}'))
+            return FakeResponse(200, b'{"access_token":"writer-jwt"}')
+        assert req.headers.get("Authorization") == "Bearer writer-jwt"
+        if "/rest/v1/evidence_registry" in req.full_url:
+            if req.get_method() == "POST":
+                row = json.loads(req.data)
+                if row["run_id"] in registry:
+                    raise urllib.error.HTTPError(req.full_url, 409, "conflict", {}, _io(b"{}"))
+                registry[row["run_id"]] = row
+                return FakeResponse(201, b"")
+            run_id = urllib.parse.parse_qs(urllib.parse.urlsplit(req.full_url).query)["run_id"][0][3:]
+            return FakeResponse(200, json.dumps([registry[run_id]] if run_id in registry else []).encode())
         path = req.full_url.split("/storage/v1/object/", 1)[1]
         if req.get_method() == "POST":
             key = path.split("/", 1)[1]
@@ -268,12 +314,24 @@ def _io(b):
 def test_supabase_backend_persists_reads_back_and_refuses_overwrites(tmp_path, monkeypatch):
     objects, seen = fake_bucket(monkeypatch)
     store = es.store_from_env({"EVIDENCE_STORE": "supabase", "SUPABASE_URL": "https://example.supabase.co",
-                               "SUPABASE_SERVICE_ROLE_KEY": "secret-key-value", "EVIDENCE_BUCKET": "run-evidence"})
+                               "SUPABASE_ANON_KEY": "anon", "EVIDENCE_WRITER_EMAIL": "writer@example.com",
+                               "EVIDENCE_WRITER_PASSWORD": "writer-pass", "EVIDENCE_BUCKET": "run-evidence"})
     rec = record()
     rec["evidence"] = es.persist_run(store, "run_x", es.collect(run_folder(tmp_path), rec), NOW, record=rec)
     assert es.gate_record(rec, store) == []
     assert "runs/run_x/receipt.json" in objects
-    assert all("/run-evidence/" in r.full_url for r in seen)
+    row = store.lookup("run_x")
+    assert row["manifest_sha256"] == rec["evidence"]["manifest_sha256"] and row["retain_until"] == "2027-11-01"
+    assert all("/run-evidence/" in r.full_url for r in seen if "/storage/" in r.full_url)
     with pytest.raises(es.EvidenceError) as exc:
         store.put("runs/run_x/files/state.json", b"{}")
-    assert "never overwritten" in str(exc.value) and "secret-key-value" not in str(exc.value)
+    assert "never overwritten" in str(exc.value) and "writer-pass" not in str(exc.value)
+
+
+def test_a_failed_writer_sign_in_configures_no_store(monkeypatch):
+    fake_bucket(monkeypatch)
+    with pytest.raises(es.EvidenceError, match="sign-in failed: HTTP 400") as exc:
+        es.store_from_env({"EVIDENCE_STORE": "supabase", "SUPABASE_URL": "https://example.supabase.co",
+                           "SUPABASE_ANON_KEY": "anon", "EVIDENCE_WRITER_EMAIL": "writer@example.com",
+                           "EVIDENCE_WRITER_PASSWORD": "wrong"})
+    assert "wrong" not in str(exc.value)

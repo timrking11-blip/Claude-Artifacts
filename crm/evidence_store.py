@@ -14,11 +14,14 @@ Keys in the store, all under one run id:
 
   runs/<run_id>/files/<path>   each evidence file, byte for byte
   runs/<run_id>/manifest.json  the hash manifest (below), written after the files
-  runs/<run_id>/receipt.json   the read-back verification receipt, written last
+  runs/<run_id>/receipt.json   the read-back verification receipt
+  registry row                 run id, manifest hash, fingerprint, retention: an append-only
+                               record outside the bucket (public.evidence_registry), written last
 
 The manifest:
 
   {contract, run_id, created_at, producer,
+   retain_until,                              created_at + RETENTION_DAYS (a date); no code deletes
    files: [{path, sha256, bytes, kind}],      kind: raw | derived | decision
    inputs_fingerprint,                        crm.decision.fingerprint over {path: sha256}
    record_sha256}                             sha256 of the proposal record, `evidence` and `_` keys removed
@@ -44,8 +47,15 @@ Supabase Storage bucket over its REST API). Credentials come only from the
 environment and are never printed. `store_from_env` picks one:
 
   EVIDENCE_STORE=local:<folder>
-  EVIDENCE_STORE=supabase   with SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and
+  EVIDENCE_STORE=supabase   with SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY (or the
+                            legacy SUPABASE_ANON_KEY),
+                            EVIDENCE_WRITER_EMAIL, EVIDENCE_WRITER_PASSWORD and
                             EVIDENCE_BUCKET (default "run-evidence")
+
+The Supabase backend signs in as a dedicated evidence-writer user, whose
+storage policies (supabase/migrations/20261101_evidence_store.sql) allow
+INSERT and SELECT on the bucket and nothing else: that credential cannot
+overwrite or delete evidence. The service-role key is never accepted here.
 
 CLI (replay from a fresh process):
 
@@ -62,7 +72,7 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -71,6 +81,9 @@ from . import ledger as evidence_ledger
 
 CONTRACT = "evidence-store/1"
 DEFAULT_BUCKET = "run-evidence"
+#: Evidence is kept at least this long (owner, 1 Nov 2026), subject to contractual and regulatory
+#: requirements. Recorded on each manifest as `retain_until`; nothing here ever deletes.
+RETENTION_DAYS = 365
 
 #: Files that are observations of the outside world, kept apart from what was derived from them.
 RAW_FILES = frozenset({"web_research.md", "data_sources.md", "web_sources.json", "coverage.json", "manifest.json"})
@@ -88,6 +101,13 @@ class Store(Protocol):
     def put(self, key: str, data: bytes) -> None: ...
     def get(self, key: str) -> bytes: ...
     def exists(self, key: str) -> bool: ...
+    def register(self, entry: dict[str, Any]) -> None: ...
+    def lookup(self, run_id: str) -> dict[str, Any] | None: ...
+
+
+#: The registry row: what an append-only record outside the bucket says about a run.
+REGISTRY_FIELDS = ("run_id", "contract", "manifest_sha256", "inputs_fingerprint", "file_count", "created_at",
+                   "retain_until")
 
 
 def sha256(data: bytes) -> str:
@@ -134,25 +154,51 @@ class LocalStore:
     def exists(self, key: str) -> bool:
         return self._path(key).exists()
 
+    def register(self, entry: dict[str, Any]) -> None:
+        self.put(f"_registry/{run_prefix(entry['run_id'])[5:]}.json", _canonical(entry))
+
+    def lookup(self, run_id: str) -> dict[str, Any] | None:
+        key = f"_registry/{run_prefix(run_id)[5:]}.json"
+        return json.loads(self.get(key)) if self.exists(key) else None
+
 
 class SupabaseStore:
-    """A private Supabase Storage bucket, over the Storage REST API.
+    """A private Supabase Storage bucket, over the Storage REST API, as the evidence-writer user.
 
-    Uploads send `x-upsert: false`, so the service refuses to replace an
-    object; a refused upload is accepted only when the stored bytes match.
-    The key is read from the environment by `store_from_env`, held only on the
-    instance, and never included in a message.
+    The writer's storage policies allow INSERT and SELECT only, so the service
+    itself refuses an overwrite or a delete from this credential. Uploads also
+    send `x-upsert: false`; a refused upload is accepted only when the stored
+    bytes match. Credentials are read from the environment by
+    `store_from_env`, held only on the instance, and never included in a
+    message.
     """
 
-    def __init__(self, url: str, key: str, bucket: str = DEFAULT_BUCKET, timeout: float = 30.0) -> None:
+    def __init__(self, url: str, anon_key: str, email: str, password: str, bucket: str = DEFAULT_BUCKET,
+                 timeout: float = 30.0) -> None:
         if not url.startswith("https://"):
             raise EvidenceError("SUPABASE_URL must be an https:// URL")
-        if not key:
-            raise EvidenceError("SUPABASE_SERVICE_ROLE_KEY is not set")
-        self.base = url.rstrip("/") + "/storage/v1/object"
+        missing = [n for n, v in (("SUPABASE_PUBLISHABLE_KEY (or SUPABASE_ANON_KEY)", anon_key), ("EVIDENCE_WRITER_EMAIL", email),
+                                  ("EVIDENCE_WRITER_PASSWORD", password)) if not v]
+        if missing:
+            raise EvidenceError(f"{', '.join(missing)} not set")
+        self.url = url.rstrip("/")
+        self.base = self.url + "/storage/v1/object"
         self.bucket = bucket
         self.timeout = timeout
-        self._headers = {"Authorization": f"Bearer {key}", "apikey": key}
+        self._headers = {"apikey": anon_key}
+        self._headers["Authorization"] = f"Bearer {self._sign_in(email, password)}"
+
+    def _sign_in(self, email: str, password: str) -> str:
+        body = json.dumps({"email": email, "password": password}).encode()
+        status, raw = self._request("POST", f"{self.url}/auth/v1/token?grant_type=password", body,
+                                    {"Content-Type": "application/json"})
+        try:
+            token = json.loads(raw).get("access_token") if status == 200 else None
+        except ValueError:
+            token = None
+        if not token:
+            raise EvidenceError(f"evidence writer sign-in failed: HTTP {status}")
+        return token
 
     def _url(self, key: str, authenticated: bool = False) -> str:
         path = urllib.parse.quote(_check_key(key))
@@ -193,6 +239,27 @@ class SupabaseStore:
         status, _ = self._request("GET", self._url(key, authenticated=True))
         return status == 200
 
+    def register(self, entry: dict[str, Any]) -> None:
+        """Insert the run's row into public.evidence_registry (insert-only for the writer)."""
+        status, body = self._request("POST", f"{self.url}/rest/v1/evidence_registry", _canonical(entry),
+                                     {"Content-Type": "application/json", "Prefer": "return=minimal"})
+        if 200 <= status < 300:
+            return
+        if status == 409:
+            existing = self.lookup(entry["run_id"])
+            if existing and {k: existing.get(k) for k in REGISTRY_FIELDS} == {k: entry.get(k) for k in REGISTRY_FIELDS}:
+                return
+            raise EvidenceError(f"registry already holds a different entry for {entry['run_id']}")
+        raise EvidenceError(f"registry insert for {entry['run_id']} failed: HTTP {status} {body[:200]!r}")
+
+    def lookup(self, run_id: str) -> dict[str, Any] | None:
+        q = urllib.parse.urlencode({"run_id": f"eq.{run_prefix(run_id)[5:]}", "select": ",".join(REGISTRY_FIELDS)})
+        status, body = self._request("GET", f"{self.url}/rest/v1/evidence_registry?{q}")
+        if status != 200:
+            raise EvidenceError(f"registry lookup for {run_id} failed: HTTP {status}")
+        rows = json.loads(body or b"[]")
+        return rows[0] if rows else None
+
 
 def store_from_env(env: dict[str, str] | None = None) -> Store:
     """The configured store. Fails closed: no configuration, no store."""
@@ -201,7 +268,9 @@ def store_from_env(env: dict[str, str] | None = None) -> Store:
     if spec.startswith("local:"):
         return LocalStore(Path(spec[len("local:"):]))
     if spec == "supabase":
-        return SupabaseStore(env.get("SUPABASE_URL", ""), env.get("SUPABASE_SERVICE_ROLE_KEY", ""),
+        return SupabaseStore(env.get("SUPABASE_URL", ""),
+                             env.get("SUPABASE_PUBLISHABLE_KEY") or env.get("SUPABASE_ANON_KEY", ""),
+                             env.get("EVIDENCE_WRITER_EMAIL", ""), env.get("EVIDENCE_WRITER_PASSWORD", ""),
                              env.get("EVIDENCE_BUCKET", DEFAULT_BUCKET))
     raise EvidenceError("no evidence store configured (EVIDENCE_STORE=supabase or local:<folder>); "
                         "a proposal cannot be filed without one")
@@ -260,7 +329,9 @@ def persist_run(store: Store, run_id: str, files: dict[str, bytes], now: datetim
     """
     prefix = run_prefix(run_id)
     entries = [{"path": p, "sha256": sha256(b), "bytes": len(b), "kind": kind_of(p)} for p, b in sorted(files.items())]
-    manifest = {"contract": CONTRACT, "run_id": run_id, "created_at": now.astimezone(timezone.utc).isoformat(),
+    created = now.astimezone(timezone.utc)
+    manifest = {"contract": CONTRACT, "run_id": run_id, "created_at": created.isoformat(),
+                "retain_until": (created + timedelta(days=RETENTION_DAYS)).date().isoformat(),
                 "producer": producer, "files": entries, "inputs_fingerprint": inputs_fingerprint(entries),
                 "record_sha256": record_digest(record) if record is not None else None}
     for path, data in sorted(files.items()):
@@ -274,6 +345,9 @@ def persist_run(store: Store, run_id: str, files: dict[str, bytes], now: datetim
                "verified_at": now.astimezone(timezone.utc).isoformat(), "files_verified": len(entries),
                "checks": ["files re-hashed", "inputs fingerprint recomputed", "evidence ledger validated"]}
     store.put(f"{prefix}/receipt.json", _canonical(receipt))
+    store.register({"run_id": run_id, "contract": CONTRACT, "manifest_sha256": receipt["manifest_sha256"],
+                    "inputs_fingerprint": manifest["inputs_fingerprint"], "file_count": len(entries),
+                    "created_at": manifest["created_at"], "retain_until": manifest["retain_until"]})
     return {"contract": CONTRACT, "run_id": run_id, "manifest_key": f"{prefix}/manifest.json",
             "manifest_sha256": receipt["manifest_sha256"], "inputs_fingerprint": manifest["inputs_fingerprint"],
             "receipt_key": f"{prefix}/receipt.json", "verified_at": receipt["verified_at"]}
@@ -346,7 +420,8 @@ def gate_record(record: dict[str, Any], store: Store) -> list[str]:
     ev = record.get("evidence")
     pid = record.get("proposal_id") or "proposal"
     if not ev:
-        return [f"{pid}: no evidence receipt (filed before the evidence store, or never persisted)"]
+        return [f"{pid}: quarantined: no evidence receipt (filed before the evidence store, or never persisted); "
+                "it is pushed only after verification or an authorized re-run from the intake page"]
     if ev.get("contract") != CONTRACT:
         return [f"{pid}: evidence contract {ev.get('contract')!r} is not {CONTRACT}"]
     run_id = ev.get("run_id") or ""
@@ -364,6 +439,14 @@ def gate_record(record: dict[str, Any], store: Store) -> list[str]:
             store.get(ev.get("receipt_key") or f"{run_prefix(run_id)}/receipt.json")
         except EvidenceError:
             errors.append("no read-back receipt for the run")
+        try:
+            entry = store.lookup(run_id)
+        except EvidenceError as exc:
+            entry, _ = None, errors.append(str(exc))
+        if entry is None:
+            errors.append("no registry entry for the run (the record outside the bucket is missing)")
+        elif entry.get("manifest_sha256") != ev.get("manifest_sha256"):
+            errors.append("the registry entry's manifest hash does not match the stored run")
     return [f"{pid}: {e}" for e in errors]
 
 

@@ -19,5 +19,6 @@ tests/ @timrking11-blip
 docs/ @timrking11-blip
 artifact/ @timrking11-blip
 python/agents/account-research/ @timrking11-blip
+supabase/ @timrking11-blip
 /CLAUDE.md @timrking11-blip
 /README.md @timrking11-blip
