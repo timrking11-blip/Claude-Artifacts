@@ -56,6 +56,7 @@ systems:
   - {id: pandadoc, name: PandaDoc, implementation: external, location: connector available; no flow}
   - {id: operations-workbench, name: Operations Workbench, implementation: artifact with sample data, location: not in this repository}
   - {id: intelligence-core, name: AI-Native Intelligence Core, implementation: none, location: proposed (ADR-012), stage: proposed}
+  - {id: evidence-store, name: Run evidence store, implementation: private Supabase Storage bucket behind crm/evidence_store.py (contract evidence-store/1), location: Supabase project named in the environment (SUPABASE_URL), stage: proposed}
 
 # decision_status: Proposed | Accepted | Superseded | Deferred | Not written | n/a (no ADR governs it)
 # implementation_state: none | DESIGNED | CODE_EXISTS | CONFIGURED | EXECUTED | PRODUCTION_VERIFIED | RETIRED
@@ -95,6 +96,8 @@ capabilities:
      implementation_state: EXECUTED, deployment: routine, evidence: ["trig_012qYJ65sLwpVRXWWYrYkvP6 last run 2026-10-05"], gap: GAP-006}
   - {id: CAP-composition, name: Composition run, decision: n/a, decision_status: n/a,
      implementation_state: EXECUTED, deployment: default-branch, evidence: [scripts/compose_account.py, runlog rl_20260924T214000_composition-run, "run folder in history before 91979a0 (data/runs untracked since #26)"], gap: GAP-023}
+  - {id: CAP-evidence-store, name: Run evidence persistence (hash manifest, read-back receipt, filing gate), decision: n/a, decision_status: n/a,
+     implementation_state: CODE_EXISTS, deployment: branch, evidence: [crm/evidence_store.py, tests/test_evidence_store.py, scripts/compose_account.py persist_evidence, scripts/push_proposals_to_crm.py gate_proposals], gap: GAP-023}
   - {id: CAP-pandadoc, name: Signed proposals in PandaDoc, decision: n/a, decision_status: Accepted,
      implementation_state: none, deployment: none, evidence: [01 — Living Reference Model, system-of-record policy]}
   - {id: CAP-workbench, name: Operations Workbench as delivery authority, decision: n/a, decision_status: Accepted,

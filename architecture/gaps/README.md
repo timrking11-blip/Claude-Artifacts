@@ -261,6 +261,17 @@ Status as of 15 Oct 2026. A closed gap stays listed, with what closed it.
 
   Either holds evidence files only, never CRM records.
 - **Needs:** the owner's choice of store.
+- **1 Nov 2026:**
+  - **Store chosen:** the owner picked option A, a private Supabase Storage bucket, in a Claude Code session. The owner also directed that it be built as a reusable, vendor-independent evidence contract with the composition run as its first consumer. No ADR records this yet: the ADR text goes on its Notion 02 page (ADR-014).
+  - **Built:** `crm/evidence_store.py` (contract `evidence-store/1`), on a branch. A run's folder and its proposal record are persisted under a hash manifest, read back and receipted before any CRM batch exists.
+  - **The Monday catch-up is gated too.** `scripts/push_proposals_to_crm.py` now applies the same check (`gate_record`), so it no longer pushes a proposal whose evidence is missing, altered or stale.
+  - **Tests:** `tests/test_evidence_store.py`, with a local store and a fake Storage API.
+- **Still open:**
+  - the bucket, with no public access;
+  - the repository secrets that let a run reach it;
+  - one real run persisted to the bucket and read back from a fresh process.
+
+  Until all three are done the gap stays open, and composition runs refuse to file because no store is configured.
 
 ## GAP-024 — Weekly GitHub sync cannot complete
 

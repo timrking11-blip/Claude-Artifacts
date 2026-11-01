@@ -67,6 +67,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from crm import config, costs, runlog  # noqa: E402
+from crm import evidence_store  # noqa: E402
 from crm import ledger as evidence_ledger  # noqa: E402
 from crm.crm_sync import load_crm_dump, pinned, system_activity, utcnow_iso  # noqa: E402
 from crm.guardrails import check_run, credit_spend_allowed, found_on_intake_domain, urls_in  # noqa: E402
@@ -726,6 +727,28 @@ def check_ledger(run_dir: Path, wanted: dict[str, Any] | None) -> dict[str, Any]
                                 f"{len(data.get('claims') or [])} claims", "profile": profile}
 
 
+def persist_evidence(run_dir: Path, record: dict[str, Any], now: datetime, store=None) -> dict[str, Any]:
+    """Persist the run's evidence and gate the record on it (GAP-023), before any CRM batch exists.
+
+    The run folder and the proposal record go to the evidence store under a
+    hash manifest and are read back; the record then carries the pointer in
+    `evidence`. Any failure stops the run here, so a proposal with no verified
+    evidence never reaches the CRM. The Monday catch-up applies the same gate.
+    """
+    try:
+        store = store or evidence_store.store_from_env()
+        files = evidence_store.collect(run_dir, record)
+        record["evidence"] = evidence_store.persist_run(store, run_dir.name, files, now, record=record)
+        problems = evidence_store.gate_record(record, store)
+    except evidence_store.EvidenceError as exc:
+        record.pop("evidence", None)
+        raise GateError(f"evidence store: {exc}") from None
+    if problems:
+        record.pop("evidence", None)
+        raise GateError("evidence store: " + " | ".join(problems))
+    return record["evidence"]
+
+
 def run_line(record: dict[str, Any], contact_ids: list[str], account_write: dict[str, Any] | None,
              now: datetime, *, run_id: str | None = None, cap: dict[str, Any] | None = None) -> dict[str, Any]:
     """The run's one line for the CRM page's Last runs strip (crm/runlog.py).
@@ -909,6 +932,7 @@ def main(argv: list[str] | None = None) -> int:
     summary = args.website_summary.read_text() if args.website_summary else None
     result = finalize(run_dir, args.proposal.read_text(), summary, args.composer_flag, master, docs, accounts, now,
                       founder_lines=args.founder_line)
+    persist_evidence(run_dir, result["record"], now)
     json_path, md_path = write_proposal_files(result["record"], args.proposals_dir, now)
     writes_path = write_finalize(run_dir, result, args.out_dir / f"compose_{args.run_id}", json_path, md_path, now)
     print(json.dumps({"run_id": args.run_id, "proposal_id": result["record"]["proposal_id"],
