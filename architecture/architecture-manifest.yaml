@@ -97,7 +97,7 @@ capabilities:
   - {id: CAP-composition, name: Composition run, decision: n/a, decision_status: n/a,
      implementation_state: EXECUTED, deployment: default-branch, evidence: [scripts/compose_account.py, runlog rl_20260924T214000_composition-run, "run folder in history before 91979a0 (data/runs untracked since #26)"], gap: GAP-023}
   - {id: CAP-evidence-store, name: Run evidence persistence (hash manifest, read-back receipt, filing gate), decision: n/a, decision_status: n/a,
-     implementation_state: CODE_EXISTS, deployment: branch, evidence: [crm/evidence_store.py, tests/test_evidence_store.py, scripts/compose_account.py persist_evidence, scripts/push_proposals_to_crm.py gate_proposals], gap: GAP-023}
+     implementation_state: CODE_EXISTS, deployment: default-branch, evidence: ["merged 3 Nov 2026 (#32, 1fafa9c); store not yet configured, so filing is blocked", crm/evidence_store.py, tests/test_evidence_store.py, scripts/compose_account.py persist_evidence, scripts/push_proposals_to_crm.py gate_proposals], gap: GAP-023}
   - {id: CAP-pandadoc, name: Signed proposals in PandaDoc, decision: n/a, decision_status: Accepted,
      implementation_state: none, deployment: none, evidence: [01 — Living Reference Model, system-of-record policy]}
   - {id: CAP-workbench, name: Operations Workbench as delivery authority, decision: n/a, decision_status: Accepted,

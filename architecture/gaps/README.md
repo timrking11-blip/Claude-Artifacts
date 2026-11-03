@@ -283,6 +283,16 @@ Status as of 15 Oct 2026. A closed gap stays listed, with what closed it.
   - the deletion process designed.
 
   Until then the gap stays open, and composition runs refuse to file because no store is configured.
+- **3 Nov 2026:** the owner merged #32 (merge commit `1fafa9c`, 18:40 UTC) before live acceptance. A read-only check of the Supabase project the same day found:
+  - no `run-evidence` bucket;
+  - no `evidence_registry` or `evidence_writers` table;
+  - no evidence storage policies.
+
+  So the migration is not applied. From the merge until the store is configured:
+  - `compose_account.py finalize` refuses to file;
+  - the Monday catch-up (`push_proposals_to_crm.py`) pushes nothing and exits 1.
+
+  This is the fail-closed behaviour, not a fault.
 
 ## GAP-024 — Weekly GitHub sync cannot complete
 
