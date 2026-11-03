@@ -27,6 +27,11 @@ instead, found by domain in <dump>/accounts/. The same append-only notes rule
 applies; a LinkedIn-sourced account also gets source "linkedin" and its
 pre-qual box ticked when neither is set yet. Account stage is never touched.
 
+Only proposals whose run evidence verifies in the evidence store are planned
+(GAP-023; crm/evidence_store.py, docs/evidence-store.md): the same gate the
+composition run applies before filing. Others are listed as held. With no
+store configured, nothing is pushed.
+
 Dry-run by default. `--write` emits data/artifact/crm/proposal_*.json.
 """
 
@@ -40,7 +45,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from crm import config
+from crm import config, evidence_store
 from crm.crm_sync import load_crm_dump, pinned, system_activity, utcnow_iso, write_batches
 from crm.master import load_master
 from crm.schema import Contact, normalize_domain
@@ -196,6 +201,22 @@ def plan(proposals: list[dict[str, Any]], master: list[Contact], docs: dict[str,
     return writes, log
 
 
+def gate_proposals(proposals: list[dict[str, Any]], store) -> tuple[list[dict[str, Any]], list[str]]:
+    """The proposals whose stored evidence verifies, and why each other one is held (GAP-023).
+
+    The same gate the composition run applies before it emits a batch
+    (crm.evidence_store.gate_record), so the catch-up is no way round it.
+    """
+    kept, held = [], []
+    for p in proposals:
+        problems = evidence_store.gate_record(p, store)
+        if problems:
+            held.extend(problems)
+        else:
+            kept.append(p)
+    return kept, held
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--crm-dump", type=Path, required=True)
@@ -208,6 +229,17 @@ def main() -> int:
     proposals = load_proposals(args.proposals_dir)
     if not proposals:
         print(f"no proposals in {args.proposals_dir}; nothing to do")
+        return 0
+    try:
+        store = evidence_store.store_from_env()
+    except evidence_store.EvidenceError as exc:
+        print(f"evidence: {exc}; nothing pushed")
+        return 1
+    proposals, held = gate_proposals(proposals, store)
+    for line in held:
+        print(f"  held: {line}")
+    if not proposals:
+        print("no proposal has verified evidence; nothing to write")
         return 0
     master = load_master(args.master)
     docs = load_crm_dump(args.crm_dump)

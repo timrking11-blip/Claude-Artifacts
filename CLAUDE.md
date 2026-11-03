@@ -53,6 +53,12 @@ Don't work around them.
   account", and only for the intake domain.
 - **One proposal per run.** A changed proposal is a new run from the Intake
   page, never an edit or revision of one already filed.
+- **No filing without stored evidence (GAP-023).** A proposal is filed, and
+  pushed by the Monday catch-up, only when its run's evidence verifies in the
+  private evidence store (`crm/evidence_store.py`, `docs/evidence-store.md`).
+  The owner chose Supabase Storage on 1 Nov 2026. Runs sign in as the
+  least-privilege evidence writer; the service-role key is never given to a
+  run. With no store configured, runs refuse to file: there is no bypass.
 
 ## HOLDs and "unconfirmed" flags clear only after an independent check
 

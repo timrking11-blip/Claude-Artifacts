@@ -93,6 +93,8 @@ def ledger(tmp_path, monkeypatch):
     path = tmp_path / "contacts.json"
     save_master([ada, bob, cy], path)
     monkeypatch.setenv("ACCOUNT_RESEARCH_LEDGER", str(path))
+    # Filing needs an evidence store (GAP-023); a folder stands in for the private bucket.
+    monkeypatch.setenv("EVIDENCE_STORE", f"local:{tmp_path / 'evidence'}")
     return path
 
 
@@ -344,6 +346,34 @@ def test_cli_prepare_then_finalize(ledger, dump, tmp_path):
     assert final["coverage"]["apollo"] == "none: plan" and len(final["sync_schedule"]) == 4
     rec = json.loads(next((tmp_path / "proposals").glob("*.json")).read_text())
     assert "Sync schedule" in rec["notes_appendix"] and "Mon 28 Sep 2026 11:00 UTC" in rec["notes_appendix"]
+    # The filed proposal points at its persisted, read-back evidence, and that evidence verifies.
+    from crm import evidence_store
+    store = evidence_store.LocalStore(tmp_path / "evidence")
+    assert rec["evidence"]["run_id"] == "run_t" and evidence_store.gate_record(rec, store) == []
+    manifest_ = json.loads(store.get("runs/run_t/manifest.json"))
+    assert {"state.json", "proposal_record.json"} <= {f["path"] for f in manifest_["files"]}
+    assert "run_final.json" not in {f["path"] for f in manifest_["files"]}
+
+
+def test_cli_finalize_without_an_evidence_store_files_nothing(ledger, dump, tmp_path, monkeypatch, capsys):
+    monkeypatch.delenv("EVIDENCE_STORE")
+    mpath = tmp_path / "manifest.json"
+    mpath.write_text(json.dumps(manifest()))
+    runs = tmp_path / "runs"
+    assert compose.main(["prepare", str(mpath), "--crm-dump", str(dump), "--runs-dir", str(runs),
+                         "--no-fetch", "--now", "2026-09-24T20:00:00Z"]) == 0
+    memo = tmp_path / "memo.md"
+    memo.write_text("## Company\nExamples ([site](https://example.com/about)) [supported]")
+    assert compose.main(["brief", "run_t", "--web-research", str(memo), "--runs-dir", str(runs)]) == 0
+    draft = tmp_path / "draft.md"
+    draft.write_text(PROPOSAL)
+    with pytest.raises(compose.GateError) as exc:
+        compose.main(["finalize", "run_t", "--proposal", str(draft), "--crm-dump", str(dump), "--runs-dir", str(runs),
+                      "--proposals-dir", str(tmp_path / "proposals"), "--out-dir", str(tmp_path / "batch"),
+                      "--master", str(ledger), "--now", "2026-09-24T20:05:00Z"])
+    assert exc.value.code == 2 and "no evidence store configured" in capsys.readouterr().err
+    assert not (tmp_path / "batch").exists() and not list((tmp_path / "proposals").glob("*.json"))
+    assert not (runs / "run_t" / "run_final.json").exists()
 
 
 def test_linkedin_prospect_gets_the_proposal_on_its_account(ledger, dump, tmp_path):
