@@ -68,6 +68,8 @@ Each manifest file has a `kind`: `raw` (the intake manifest, web research, data 
    - `EVIDENCE_WRITER_PASSWORD` = the writer's password
 
    Anyone who uses the environment can read its variables. That is acceptable only because the writer can do no more than add and read evidence: no overwrite, no delete. Never paste these into a chat. Routine sessions that run the Monday catch-up need the same variables.
+
+   Under **Network access** in the same dialog, add the project's host (the host in `SUPABASE_URL`) to **Allowed domains**, keeping the package-manager default ticked, or use a broader level. Otherwise the proxy refuses the connection and `verify` reports `store unreachable: Tunnel connection failed: 403 Forbidden`.
 4. **Check access without filing anything.** From a new session, run `python3 -m crm.evidence_store verify run_does_not_exist`. A working setup answers `runs/run_does_not_exist/manifest.json is not in the store`. A sign-in or HTTP error is a setup problem.
 
 ## Live acceptance (closes GAP-023; PR #32 stays a draft until then)
