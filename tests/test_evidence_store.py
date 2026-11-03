@@ -276,7 +276,8 @@ def fake_bucket(monkeypatch):
             creds = json.loads(req.data)
             ok = creds == {"email": "writer@example.com", "password": "writer-pass"} and req.headers.get("Apikey") == "anon"
             if not ok:
-                raise urllib.error.HTTPError(req.full_url, 400, "bad", {}, _io(b'{"error":"invalid_grant"}'))
+                raise urllib.error.HTTPError(req.full_url, 400, "bad", {}, _io(
+                    b'{"code":400,"error_code":"invalid_credentials","msg":"Invalid login credentials"}'))
             return FakeResponse(200, b'{"access_token":"writer-jwt"}')
         assert req.headers.get("Authorization") == "Bearer writer-jwt"
         if "/rest/v1/evidence_registry" in req.full_url:
@@ -330,8 +331,23 @@ def test_supabase_backend_persists_reads_back_and_refuses_overwrites(tmp_path, m
 
 def test_a_failed_writer_sign_in_configures_no_store(monkeypatch):
     fake_bucket(monkeypatch)
-    with pytest.raises(es.EvidenceError, match="sign-in failed: HTTP 400") as exc:
+    with pytest.raises(es.EvidenceError, match=r"sign-in failed: HTTP 400 \(invalid_credentials\)") as exc:
         es.store_from_env({"EVIDENCE_STORE": "supabase", "SUPABASE_URL": "https://example.supabase.co",
                            "SUPABASE_ANON_KEY": "anon", "EVIDENCE_WRITER_EMAIL": "writer@example.com",
                            "EVIDENCE_WRITER_PASSWORD": "wrong"})
     assert "wrong" not in str(exc.value)
+
+
+def test_a_sign_in_error_shows_only_a_bare_error_code(monkeypatch):
+    """Supabase's reason is shown only when it is a snake_case code, so no request text is echoed."""
+    import urllib.error
+
+    def urlopen(req, timeout=None):
+        raise urllib.error.HTTPError(req.full_url, 400, "bad", {}, _io(b'{"error_code":"bad pass: hunter2"}'))
+
+    monkeypatch.setattr(es.urllib.request, "urlopen", urlopen)
+    with pytest.raises(es.EvidenceError) as exc:
+        es.store_from_env({"EVIDENCE_STORE": "supabase", "SUPABASE_URL": "https://example.supabase.co",
+                           "SUPABASE_ANON_KEY": "anon", "EVIDENCE_WRITER_EMAIL": "writer@example.com",
+                           "EVIDENCE_WRITER_PASSWORD": "hunter2"})
+    assert str(exc.value) == "evidence writer sign-in failed: HTTP 400"
