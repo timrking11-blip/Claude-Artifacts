@@ -293,6 +293,7 @@ Status as of 15 Oct 2026. A closed gap stays listed, with what closed it.
   - the Monday catch-up (`push_proposals_to_crm.py`) pushes nothing and exits 1.
 
   This is the fail-closed behaviour, not a fault.
+- **3 Nov 2026, later:** the store goes in its own Supabase project, the owner's choice, not the existing project that another app's tables and Auth users already share. The owner confirmed the new project and its ref in the session. The ref is kept out of this repository, like every project identifier. The migration was not applied to the shared project (the owner stopped that call). It waits for a session whose Supabase connector can reach the new project, and is applied there only after a read-only check shows that project is empty.
 
 ## GAP-024 — Weekly GitHub sync cannot complete
 

@@ -57,7 +57,7 @@ Each manifest file has a `kind`: `raw` (the intake manifest, web research, data 
 
 ## Setup (the owner)
 
-1. **Apply the migration.** Paste `supabase/migrations/20261101000000_evidence_store.sql` into the project's SQL editor and run it. Or tell Claude to apply it with the Supabase connector. It creates the bucket, the writer allow-list, the storage policies and the registry.
+1. **Apply the migration** to the store's own Supabase project (the owner's choice, 3 Nov 2026), not one another app shares, so the writer is the only Auth user that matters to the store. Paste `supabase/migrations/20261101000000_evidence_store.sql` into the project's SQL editor and run it. Or tell Claude to apply it with the Supabase connector. It creates the bucket, the writer allow-list, the storage policies and the registry.
 2. **Create the writer user.** Go to Authentication → Users → Add user, give it an email and a long random password, and auto-confirm it. Then run this in the SQL editor, with the new user's id:
    `insert into public.evidence_writers (user_id) values ('<the user id>');`
 3. **Give runs the writer, never the service key.** Edit the session's cloud environment: the environment menu in the session's title bar, then **Edit**. Add these variables:
