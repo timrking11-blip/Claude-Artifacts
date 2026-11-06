@@ -57,17 +57,19 @@ Each manifest file has a `kind`: `raw` (the intake manifest, web research, data 
 
 ## Setup (the owner)
 
-1. **Apply the migration.** Paste `supabase/migrations/20261101000000_evidence_store.sql` into the project's SQL editor and run it. Or tell Claude to apply it with the Supabase connector. It creates the bucket, the writer allow-list, the storage policies and the registry.
+1. **Apply the migration** to the store's own Supabase project (the owner's choice, 3 Nov 2026), not one another app shares, so the writer is the only Auth user that matters to the store. Paste `supabase/migrations/20261101000000_evidence_store.sql` into the project's SQL editor and run it. Or tell Claude to apply it with the Supabase connector. It creates the bucket, the writer allow-list, the storage policies and the registry.
 2. **Create the writer user.** Go to Authentication → Users → Add user, give it an email and a long random password, and auto-confirm it. Then run this in the SQL editor, with the new user's id:
    `insert into public.evidence_writers (user_id) values ('<the user id>');`
-3. **Give runs the writer, never the service key.** Edit the session's cloud environment: the environment menu in the session's title bar, then **Edit**. Add these variables:
+3. **Give runs the writer, never the service key.** Edit the session's cloud environment: the environment menu in the session's title bar, then **Edit**, then the **Environment variables** row. Add these five, one `NAME=value` per line, then press **Save changes**. They must be environment variables, not network secrets. A network secret is attached as a request header by the proxy and never reaches the session, while the writer's sign-in sends the password in the request body:
    - `EVIDENCE_STORE` = `supabase`
    - `SUPABASE_URL` = the project URL
    - `SUPABASE_PUBLISHABLE_KEY` = the publishable key
    - `EVIDENCE_WRITER_EMAIL` = the writer's email
-   - `EVIDENCE_WRITER_PASSWORD` = the writer's password, under Network secrets if that section is offered
+   - `EVIDENCE_WRITER_PASSWORD` = the writer's password
 
-   Never paste these into a chat. Routine sessions that run the Monday catch-up need the same variables.
+   Anyone who uses the environment can read its variables. That is acceptable only because the writer can do no more than add and read evidence: no overwrite, no delete. Never paste these into a chat. Routine sessions that run the Monday catch-up need the same variables.
+
+   Under **Network access** in the same dialog, add the project's host (the host in `SUPABASE_URL`) to **Allowed domains**, keeping the package-manager default ticked, or use a broader level. Otherwise the proxy refuses the connection and `verify` reports `store unreachable: Tunnel connection failed: 403 Forbidden`.
 4. **Check access without filing anything.** From a new session, run `python3 -m crm.evidence_store verify run_does_not_exist`. A working setup answers `runs/run_does_not_exist/manifest.json is not in the store`. A sign-in or HTTP error is a setup problem.
 
 ## Live acceptance (closes GAP-023; PR #32 stays a draft until then)

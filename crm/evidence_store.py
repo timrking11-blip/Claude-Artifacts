@@ -68,6 +68,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -193,11 +194,17 @@ class SupabaseStore:
         status, raw = self._request("POST", f"{self.url}/auth/v1/token?grant_type=password", body,
                                     {"Content-Type": "application/json"})
         try:
-            token = json.loads(raw).get("access_token") if status == 200 else None
+            answer = json.loads(raw)
         except ValueError:
-            token = None
+            answer = None
+        answer = answer if isinstance(answer, dict) else {}
+        token = answer.get("access_token") if status == 200 else None
         if not token:
-            raise EvidenceError(f"evidence writer sign-in failed: HTTP {status}")
+            # Supabase names the cause (invalid_credentials, email_not_confirmed, ...).
+            # Only a bare snake_case code is shown, so nothing the request carried is echoed.
+            code = answer.get("error_code") or answer.get("error")
+            reason = f" ({code})" if isinstance(code, str) and re.fullmatch(r"[a-z_]{1,64}", code) else ""
+            raise EvidenceError(f"evidence writer sign-in failed: HTTP {status}{reason}")
         return token
 
     def _url(self, key: str, authenticated: bool = False) -> str:

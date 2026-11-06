@@ -283,6 +283,28 @@ Status as of 15 Oct 2026. A closed gap stays listed, with what closed it.
   - the deletion process designed.
 
   Until then the gap stays open, and composition runs refuse to file because no store is configured.
+- **3 Nov 2026:** the owner merged #32 (merge commit `1fafa9c`, 18:40 UTC) before live acceptance. A read-only check of the Supabase project the same day found:
+  - no `run-evidence` bucket;
+  - no `evidence_registry` or `evidence_writers` table;
+  - no evidence storage policies.
+
+  So the migration is not applied. From the merge until the store is configured:
+  - `compose_account.py finalize` refuses to file;
+  - the Monday catch-up (`push_proposals_to_crm.py`) pushes nothing and exits 1.
+
+  This is the fail-closed behaviour, not a fault.
+- **3 Nov 2026, later:** the store goes in its own Supabase project, the owner's choice, not the existing project that another app's tables and Auth users already share. The owner confirmed the new project and its ref in the session. The ref is kept out of this repository, like every project identifier. The migration was not applied to the shared project (the owner stopped that call). It waits for a session whose Supabase connector can reach the new project, and is applied there only after a read-only check shows that project is empty.
+- **3 Nov 2026, applied:** on the owner's go in a fresh session (session_01Ftroarj9sEc56EYGzYjLms), the migration was applied to the store's own project. That project had no migrations, tables, buckets, storage policies or Auth users beforehand. The file's sha256 matched `97e84fb0…fb47a`, and its exact contents were recorded as migration version `20261103190148`.
+  - **Checked by that session (read-only):**
+    - the `run-evidence` bucket is private;
+    - `evidence_writers` and `evidence_registry` have RLS on;
+    - `is_evidence_writer()` is SECURITY DEFINER with an empty search_path;
+    - `storage.objects` has only the two writer policies (INSERT, SELECT);
+    - `evidence_registry` has only its INSERT and SELECT policies; `authenticated` holds INSERT and SELECT, `anon` holds nothing.
+  - **Security advisors:**
+    - INFO `rls_enabled_no_policy` on `evidence_writers`, as intended;
+    - WARN that `anon` and `authenticated` can execute `is_evidence_writer()` (and Supabase's default `rls_auto_enable()`). The migration's `revoke all … from public` leaves Supabase's direct grant to `anon` in place. The function returns false for `anon` and exposes no data; revoking `anon`'s execute grant needs a new migration, which is the owner's call.
+  - **Still needed:** the writer user and its `evidence_writers` row, the run environment, live acceptance and the deletion process. Filing stays blocked until the run environment is set.
 
 ## GAP-024 — Weekly GitHub sync cannot complete
 
